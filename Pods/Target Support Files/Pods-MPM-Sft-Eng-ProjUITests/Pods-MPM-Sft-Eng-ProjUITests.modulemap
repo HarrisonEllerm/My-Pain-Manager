@@ -1,0 +1,6 @@
+framework module Pods_MPM_Sft_Eng_ProjUITests {
+  umbrella header "Pods-MPM-Sft-Eng-ProjUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
