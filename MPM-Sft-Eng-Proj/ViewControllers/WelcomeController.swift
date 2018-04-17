@@ -115,7 +115,6 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     func validationSuccessful() {
         hud.textLabel.text = "Signing In..."
-        
         hud.show(in: view, animated: true)
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
@@ -135,12 +134,13 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
              there is a check to the appDelegate singleton variable
              signInCount.
              */
-            if(self.appDelegate.signInCount > 1) {
-                self.refreshApplicationState()
+            if(self.appDelegate.signInCount >= 1) {
+                self.appDelegate.refreshApplicationState()
+            } else {
+                self.appDelegate.signInCount += 1
+                self.hud.dismiss(animated: true)
+                self.dismiss(animated: true, completion: nil)
             }
-            self.hud.dismiss(animated: true)
-            self.dismiss(animated: true, completion: nil)
-            self.appDelegate.signInCount += 1
         }
     }
     
@@ -208,12 +208,5 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
-    }
-    
-    fileprivate func refreshApplicationState() {
-        appDelegate.window = UIWindow(frame: UIScreen.main.bounds)
-        let rootViewController = MainTabBarController()
-        appDelegate.window!.rootViewController = rootViewController
-        appDelegate.window!.makeKeyAndVisible()
     }
 }

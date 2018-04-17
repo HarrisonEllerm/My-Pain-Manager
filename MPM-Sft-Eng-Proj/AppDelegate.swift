@@ -123,18 +123,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                  there is a check to the appDelegate singleton variable
                  signInCount.
                  */
-                if(self.signInCount > 1) {
+                if(self.signInCount >= 1) {
                     self.refreshApplicationState()
-                }
-                //Dismiss HUD
-                self.hud.dismiss(animated: true)
-                //Allow slight delay so hud can be dismissed before dismissing
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    //present mainTabBar
-                    if let topVC = getTopViewController() {
-                        topVC.dismiss(animated: true, completion: nil)
+                } else {
+                    
+                    //Dismiss HUD and increment sign in count
+                    self.hud.dismiss(animated: true)
+                    self.signInCount += 1
+
+                    //Allow slight delay so hud can be dismissed before dismissing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        //present mainTabBar
+                        if let topVC = getTopViewController() {
+                            topVC.dismiss(animated: true, completion: nil)
+                        }
                     }
                 }
+            
             })
         }
     }
@@ -166,10 +171,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    fileprivate func refreshApplicationState() {
+    func refreshApplicationState() {
+        print("Refreshing Applicaton State....")
         self.window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = MainTabBarController()
-        self.window?.rootViewController = rootViewController
-        self.window?.makeKeyAndVisible()
+        UIView.transition(with: self.window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromLeft, animations: {
+            self.window?.rootViewController = rootViewController
+             self.window?.makeKeyAndVisible()
+        }, completion: nil)
     }
 }
