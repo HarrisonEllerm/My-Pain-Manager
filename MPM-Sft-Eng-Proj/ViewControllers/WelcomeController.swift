@@ -103,7 +103,6 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         //register text fields that will be validated
         validator.registerField(emailTextField, rules: [RequiredRule(message: "Please provide a email!"), EmailRule(message: "Please provide a valid email!")])
         validator.registerField(passwordTextField, rules: [RequiredRule(message: "Password Required!")])
-        appDelegate.signInCount += 1
     }
     
     
