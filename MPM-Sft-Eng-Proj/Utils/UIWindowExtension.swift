@@ -17,7 +17,6 @@ public extension UIWindow {
     public var visibleViewController: UIViewController? {
         return UIWindow.getVisibleViewControllerFrom(vc: self.rootViewController)
     }
-    
     public static func getVisibleViewControllerFrom(vc: UIViewController?) -> UIViewController? {
         if let nc = vc as? UINavigationController {
             return UIWindow.getVisibleViewControllerFrom(vc: nc.visibleViewController)

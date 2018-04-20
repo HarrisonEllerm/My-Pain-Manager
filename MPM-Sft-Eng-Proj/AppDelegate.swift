@@ -65,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
         hud.textLabel.text = "Signing In via Google..."
         hud.detailTextLabel.text = ""
+        
         if let topVC = getTopViewController() {
             hud.show(in: topVC.view, animated: true)
         }
@@ -80,30 +81,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         }
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
                                                        accessToken: authentication.accessToken)
+        
         Auth.auth().signIn(with: credential) { (user, error) in
             if let error = error {
                 Service.dismissHud(self.hud, text: "Error", detailText: "Failed to authenticate.", delay: 3)
                 print(error)
                 return
             }
-            guard let name = user?.displayName else {
-                Service.dismissHud(self.hud, text: "Error", detailText: "Could not find display name for user.", delay: 3)
+           
+            guard let name = user?.displayName, let email = user?.email,
+                            let profilePicUrl = user?.photoURL?.absoluteString,
+                            let uid = Auth.auth().currentUser?.uid else {
+                Service.dismissHud(self.hud, text: "Error", detailText: "Error finding information for user.", delay: 3)
                 return
             }
-            guard let email = user?.email else {
-                Service.dismissHud(self.hud, text: "Error", detailText: "Could not find email for user.", delay: 3)
-                return
-            }
-            guard let profilePicUrl = user?.photoURL?.absoluteString else {
-                Service.dismissHud(self.hud, text: "Error", detailText: "Could not photo url for user.", delay: 3)
-                return
-            }
-            guard let uid = Auth.auth().currentUser?.uid else {
-                print("Couldnt get UID")
-                Service.dismissHud(self.hud, text: "Error", detailText: "Could not get uid for user.", delay: 3)
-                return
-            }
-            
             let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl]
             let values = [uid: dictionaryValues]
             
@@ -111,26 +102,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                 if let error = error {
                     Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
                     print(error)
-                }
+            }
+                
                 /*
                  User Sucessfuly Signed In
-                 
-                 In the rare case where a user:
-                 1. Signs in with an account
-                 2. Proceeds to log out and sign in with a different account,
-                 -> we need to essentially refresh the state of the application,
-                 to ensure no previous data is left behind. This is why
-                 there is a check to the appDelegate singleton variable
-                 signInCount.
+                 -> Must refresh state if this is not the first sign in.
                  */
                 if(self.signInCount >= 1) {
+                    self.hud.dismiss(animated: true)
                     self.refreshApplicationState()
+                
                 } else {
-                    
                     //Dismiss HUD and increment sign in count
                     self.hud.dismiss(animated: true)
                     self.signInCount += 1
-
                     //Allow slight delay so hud can be dismissed before dismissing
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         //present mainTabBar
@@ -139,7 +124,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                         }
                     }
                 }
-            
             })
         }
     }

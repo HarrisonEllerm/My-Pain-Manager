@@ -20,7 +20,6 @@ class Service {
     static let buttonTitleColor = UIColor.white
     static let buttonCornerRadius: CGFloat = 7
     static let buttonBackgroundColorSignInAnon = UIColor(r: 54, g: 54, b: 54)
-    static let buttonBackgroundColorSignInFB = UIColor(r: 128, g: 128, b: 255)
     static let loginButtonBackgroundColor = UIColor(displayP3Red: 89 / 255, green: 156 / 255, blue: 120 / 255, alpha: 1)
     static let greenTheme = UIColor(displayP3Red: 109/255, green: 201/255, blue: 149/255, alpha: 1 )
     static let dontHaveAccountTextColor = UIColor(red: 89/155, green: 156/255, blue: 120/255, alpha: 1)

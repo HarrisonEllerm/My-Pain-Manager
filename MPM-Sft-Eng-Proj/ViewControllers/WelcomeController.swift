@@ -82,9 +82,12 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     let dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = Service.greenTheme
-        let attributeTitle = NSMutableAttributedString(string: "Don't have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.dontHaveAccountTextColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
+        let attributeTitle = NSMutableAttributedString(string: "Don't have an account? ",
+            attributes: [NSAttributedStringKey.foregroundColor: Service.dontHaveAccountTextColor,
+                         NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
         button.setAttributedTitle(attributeTitle, for: .normal)
-        attributeTitle.append(NSAttributedString(string: "Sign Up" , attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]))
+        attributeTitle.append(NSAttributedString(string: "Sign Up" , attributes:
+            [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]))
         button.addTarget(self, action: #selector(signUpAction), for: .touchUpInside)
         return button
     }()
@@ -125,21 +128,17 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
             }
             /*
              User Sucessfuly Signed In
-             
-             In the rare case where a user:
-             1. Signs in with an account
-             2. Proceeds to log out and sign in with a different account,
-             -> we need to essentially refresh the state of the application,
-             to ensure no previous data is left behind. This is why
-             there is a check to the appDelegate singleton variable
-             signInCount.
+             -> Must refresh state if this is not the first sign in.
              */
             if(self.appDelegate.signInCount >= 1) {
                 self.appDelegate.refreshApplicationState()
             } else {
-                self.appDelegate.signInCount += 1
                 self.hud.dismiss(animated: true)
-                self.dismiss(animated: true, completion: nil)
+                self.appDelegate.signInCount += 1
+                //Allow slight delay so hud can be dismissed before dismissing
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.dismiss(animated: true, completion: nil)
+                }
             }
         }
     }
