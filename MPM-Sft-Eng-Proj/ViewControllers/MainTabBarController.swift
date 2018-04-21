@@ -13,6 +13,7 @@ class MainTabBarController: UITabBarController {
     
     let homeController: HomeController = HomeController()
     let userController: UserController = UserController()
+    let summaryController: SummaryController = SummaryController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,11 @@ class MainTabBarController: UITabBarController {
         userNavController.tabBarItem.image = #imageLiteral(resourceName: "MainTabBarItemProfile").withRenderingMode(.alwaysTemplate)
         userNavController.tabBarItem.selectedImage = #imageLiteral(resourceName: "MainTabBarItemProfile").withRenderingMode(.alwaysTemplate)
         
-        viewControllers = [homeNavController, userNavController]
+        let summaryNavController = UINavigationController(rootViewController: summaryController)
+        summaryNavController.tabBarItem.image = #imageLiteral(resourceName: "graph").withRenderingMode(.alwaysTemplate)
+        summaryNavController.tabBarItem.selectedImage = #imageLiteral(resourceName: "graph").withRenderingMode(.alwaysTemplate)
+        
+        viewControllers = [homeNavController,summaryNavController,userNavController]
         
         guard let items = tabBar.items else { return }
         for item in items {
