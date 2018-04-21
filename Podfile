@@ -19,7 +19,6 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'SwiftValidator', :git => 'https://github.com/jpotts18/SwiftValidator.git', :branch => 'master'
     pod 'GoogleSignIn'
     pod 'Charts'
-    pod 'ChartsRealm'
 
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths

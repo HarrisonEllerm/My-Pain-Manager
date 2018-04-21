@@ -14,7 +14,7 @@ import FirebaseStorage
 import FirebaseDatabase
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker  {
     
     let hud: JGProgressHUD = {
         let hud = JGProgressHUD(style: .light)
@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
     }()
     
     var window: UIWindow?
-    var signInCount: Int = 0
     var mainTabBarController: MainTabBarController?
     
     
@@ -36,9 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
         // Override point for customization after application launch.
         window = UIWindow()
         window?.makeKeyAndVisible()
-        //add view controller to window root view controller
-        mainTabBarController = MainTabBarController()
-        window?.rootViewController = mainTabBarController
+        handleLogin(withWindow: window)
+        
         
         return true
     }
@@ -55,13 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                                                  annotation: annotation)
     }
     
-    /*
-     It bothers me that this code sits inside AppDelegate, as it kind of ruins MVC (should be in
-     welcome controller along with other sign in code). However this is the way google suggests that
-     you integrate the google sign in functionality into your application.
-     
-     -> Method needs refactoring, on todo list
-     */
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
         hud.textLabel.text = "Signing In via Google..."
         hud.detailTextLabel.text = ""
@@ -103,26 +94,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate {
                     Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
                     print(error)
             }
-                
-                /*
-                 User Sucessfuly Signed In
-                 -> Must refresh state if this is not the first sign in.
-                 */
-                if(self.signInCount >= 1) {
-                    self.hud.dismiss(animated: true)
-                    self.refreshApplicationState()
-                
-                } else {
-                    //Dismiss HUD and increment sign in count
-                    self.hud.dismiss(animated: true)
-                    self.signInCount += 1
-                    //Allow slight delay so hud can be dismissed before dismissing
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        //present mainTabBar
-                        if let topVC = getTopViewController() {
-                            topVC.dismiss(animated: true, completion: nil)
-                        }
-                    }
+            //Allow slight delay so hud can be dismissed before dismissing
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                //present mainTabBar
+                self.handleLogin(withWindow: self.window)
                 }
             })
         }

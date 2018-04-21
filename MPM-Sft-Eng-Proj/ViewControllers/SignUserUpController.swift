@@ -124,11 +124,11 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                 }
                 //No error, it validated correctly push back to sign in page
                 self.hud.dismiss(animated: true)
-                let welcomeController = WelcomeController()
                 self.registerButton.isUserInteractionEnabled = false
-                
+                //allow delay to dismiss hud
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.navigationController?.pushViewController(welcomeController, animated: true)
+                    let welcomeController = WelcomeController()
+                    self.present(welcomeController, animated: true, completion: nil)
                 }
             })
         }
@@ -143,8 +143,8 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     }
     
     @objc func signInAction() {
-        navigationController?.popViewController(animated: true)
-        
+        let welcomeController = WelcomeController()
+        self.present(welcomeController, animated: true, completion: nil)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

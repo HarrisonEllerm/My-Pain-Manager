@@ -16,21 +16,8 @@ class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkLoggedInUserStatus()
         setUpViewControllers()
         
-    }
-    
-    //Checks if user is logged in, if not redirects to sign in page.
-    func checkLoggedInUserStatus() {
-        if Auth.auth().currentUser == nil {
-            DispatchQueue.main.async {
-                let welcomeController = WelcomeController()
-                let signUpNavigationController = UINavigationController(rootViewController: welcomeController)
-                self.present(signUpNavigationController, animated: false, completion: nil)
-                return
-            }
-        }
     }
     
     fileprivate func setUpViewControllers() {

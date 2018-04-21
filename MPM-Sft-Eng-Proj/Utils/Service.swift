@@ -25,7 +25,7 @@ class Service {
     static let dontHaveAccountTextColor = UIColor(red: 89/155, green: 156/255, blue: 120/255, alpha: 1)
     
     //Default profile image used if user signs up with email
-    static let defaultProfilePicUrl = "https://firebasestorage.googleapis.com/v0/b/mpmv1-606b6.appspot.com/o/icons8-female-profile-50.png?alt=media&token=278fcdf5-754a-497f-99ab-b18ed44d7a10"
+    static let defaultProfilePicUrl = "https://firebasestorage.googleapis.com/v0/b/mpmv1-606b6.appspot.com/o/user_name_icon.png?alt=media&token=a7186046-6f73-4948-aa12-3154920b4e3c"
     
     //UITabBarInsets
     static let topUITabBarEdgeInset: CGFloat = 4

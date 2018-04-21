@@ -126,20 +126,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
                 print("Error signing in: \(error)")
                 return
             }
-            /*
-             User Sucessfuly Signed In
-             -> Must refresh state if this is not the first sign in.
-             */
-            if(self.appDelegate.signInCount >= 1) {
-                self.appDelegate.refreshApplicationState()
-            } else {
-                self.hud.dismiss(animated: true)
-                self.appDelegate.signInCount += 1
-                //Allow slight delay so hud can be dismissed before dismissing
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.dismiss(animated: true, completion: nil)
-                }
-            }
+        self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
         }
     }
     
@@ -151,9 +138,8 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     @objc func signUpAction() {
         let signUserUpController = SignUserUpController()
-        navigationController?.pushViewController(signUserUpController, animated: true)
+        self.present(signUserUpController, animated: true, completion: nil)
     }
-    
     
     fileprivate func setUpViews() {
         
