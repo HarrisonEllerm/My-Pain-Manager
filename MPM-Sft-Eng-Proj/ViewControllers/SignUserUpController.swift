@@ -26,6 +26,12 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return hud
     }()
     
+    let signUpBelowImg: UIImageView = {
+        let img = UIImageView(image: UIImage(named: "signUpBelow"))
+        img.contentMode = .scaleAspectFit
+        return img
+    }()
+    
     let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = Service.greenTheme
@@ -171,6 +177,9 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     fileprivate func setUpView() {
         view.backgroundColor = Service.greenTheme
         
+        view.addSubview(signUpBelowImg)
+        anchorSignUpBelowImg(signUpBelowImg)
+        
         view.addSubview(nameTextField)
         anchorNameTextField(nameTextField)
         
@@ -188,8 +197,13 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         
     }
     
+    fileprivate func anchorSignUpBelowImg(_ image: UIImageView) {
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 180, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 75)
+        
+    }
+    
     fileprivate func anchorNameTextField(_ textField: UITextField) {
-        textField.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 300, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(signUpBelowImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorEmailTextField(_ textField: UITextField) {

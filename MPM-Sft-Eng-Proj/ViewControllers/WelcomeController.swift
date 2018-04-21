@@ -35,6 +35,12 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         return hud
     }()
     
+    let loginImg: UIImageView = {
+        let img = UIImageView(image: UIImage(named: "loginText"))
+        img.contentMode = .scaleAspectFit
+        return img
+    }()
+    
     let emailTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
@@ -117,6 +123,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     
     func validationSuccessful() {
+        hud.detailTextLabel.text = "";
         hud.textLabel.text = "Signing In..."
         hud.show(in: view, animated: true)
         guard let email = emailTextField.text else { return }
@@ -124,6 +131,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if let error = error {
                 print("Error signing in: \(error)")
+                Service.dismissHud(self.hud, text: "Error", detailText: error.localizedDescription, delay: 3)
                 return
             }
         self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
@@ -143,6 +151,9 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     fileprivate func setUpViews() {
         
+        view.addSubview(loginImg)
+        anchorLoginImg(loginImg)
+        
         view.addSubview(emailTextField)
         anchorEmailTextField(emailTextField)
         
@@ -158,11 +169,14 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         view.addSubview(dontHaveAccountButton)
         anchorDontHaveAccountButton(dontHaveAccountButton)
         
-        
+    }
+    
+    fileprivate func anchorLoginImg(_ image: UIImageView) {
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 180, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
     
     fileprivate func anchorEmailTextField(_ textField: UITextField) {
-        textField.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 300, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(loginImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorPasswordTextField(_ textField: UITextField) {
