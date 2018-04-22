@@ -134,7 +134,12 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
                 Service.dismissHud(self.hud, text: "Error", detailText: error.localizedDescription, delay: 3)
                 return
             }
-        self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
+            /*
+             Normal sign in ok, allow slight delay to dismiss hud, then push new page.
+             */
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
+            }
         }
     }
     

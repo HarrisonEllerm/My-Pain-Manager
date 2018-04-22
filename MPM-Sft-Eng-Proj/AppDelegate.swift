@@ -55,6 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     }
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
+        
         hud.textLabel.text = "Signing In via Google..."
         hud.detailTextLabel.text = ""
         
@@ -93,9 +94,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
                 if let error = error {
                     Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
-                    print(error)
+                    return
             }
-            //Allow slight delay so hud can be dismissed before dismissing
+            /*
+                Google sign in ok, allow slight delay to dismiss hud, then push new page.
+            */
+            self.hud.dismiss()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 //present mainTabBar
                 self.handleLogin(withWindow: self.window)

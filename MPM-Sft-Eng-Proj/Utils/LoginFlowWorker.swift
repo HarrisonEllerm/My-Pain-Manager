@@ -8,6 +8,11 @@
 import UIKit
 import FirebaseAuth
 
+/*
+ A protocol is essentially an interface in Java land. Link
+ outlining some of the differences:
+    https://preview.tinyurl.com/yctzk7kp
+ */
 protocol LoginFlowWorker {
     func handleLogin(withWindow window: UIWindow?)
 }
