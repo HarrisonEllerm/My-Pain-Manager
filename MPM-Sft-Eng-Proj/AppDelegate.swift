@@ -29,7 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Configure Firebase
         FirebaseApp.configure()
-        
         //Client ID for Google Sign In
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
@@ -37,8 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         window = UIWindow()
         window?.makeKeyAndVisible()
         handleLogin(withWindow: window)
-        
-        
         return true
     }
     
@@ -81,32 +78,49 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                 print(error)
                 return
             }
-           
-            guard let name = user?.displayName, let email = user?.email,
-                            let profilePicUrl = user?.photoURL?.absoluteString,
-                            let uid = Auth.auth().currentUser?.uid else {
-                Service.dismissHud(self.hud, text: "Error", detailText: "Error finding information for user.", delay: 3)
-                return
-            }
-            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl]
-            let values = [uid: dictionaryValues]
             
-            Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
-                if let error = error {
-                    Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
+            guard let name = user?.displayName, let email = user?.email,
+                let profilePicUrl = user?.photoURL?.absoluteString,
+                let uid = Auth.auth().currentUser?.uid else {
+                    Service.dismissHud(self.hud, text: "Error", detailText: "Error finding information for user.", delay: 3)
                     return
             }
             /*
-                Google sign in ok, allow slight delay to dismiss hud, then push new page.
+             Makes use of a transaction to ensure that the user does not exist, before pushing their info
+             to DB. If they do exist, we don't want to overwrite data they have saved.
             */
-            self.hud.dismiss()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                //present mainTabBar
-                self.handleLogin(withWindow: self.window)
+            
+            Database.database().reference().child("users").observeSingleEvent(of: .value, with: { (snapshot) in
+                if !snapshot.hasChild(uid) {
+                    print("User does not exist, creating new user...")
+                    let altProfilePicURL = Service.defaultProfilePicUrl
+                    let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL]
+                    let values = [uid: dictionaryValues]
+                    Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
+                        if let error = error {
+                            Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
+                            return
+                        }
+                        self.completeSignIn()
+                    })
+                } else {
+                    print("user exists...")
+                    self.completeSignIn()
                 }
             })
+
         }
     }
+    
+    func completeSignIn() {
+        print("complete sign in called")
+        self.hud.dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            //present mainTabBar
+            self.handleLogin(withWindow: self.window)
+        }
+    }
+    
     
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         // Perform any operations when the user disconnects from app here.
@@ -145,3 +159,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         }, completion: nil)
     }
 }
+
+

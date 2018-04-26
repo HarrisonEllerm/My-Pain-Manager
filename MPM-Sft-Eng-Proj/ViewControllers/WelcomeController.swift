@@ -202,12 +202,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     fileprivate func anchorDontHaveAccountButton(_ button: UIButton) {
         button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
-    
-    //Sets status bar style to allow white text
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    
+        
     //Allows text fields to dissapear once they have been delegated
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()

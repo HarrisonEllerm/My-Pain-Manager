@@ -17,8 +17,10 @@ class HomeController: UIViewController {
         
         //cubeData = CubeData()
         
-        
         navigationItem.title = "Home"
+        navigationController?.navigationBar.titleTextAttributes =
+            [NSAttributedStringKey.foregroundColor:UIColor.white]
+        navigationController?.navigationBar.barTintColor = UIColor.black
         let scnView = SCNView(frame: view.frame)
         view.addSubview(scnView)
         
@@ -51,8 +53,6 @@ class HomeController: UIViewController {
         //let scnView = self.view as! SCNView
         //scnView.scene = PrimitiveScene()
         //scnView.backgroundColor = UIColor.black
-        
-        
         //view.backgroundColor = .white
         
         
@@ -60,7 +60,7 @@ class HomeController: UIViewController {
         
     }
     
-    
+   
     //TODO create page
     
 }

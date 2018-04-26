@@ -114,12 +114,13 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
             }
             //sucessfully authenticated now store in firebase database
             let profilePicUrl = Service.defaultProfilePicUrl
+            let altProfilePicUrl = Service.defaultProfilePicUrl
             guard let uid = Auth.auth().currentUser?.uid else {
                 print("Couldnt get UID")
                 Service.dismissHud(self.hud, text: "Sign up error.", detailText: "Could not get UID", delay: 3)
                 return
             }
-            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl]
+            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfilePicURL": altProfilePicUrl]
             let values = [uid: dictionaryValues]
             
             Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, dbRef) in

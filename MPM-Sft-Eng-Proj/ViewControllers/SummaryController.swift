@@ -16,6 +16,9 @@ class SummaryController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.titleTextAttributes =
+            [NSAttributedStringKey.foregroundColor:UIColor.white]
+        navigationController?.navigationBar.barTintColor = UIColor.black
         view.backgroundColor = .white
         navigationItem.title = "Summary"
         
