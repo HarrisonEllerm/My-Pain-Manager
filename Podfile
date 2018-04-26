@@ -2,6 +2,7 @@
 platform :ios, '11.0'
 
 target 'MPM-Sft-Eng-Proj' do
+    project 'MPM-Sft-Eng-Proj.xcodeproj'
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
   
@@ -19,6 +20,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'SwiftValidator', :git => 'https://github.com/jpotts18/SwiftValidator.git', :branch => 'master'
     pod 'GoogleSignIn'
     pod 'Charts'
+    pod 'SwiftSpinner'
 
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths

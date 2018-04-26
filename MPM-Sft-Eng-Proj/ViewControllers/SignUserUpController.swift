@@ -12,19 +12,13 @@ import UIKit
 import Firebase
 import FirebaseStorage
 import FirebaseDatabase
-import JGProgressHUD
 import SwiftValidator
+import SwiftSpinner
 
 class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDelegate {
     
     //Validator for text fields
     let validator = Validator()
-    
-    let hud: JGProgressHUD = {
-        let hud = JGProgressHUD(style: .light)
-        hud.interactionType = .blockAllTouches
-        return hud
-    }()
     
     let signUpBelowImg: UIImageView = {
         let img = UIImageView(image: UIImage(named: "signUpBelow"))
@@ -96,19 +90,20 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     }
     
     func validationSuccessful() {
-        //clear detail
-        hud.textLabel.text = "Signing up..."
-        hud.detailTextLabel.text = "";
-        hud.show(in: view, animated: true)
+        SwiftSpinner.show("Signing up...")
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
-            Service.dismissHud(self.hud, text: "Sign up error.", detailText: "Field was invalid", delay: 3)
+            SwiftSpinner.show("Sign up error...").addTapHandler({
+                SwiftSpinner.hide()
+            })
             print("Form is not valid")
             return
         }
         //Authenticate new user
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
             if let error = error {
-                Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
+                SwiftSpinner.show("Sign up error...").addTapHandler({
+                    SwiftSpinner.hide()
+                })
                 print(error)
                 return
             }
@@ -116,27 +111,27 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
             let profilePicUrl = Service.defaultProfilePicUrl
             let altProfilePicUrl = Service.defaultProfilePicUrl
             guard let uid = Auth.auth().currentUser?.uid else {
-                print("Couldnt get UID")
-                Service.dismissHud(self.hud, text: "Sign up error.", detailText: "Could not get UID", delay: 3)
+                SwiftSpinner.show("Sign up error...").addTapHandler({
+                    SwiftSpinner.hide()
+                })
                 return
             }
-            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfilePicURL": altProfilePicUrl]
+            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicUrl]
             let values = [uid: dictionaryValues]
             
             Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, dbRef) in
                 if let error = error {
-                    Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
+                    SwiftSpinner.show("Sign up error...").addTapHandler({
+                        SwiftSpinner.hide()
+                    })
                     print(error)
                     return
                 }
                 //No error, it validated correctly push back to sign in page
-                self.hud.dismiss(animated: true)
+                SwiftSpinner.hide()
                 self.registerButton.isUserInteractionEnabled = false
-                //allow delay to dismiss hud
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    let welcomeController = WelcomeController()
-                    self.present(welcomeController, animated: true, completion: nil)
-                }
+                let welcomeController = WelcomeController()
+                self.present(welcomeController, animated: true, completion: nil)
             })
         }
     }

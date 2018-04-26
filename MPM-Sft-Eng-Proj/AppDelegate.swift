@@ -9,18 +9,12 @@
 import UIKit
 import Firebase
 import GoogleSignIn
-import JGProgressHUD
 import FirebaseStorage
 import FirebaseDatabase
+import SwiftSpinner
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker  {
-    
-    let hud: JGProgressHUD = {
-        let hud = JGProgressHUD(style: .light)
-        hud.interactionType = .blockAllTouches
-        return hud
-    }()
     
     var window: UIWindow?
     var mainTabBarController: MainTabBarController?
@@ -52,21 +46,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     }
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
-        
-        hud.textLabel.text = "Signing In via Google..."
-        hud.detailTextLabel.text = ""
-        
-        if let topVC = getTopViewController() {
-            hud.show(in: topVC.view, animated: true)
-        }
+        SwiftSpinner.show("Signing In via Google")
+
         if let error = error {
-            Service.dismissHud(self.hud, text: "Error", detailText: "Error signing in.", delay: 3)
+            SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
+                SwiftSpinner.hide()
+            })
             print(error)
             return
         }
         
         guard let authentication = user.authentication else {
-            Service.dismissHud(self.hud, text: "Error", detailText: "Failed to authenticate.", delay: 3)
+            SwiftSpinner.show("Error Authenticating User...").addTapHandler({
+                SwiftSpinner.hide()
+            })
             return
         }
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
@@ -74,7 +67,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         
         Auth.auth().signIn(with: credential) { (user, error) in
             if let error = error {
-                Service.dismissHud(self.hud, text: "Error", detailText: "Failed to authenticate.", delay: 3)
+                SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
+                    SwiftSpinner.hide()
+                })
                 print(error)
                 return
             }
@@ -82,12 +77,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             guard let name = user?.displayName, let email = user?.email,
                 let profilePicUrl = user?.photoURL?.absoluteString,
                 let uid = Auth.auth().currentUser?.uid else {
-                    Service.dismissHud(self.hud, text: "Error", detailText: "Error finding information for user.", delay: 3)
+                    SwiftSpinner.show("Error Retrieving User Information...").addTapHandler({
+                        SwiftSpinner.hide()
+                    })
                     return
             }
             /*
-             Makes use of a transaction to ensure that the user does not exist, before pushing their info
-             to DB. If they do exist, we don't want to overwrite data they have saved.
+             Important to use observeSingleEvent here as we don't want the callback to be executed
+             multiple times. 
             */
             
             Database.database().reference().child("users").observeSingleEvent(of: .value, with: { (snapshot) in
@@ -98,7 +95,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                     let values = [uid: dictionaryValues]
                     Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
                         if let error = error {
-                            Service.dismissHud(self.hud, text: "Sign up error.", detailText: error.localizedDescription, delay: 3)
+                            SwiftSpinner.show("Error Signing Up...").addTapHandler({
+                                SwiftSpinner.hide()
+                                print(error)
+                            })
                             return
                         }
                         self.completeSignIn()
@@ -114,11 +114,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     
     func completeSignIn() {
         print("complete sign in called")
-        self.hud.dismiss()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            //present mainTabBar
-            self.handleLogin(withWindow: self.window)
-        }
+        SwiftSpinner.hide()
+        //present mainTabBar
+        self.handleLogin(withWindow: self.window)
     }
     
     
@@ -155,7 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         let rootViewController = MainTabBarController()
         UIView.transition(with: self.window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromLeft, animations: {
             self.window?.rootViewController = rootViewController
-             self.window?.makeKeyAndVisible()
+            self.window?.makeKeyAndVisible()
         }, completion: nil)
     }
 }

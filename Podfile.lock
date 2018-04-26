@@ -65,6 +65,7 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
+  - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
   - SwiftyJSON (4.0.0)
 
@@ -76,6 +77,7 @@ DEPENDENCIES:
   - GoogleSignIn
   - JGProgressHUD
   - LBTAComponents
+  - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
   - SwiftyJSON
 
@@ -106,9 +108,10 @@ SPEC CHECKSUMS:
   LBTAComponents: c4c8863e0ef6715e378300db148b96a09df656f7
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
 
-PODFILE CHECKSUM: e02f6aad369ba2b85b8021a2f0c3013e66590a65
+PODFILE CHECKSUM: d454842ba6d85f1d20991cef5c3592a4a1932bd0
 
 COCOAPODS: 1.4.0

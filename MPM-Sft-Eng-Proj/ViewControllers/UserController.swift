@@ -11,20 +11,14 @@ import FirebaseAuth
 import LBTAComponents
 import FirebaseDatabase
 import FirebaseStorage
-import JGProgressHUD
 import Photos
+import SwiftSpinner
 
 class UserController : UIViewController {
     
     var window: UIWindow?
     
     var selectedImage: UIImage?
-    
-    let hud: JGProgressHUD = {
-        let hud = JGProgressHUD(style: .light)
-        hud.interactionType = .blockAllTouches
-        return hud
-    }()
     
     lazy var signOutButton: UIButton = {
         var button = UIButton(type: .system)
@@ -41,10 +35,10 @@ class UserController : UIViewController {
     let tapThis: UIButton = {
         let textButton = UIButton()
         let attributeTitle = NSMutableAttributedString(string: "Tap to update",
-            attributes: [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10)])
+            attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10)])
         textButton.setAttributedTitle(attributeTitle, for: .normal)
         textButton.translatesAutoresizingMaskIntoConstraints = false;
-        textButton.backgroundColor = UIColor.white
+        textButton.backgroundColor = UIColor(r: 173, g: 173, b: 173)
         textButton.isHidden = true
         return textButton
     }()
@@ -54,7 +48,6 @@ class UserController : UIViewController {
     lazy var profileImageView: CachedImageView = {
         var cImg = CachedImageView()
         cImg.translatesAutoresizingMaskIntoConstraints = false
-      
         cImg.contentMode = .scaleAspectFill
         cImg.layer.cornerRadius = profileImageViewHeight / 2
         cImg.clipsToBounds = true
@@ -67,6 +60,7 @@ class UserController : UIViewController {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textColor = UIColor.white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -75,6 +69,7 @@ class UserController : UIViewController {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.systemFont(ofSize: 18)
+        label.textColor = UIColor.white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -86,6 +81,7 @@ class UserController : UIViewController {
     
     let bannerView: UIView = {
         let cont = UIView(frame: CGRect.zero)
+        cont.backgroundColor = UIColor(r: 173, g: 173, b: 173)
         return cont
     }()
     
@@ -166,8 +162,7 @@ class UserController : UIViewController {
     
     @objc func loadCurrentUser() {
         if Auth.auth().currentUser != nil {
-            hud.textLabel.text = "Loading User Profile..."
-            hud.show(in: view, animated: false)
+            SwiftSpinner.show("Loading User Profile...")
             guard let uid = Auth.auth().currentUser?.uid else { return }
             Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                 guard let dict = snapshot.value as? [String: Any] else { return }
@@ -176,7 +171,7 @@ class UserController : UIViewController {
                 if(user.altProfileImageUrl != Service.defaultProfilePicUrl) {
                     print("loaded alt image")
                     self.profileImageView.loadImage(urlString: user.altProfileImageUrl, completion: {
-                        self.hud.dismiss()
+                        SwiftSpinner.hide()
                         self.nameLabel.text = user.name
                         self.emailLabel.text = user.email
                         self.tapThis.isHidden = false
@@ -185,12 +180,12 @@ class UserController : UIViewController {
                     print("loaded preset image")
                     //Load either preset profile image provided by google, or default
                     self.profileImageView.loadImage(urlString: user.profileImageURL, completion: {
-                        self.hud.dismiss()
+                        SwiftSpinner.hide()
                         self.nameLabel.text = user.name
                         self.emailLabel.text = user.email
+                        self.tapThis.isHidden = false
                     })
                 }
-              
             }, withCancel: { (err) in
                 print(err)
             })
@@ -207,8 +202,7 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
             storeImage(image)
             profileImageView.image = image
             self.dismiss(animated: true, completion: nil)
-            hud.textLabel.text = "Storing Profile Picture..."
-            hud.show(in: view, animated: true)
+            SwiftSpinner.show("Updating Profile Picture...")
         }
     }
     
@@ -225,14 +219,16 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
             print("put data")
             storageRef.downloadURL(completion: { (url, error) in
                 if error != nil {
-                    print(error?.localizedDescription)
-                    self.hud.dismiss()
+                    print(error?.localizedDescription ?? "")
+                    SwiftSpinner.show("Error Updating Profile Picture...").addTapHandler({
+                        SwiftSpinner.hide()
+                    })
                     return
                 }
                 if let downloadUrl = url {
                     let downloadString = downloadUrl.absoluteString
                     Database.database().reference().child("users").child(userID).child("altProfileImageURL").setValue(downloadString)
-                    self.hud.dismiss()
+                    SwiftSpinner.hide()
                 }
             })
         }

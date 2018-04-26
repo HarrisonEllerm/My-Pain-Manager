@@ -17,6 +17,7 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftValidator
 import GoogleSignIn
+import SwiftSpinner
 
 
 class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelegate, GIDSignInUIDelegate {
@@ -123,29 +124,30 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     
     func validationSuccessful() {
-        hud.detailTextLabel.text = "";
-        hud.textLabel.text = "Signing In..."
-        hud.show(in: view, animated: true)
+        SwiftSpinner.show("Signing In...")
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if let error = error {
                 print("Error signing in: \(error)")
-                Service.dismissHud(self.hud, text: "Error", detailText: error.localizedDescription, delay: 3)
+                SwiftSpinner.show("Failed to sign in...")
+                SwiftSpinner.hide()
+                //Service.dismissHud(self.hud, text: "Error", detailText: error.localizedDescription, delay: 3)
                 return
             }
-            /*
-             Normal sign in ok, allow slight delay to dismiss hud, then push new page.
-             */
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
-            }
+            SwiftSpinner.hide()
+            self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
         }
     }
     
     func validationFailed(_ errors:[(Validatable ,ValidationError)]) {
         for (_, error) in errors {
-            Service.showAlert(on: self, style: .alert, title: "Error", message: error.errorMessage)
+            if let present = self.presentedViewController {
+                present.removeFromParentViewController()
+            }
+            if presentedViewController == nil {
+                Service.showAlert(on: self, style: .alert, title: "Error", message: error.errorMessage)
+            }
         }
     }
     
