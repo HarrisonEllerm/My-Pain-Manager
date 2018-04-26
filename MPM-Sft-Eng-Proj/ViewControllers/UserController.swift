@@ -190,6 +190,7 @@ class UserController : UIViewController {
                         self.emailLabel.text = user.email
                     })
                 }
+              
             }, withCancel: { (err) in
                 print(err)
             })
@@ -198,24 +199,25 @@ class UserController : UIViewController {
 }
 
 extension UserController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         print("finished picking photo")
         //print(info)
         if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
             storeImage(image)
             profileImageView.image = image
+            self.dismiss(animated: true, completion: nil)
+            hud.textLabel.text = "Storing Profile Picture..."
+            hud.show(in: view, animated: true)
         }
-        dismiss(animated: true, completion: nil)
     }
     
     func storeImage(_ image: UIImage) {
-        hud.textLabel.text = "Storing Profile Picture..."
-        hud.show(in: view, animated: false)
+       
         guard let userID = Auth.auth().currentUser?.uid else { return }
         let storageRef = Storage.storage().reference(forURL: "gs://mpmv1-606b6.appspot.com").child("profileImg").child(userID)
         guard let imageData = UIImageJPEGRepresentation(image, 0.1) else { return }
         
-       
         storageRef.putData(imageData, metadata: nil) { (metaData, error) in
             if error != nil {
                 return
@@ -223,6 +225,7 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
             print("put data")
             storageRef.downloadURL(completion: { (url, error) in
                 if error != nil {
+                    print(error?.localizedDescription)
                     self.hud.dismiss()
                     return
                 }
