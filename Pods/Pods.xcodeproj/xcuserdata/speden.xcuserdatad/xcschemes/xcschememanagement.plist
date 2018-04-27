@@ -49,15 +49,20 @@
 			<key>orderHint</key>
 			<integer>11</integer>
 		</dict>
-		<key>SwiftValidator.xcscheme</key>
+		<key>SwiftSpinner.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>12</integer>
 		</dict>
-		<key>SwiftyJSON.xcscheme</key>
+		<key>SwiftValidator.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>13</integer>
+		</dict>
+		<key>SwiftyJSON.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
 		</dict>
 		<key>leveldb-library.xcscheme</key>
 		<dict>
