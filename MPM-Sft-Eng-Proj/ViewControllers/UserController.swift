@@ -22,6 +22,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     let settingsTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
+        t.isScrollEnabled = false
         return t
     }()
     
@@ -202,7 +203,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return 7
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -212,9 +213,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "headerId")
     }
-    
-    
-    
+
 }
 
 extension UserController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -268,18 +267,19 @@ class MyCell: UITableViewCell {
     let nameLabel: UILabel = {
         let label = UILabel()
         label.text = "Sample Item"
-        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.font = UIFont(name: label.font.fontName, size: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let actionButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Action", for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
+    let actionButton: UISwitch = {
+        let switchButton = UISwitch(frame:CGRect(x: UIScreen.main.bounds.width-60, y: 0, width: 150, height: 300))
+        switchButton.translatesAutoresizingMaskIntoConstraints = false
+        switchButton.isOn = true
+        switchButton.setOn(true, animated: false)
+        switchButton.onTintColor = UIColor(r: 254, g: 162, b: 25)
+        return switchButton
     }()
-    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -290,14 +290,15 @@ class MyCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    let valueX = UIScreen.main.bounds.width-6
+    
     func setupViews() {
         addSubview(nameLabel)
         addSubview(actionButton)
-        actionButton.addTarget(self, action: #selector(handleAction), for: .touchUpInside)
-        
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0]-8-[v1(80)]-8-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel, "v1": actionButton]))
+        actionButton.addTarget(self, action: #selector(handleAction), for: UIControlEvents.valueChanged)
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0][v1]-16-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel, "v1": actionButton]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : actionButton]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v1]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v1" : actionButton]))
         
     }
     
