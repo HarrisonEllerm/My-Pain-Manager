@@ -26,9 +26,11 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Home"
+        navigationController?.navigationBar.titleTextAttributes =
+            [NSAttributedStringKey.foregroundColor:UIColor.white]
+        navigationController?.navigationBar.barTintColor = UIColor.black
         createScene()
         addMeshToScene()
-        
         createCamera()
         createGestureRecogniser()
         createLights()
@@ -67,7 +69,7 @@ class HomeController: UIViewController {
         
         let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
         
-        print("Called the handlePan method")
+        //print("Called the handlePan method")
        // let scnView = self.view as! SCNView
         //let cameraOrbit = scnView.scene?.rootNode.childNode(withName: "cameraOrbit", recursively: true)
         let cameraOrbit = cameraNode

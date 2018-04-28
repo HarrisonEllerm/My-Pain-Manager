@@ -14,22 +14,15 @@ import FirebaseStorage
 import Photos
 import SwiftSpinner
 
-class UserController : UIViewController {
+class UserController : UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var window: UIWindow?
-    
     var selectedImage: UIImage?
     
-    lazy var signOutButton: UIButton = {
-        var button = UIButton(type: .system)
-        button.setTitle("Sign Out", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
-        button.setTitleColor(Service.buttonTitleColor, for: .normal)
-        button.backgroundColor = Service.buttonBackgroundColorSignInAnon
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = Service.buttonCornerRadius
-        button.addTarget(self, action: #selector(handleSignOutButtonTapped), for: .touchUpInside)
-        return button
+    let settingsTableView : UITableView = {
+        let t = UITableView()
+        t.translatesAutoresizingMaskIntoConstraints = false
+        return t
     }()
     
     let tapThis: UIButton = {
@@ -95,10 +88,14 @@ class UserController : UIViewController {
         setUpViews()
         loadCurrentUser()
         picker.delegate = self
+        settingsTableView.delegate = self
+        settingsTableView.dataSource = self
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sign Out", style: .done, target: self, action: #selector(handleSignOutButtonTapped))
+        self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
     }
     
+  
     @objc func handleSelectProfileImageView() {
-        print("Photo tapped")
         let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
         switch photoAuthStatus {
             case .authorized: self.present(self.picker, animated: true, completion: nil)
@@ -133,36 +130,48 @@ class UserController : UIViewController {
       
         //Setup the banner view
         view.addSubview(bannerView)
-        view.addSubview(signOutButton)
+        view.addSubview(settingsTableView)
+        //view.addSubview(signOutButton)
         
         bannerView.addSubview(profileImageView)
         bannerView.addSubview(tapThis)
         bannerView.addSubview(nameLabel)
         bannerView.addSubview(emailLabel)
-        
+
         profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         profileImageView.topAnchor.constraint(equalTo: bannerView.safeAreaLayoutGuide.topAnchor, constant: 50).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: profileImageViewHeight).isActive = true
         profileImageView.widthAnchor.constraint(equalToConstant: profileImageViewHeight).isActive = true
-        
+
         tapThis.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         tapThis.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 2).isActive = true
-        
+
         nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: tapThis.bottomAnchor, constant: 16).isActive = true
-        
+
         emailLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 16).isActive = true
-        
+
         bannerView.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: UIScreen.main.bounds.width, heightConstant: 300)
        
+        settingsTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+        settingsTableView.topAnchor.constraint(equalTo: bannerView.bottomAnchor).isActive = true
+        settingsTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+        settingsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
+        settingsTableView.register(MyCell.self, forCellReuseIdentifier: "cellId")
+        settingsTableView.register(Header.self, forHeaderFooterViewReuseIdentifier: "headerId")
+        settingsTableView.sectionHeaderHeight = 50
+        
+        
+        
         //Temp signout button
-        signOutButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 50)
+//        signOutButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
     
     @objc func loadCurrentUser() {
         if Auth.auth().currentUser != nil {
-            SwiftSpinner.show("Loading User Profile...")
+            SwiftSpinner.show("Loading User Profile")
             guard let uid = Auth.auth().currentUser?.uid else { return }
             Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                 guard let dict = snapshot.value as? [String: Any] else { return }
@@ -191,25 +200,44 @@ class UserController : UIViewController {
             })
         }
     }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return settingsTableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "headerId")
+    }
+    
+    
+    
 }
 
 extension UserController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        print("finished picking photo")
-        //print(info)
         if let image = info["UIImagePickerControllerOriginalImage"] as? UIImage {
             storeImage(image)
             profileImageView.image = image
             self.dismiss(animated: true, completion: nil)
-            SwiftSpinner.show("Updating Profile Picture...")
+            SwiftSpinner.show("Updating Profile Picture")
         }
     }
     
     func storeImage(_ image: UIImage) {
        
+        let now = Date()
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        let dateString = formatter.string(from: now)
+        
         guard let userID = Auth.auth().currentUser?.uid else { return }
-        let storageRef = Storage.storage().reference(forURL: "gs://mpmv1-606b6.appspot.com").child("profileImg").child(userID)
+        let storageRef = Storage.storage().reference(forURL: "gs://mpmv1-606b6.appspot.com").child("profileImg").child(userID).child(dateString)
         guard let imageData = UIImageJPEGRepresentation(image, 0.1) else { return }
         
         storageRef.putData(imageData, metadata: nil) { (metaData, error) in
@@ -235,3 +263,71 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
     }
 }
 
+class MyCell: UITableViewCell {
+    
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Sample Item"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    let actionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Action", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupViews()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupViews() {
+        addSubview(nameLabel)
+        addSubview(actionButton)
+        actionButton.addTarget(self, action: #selector(handleAction), for: .touchUpInside)
+        
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0]-8-[v1(80)]-8-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel, "v1": actionButton]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : actionButton]))
+        
+    }
+    
+    @objc func handleAction() {
+        print("tapped")
+    }
+}
+
+class Header: UITableViewHeaderFooterView {
+    
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Settings"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        setupViews()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupViews() {
+        addSubview(nameLabel)
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
+    }
+}

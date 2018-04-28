@@ -113,7 +113,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     }
     
     func completeSignIn() {
-        print("complete sign in called")
         SwiftSpinner.hide()
         //present mainTabBar
         self.handleLogin(withWindow: self.window)
