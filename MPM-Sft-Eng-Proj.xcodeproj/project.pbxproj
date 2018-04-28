@@ -57,10 +57,10 @@
 		1B0B7306F65F9607BA1BE341 /* Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		38324DF0208B14FC005605B9 /* SummaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryController.swift; sourceTree = "<group>"; };
 		38324DF2208B1601005605B9 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
-		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = femalemesh.obj; path = "MPM-Sft-Eng-Proj/femalemesh.obj"; sourceTree = "<group>"; };
-		384D7CBA2092B46900DBE5E3 /* malemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = malemesh.obj; path = "MPM-Sft-Eng-Proj/malemesh.obj"; sourceTree = "<group>"; };
-		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = tex.jpg; path = "MPM-Sft-Eng-Proj/tex.jpg"; sourceTree = "<group>"; };
-		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = skin.png; path = "MPM-Sft-Eng-Proj/skin.png"; sourceTree = "<group>"; };
+		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
+		384D7CBA2092B46900DBE5E3 /* malemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = malemesh.obj; sourceTree = "<group>"; };
+		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
+		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
 		384D7CC12092F74300DBE5E3 /* malemesh2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = malemesh2.obj; sourceTree = "<group>"; };
 		4B8FAAEE662DE03393C1BA20 /* Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6F1705962085DFE100F6265C /* MPM-Sft-Eng-Proj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MPM-Sft-Eng-Proj.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,11 +138,6 @@
 		6F17058D2085DFE100F6265C = {
 			isa = PBXGroup;
 			children = (
-				384D7CC12092F74300DBE5E3 /* malemesh2.obj */,
-				384D7CBF2092BE3D00DBE5E3 /* skin.png */,
-				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
-				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
-				384D7CBA2092B46900DBE5E3 /* malemesh.obj */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
 				6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */,
@@ -165,6 +160,7 @@
 		6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */ = {
 			isa = PBXGroup;
 			children = (
+				6F6A008520946E7400A8E5DA /* 3Dobjects */,
 				6F1705DD2085EF2F00F6265C /* Domain */,
 				6F1705DC2085EF1D00F6265C /* Utils */,
 				6F1705DB2085EEF500F6265C /* ViewControllers */,
@@ -225,6 +221,18 @@
 				6F1705D92085E94300F6265C /* User.swift */,
 			);
 			path = Domain;
+			sourceTree = "<group>";
+		};
+		6F6A008520946E7400A8E5DA /* 3Dobjects */ = {
+			isa = PBXGroup;
+			children = (
+				384D7CC12092F74300DBE5E3 /* malemesh2.obj */,
+				384D7CBF2092BE3D00DBE5E3 /* skin.png */,
+				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
+				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
+				384D7CBA2092B46900DBE5E3 /* malemesh.obj */,
+			);
+			path = 3Dobjects;
 			sourceTree = "<group>";
 		};
 		9EF82062E76845780E55E19C /* Frameworks */ = {
