@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3816112320956CCE00801604 /* ManReady1.obj in Resources */ = {isa = PBXBuildFile; fileRef = 3816112120956CCE00801604 /* ManReady1.obj */; };
+		3816112420956CCE00801604 /* skeleready1.obj in Resources */ = {isa = PBXBuildFile; fileRef = 3816112220956CCE00801604 /* skeleready1.obj */; };
+		381611282095942300801604 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 381611272095942300801604 /* bg.jpg */; };
 		38324DF1208B14FC005605B9 /* SummaryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38324DF0208B14FC005605B9 /* SummaryController.swift */; };
 		38324DF3208B1601005605B9 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38324DF2208B1601005605B9 /* SceneKit.framework */; };
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
@@ -58,6 +61,9 @@
 /* Begin PBXFileReference section */
 		170DB7D019CDD8B183E3A47D /* Pods_MPM_Sft_Eng_Proj.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MPM_Sft_Eng_Proj.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B0B7306F65F9607BA1BE341 /* Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		3816112120956CCE00801604 /* ManReady1.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ManReady1.obj; path = "MPM-Sft-Eng-Proj/Assets.xcassets/ManReady1.obj"; sourceTree = SOURCE_ROOT; };
+		3816112220956CCE00801604 /* skeleready1.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = skeleready1.obj; path = "MPM-Sft-Eng-Proj/Assets.xcassets/skeleready1.obj"; sourceTree = SOURCE_ROOT; };
+		381611272095942300801604 /* bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg.jpg; sourceTree = SOURCE_ROOT; };
 		38324DF0208B14FC005605B9 /* SummaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryController.swift; sourceTree = "<group>"; };
 		38324DF2208B1601005605B9 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
@@ -243,6 +249,9 @@
 		6F6A008520946E7400A8E5DA /* 3Dobjects */ = {
 			isa = PBXGroup;
 			children = (
+				381611272095942300801604 /* bg.jpg */,
+				3816112120956CCE00801604 /* ManReady1.obj */,
+				3816112220956CCE00801604 /* skeleready1.obj */,
 				384D7CC12092F74300DBE5E3 /* malemesh2.obj */,
 				384D7CBF2092BE3D00DBE5E3 /* skin.png */,
 				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
@@ -383,9 +392,12 @@
 				6F1705C82085E23500F6265C /* GoogleService-Info.plist in Resources */,
 				384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */,
 				384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */,
+				3816112420956CCE00801604 /* skeleready1.obj in Resources */,
 				384D7CC22092F74300DBE5E3 /* malemesh2.obj in Resources */,
 				384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */,
+				3816112320956CCE00801604 /* ManReady1.obj in Resources */,
 				6F1705A12085DFE100F6265C /* Assets.xcassets in Resources */,
+				381611282095942300801604 /* bg.jpg in Resources */,
 				384D7CBC2092B46900DBE5E3 /* malemesh.obj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
