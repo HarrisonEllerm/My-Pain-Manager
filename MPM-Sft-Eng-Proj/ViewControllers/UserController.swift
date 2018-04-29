@@ -14,6 +14,11 @@ import FirebaseStorage
 import Photos
 import SwiftSpinner
 
+struct SettingsCellData {
+    let image : UIImage?
+    let message : String?
+}
+
 class UserController : UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var window: UIWindow?
@@ -23,20 +28,21 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = false
+        t.tableFooterView = UIView(frame: .zero)
         return t
     }()
     
-    let tapThis: UIButton = {
-        let textButton = UIButton()
-        let attributeTitle = NSMutableAttributedString(string: "Tap to update",
-            attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10)])
-        textButton.setAttributedTitle(attributeTitle, for: .normal)
-        textButton.translatesAutoresizingMaskIntoConstraints = false;
-        textButton.backgroundColor = UIColor(r: 173, g: 173, b: 173)
-        textButton.isHidden = true
-        return textButton
+    var data = [SettingsCellData]()
+    
+    let tapThis: UILabel = {
+        let label = UILabel()
+        label.text = "Tap to Update"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textColor = UIColor.blue
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
-
+    
     let profileImageViewHeight: CGFloat = 112
    
     lazy var profileImageView: CachedImageView = {
@@ -54,7 +60,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         let label = UILabel()
         label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.textColor = UIColor.white
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -63,7 +69,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         let label = UILabel()
         label.text = ""
         label.font = UIFont.systemFont(ofSize: 18)
-        label.textColor = UIColor.white
+        label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -75,7 +81,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     
     let bannerView: UIView = {
         let cont = UIView(frame: CGRect.zero)
-        cont.backgroundColor = UIColor(r: 173, g: 173, b: 173)
         return cont
     }()
     
@@ -91,6 +96,8 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         picker.delegate = self
         settingsTableView.delegate = self
         settingsTableView.dataSource = self
+        data = [SettingsCellData.init(image: #imageLiteral(resourceName: "healthIcon"), message: "Health Profile"), SettingsCellData.init(image: #imageLiteral(resourceName: "notifIcon"), message: "Notifications"),
+                SettingsCellData.init(image: #imageLiteral(resourceName: "healthAppIcon"), message: "Integrate Health App"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Weekly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Monthly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "humanIcon"), message: "Model Options")]
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sign Out", style: .done, target: self, action: #selector(handleSignOutButtonTapped))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
     }
@@ -131,16 +138,24 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
       
         //Setup the banner view
         view.addSubview(bannerView)
+        UIGraphicsBeginImageContext(self.view.frame.size)
+        UIImage(named: "userBackground")?.draw(in: self.view.bounds)
+        if let image = UIGraphicsGetImageFromCurrentImageContext(){
+            UIGraphicsEndImageContext()
+            self.view.backgroundColor = UIColor(patternImage: image)
+        }else{
+            UIGraphicsEndImageContext()
+            debugPrint("Image not available")
+        }
+ 
         view.addSubview(settingsTableView)
-        //view.addSubview(signOutButton)
-        
         bannerView.addSubview(profileImageView)
         bannerView.addSubview(tapThis)
         bannerView.addSubview(nameLabel)
         bannerView.addSubview(emailLabel)
 
         profileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        profileImageView.topAnchor.constraint(equalTo: bannerView.safeAreaLayoutGuide.topAnchor, constant: 50).isActive = true
+        profileImageView.topAnchor.constraint(equalTo: bannerView.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: profileImageViewHeight).isActive = true
         profileImageView.widthAnchor.constraint(equalToConstant: profileImageViewHeight).isActive = true
 
@@ -153,21 +168,18 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         emailLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 16).isActive = true
 
-        bannerView.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: UIScreen.main.bounds.width, heightConstant: 300)
+        bannerView.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: UIScreen.main.bounds.width, heightConstant: 320)
        
         settingsTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         settingsTableView.topAnchor.constraint(equalTo: bannerView.bottomAnchor).isActive = true
         settingsTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         settingsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
-        settingsTableView.register(MyCell.self, forCellReuseIdentifier: "cellId")
-        settingsTableView.register(Header.self, forHeaderFooterViewReuseIdentifier: "headerId")
+        settingsTableView.register(NoButtonCell.self, forCellReuseIdentifier: "noButtonCell")
+        settingsTableView.register(GenericHeader.self, forHeaderFooterViewReuseIdentifier: "genericHeader")
+        settingsTableView.register(ButtonCell.self, forCellReuseIdentifier: "buttonCell")
         settingsTableView.sectionHeaderHeight = 50
         
-        
-        
-        //Temp signout button
-//        signOutButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
     
     @objc func loadCurrentUser() {
@@ -203,15 +215,53 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 7
+        return data.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return settingsTableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
+        if indexPath.row == 0 {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 0
+            cell.accessoryType = .disclosureIndicator
+            return cell
+        } else if indexPath.row == 1 {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 1
+            return cell
+        } else if indexPath.row == 2 {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 2
+            return cell
+        } else if indexPath.row == 3 {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 3
+            return cell
+        } else if indexPath.row == 4 {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 4
+            return cell
+        } else {
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
+            cell.mainImage = data[indexPath.row].image
+            cell.name = data[indexPath.row].message
+            cell.id = 5
+            cell.accessoryType = .disclosureIndicator
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "headerId")
+        return settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "genericHeader")
     }
 
 }
@@ -228,7 +278,12 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
     }
     
     func storeImage(_ image: UIImage) {
-       
+        /*
+         Appending current timestamp to end of file name in Firebase Storage
+         to prevent situations where overwriting an image with the same name
+         would cause the key generated by Firebase for that image to be lost,
+         leading to a 403 error if trying to access a new image provided.
+        */
         let now = Date()
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone.current
@@ -262,73 +317,3 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
     }
 }
 
-class MyCell: UITableViewCell {
-    
-    let nameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Sample Item"
-        label.font = UIFont(name: label.font.fontName, size: 20)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    let actionButton: UISwitch = {
-        let switchButton = UISwitch(frame:CGRect(x: UIScreen.main.bounds.width-60, y: 0, width: 150, height: 300))
-        switchButton.translatesAutoresizingMaskIntoConstraints = false
-        switchButton.isOn = true
-        switchButton.setOn(true, animated: false)
-        switchButton.onTintColor = UIColor(r: 254, g: 162, b: 25)
-        return switchButton
-    }()
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupViews()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    let valueX = UIScreen.main.bounds.width-6
-    
-    func setupViews() {
-        addSubview(nameLabel)
-        addSubview(actionButton)
-        actionButton.addTarget(self, action: #selector(handleAction), for: UIControlEvents.valueChanged)
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0][v1]-16-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel, "v1": actionButton]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v1]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v1" : actionButton]))
-        
-    }
-    
-    @objc func handleAction() {
-        print("tapped")
-    }
-}
-
-class Header: UITableViewHeaderFooterView {
-    
-    let nameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Settings"
-        label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-        setupViews()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setupViews() {
-        addSubview(nameLabel)
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-16-[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
-    }
-}
