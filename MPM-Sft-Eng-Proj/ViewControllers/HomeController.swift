@@ -20,10 +20,11 @@ class HomeController: UIViewController {
     var camera: SCNCamera!
     var cameraNode: SCNNode!
     var wasClicked = false
-    //static var skelemat = SCNMaterial()
-    
-    //var recognizer: UITapGestureRecognizer!
-    
+    var isLoading = true
+    var hasLoaded = false
+    let updateQueue = DispatchQueue(label: "updateQueue")
+    weak var activityIndicator: UIActivityIndicatorView?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,36 +32,154 @@ class HomeController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
-        createScene()
-        addMeshToScene()
-        createCamera()
-        createGestureRecogniser()
-        createLights()
-        createSwapButton()
         
-        //createEnvironmentLighting()
+        scnView = SCNView(frame: view.frame)
+        view.addSubview(scnView)
+        scene = SCNScene()
+        scene.background.contents = UIImage(named: "bg.jpg")
+        scnView.scene = scene;
         
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityIndicator.startAnimating()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         
-       
- 
-    }
-    private func createSwapButton(){
-        let width = 130
-        let middle = Float(self.view.frame.size.width/2) - Float(width/2)
-        let CentreX = Int(middle)
-        
-        let button = UIButton(frame: CGRect(x: CentreX, y: 670, width: width, height: 30))
-        button.backgroundColor = .white
-        button.setTitle("Swap", for: .normal)
-       // button.titleLabel?.textColor = UIColor.yellow
-       // button.setTitle("Test Button", forState: .Normal)
-        button.addTarget(self, action: #selector(swapAction), for: .touchUpInside)
-        button.backgroundColor = UIColor.black
-        button.layer.cornerRadius = 8
-        self.view.addSubview(button)
-
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([view.centerXAnchor.constraint(equalTo: activityIndicator.centerXAnchor, constant: 0),
+                                     view.centerYAnchor.constraint(equalTo: activityIndicator.centerYAnchor, constant: 0)])
+        self.activityIndicator = activityIndicator
     }
     
+    
+    func loadScene() {
+        //Several of the opperations are required to be executed
+        //on the main thread mandatorily
+        DispatchQueue.main.async {
+            //add male
+            let myMesh = ObjectWrapper(
+                mesh: MeshLoader.loadMeshWith(name: "ManReady1", ofType: "obj"),
+                material: MaterialWrapper(
+                diffuse: UIColor.white,//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+            )
+            myMesh.node.geometry?.firstMaterial?.transparency = 0.5
+            myMesh.node.scale = SCNVector3(2.5,2.5,2.5)
+            self.scene.rootNode.addChildNode(myMesh.node)
+            myMesh.node.geometry?.firstMaterial = MaterialWrapper(
+            diffuse: UIColor.white,
+            roughness: NSNumber(value: 0.3),
+            metalness: "tex.jpg",
+            normal: "tex.jpg"
+            ).material
+            myMesh.node.geometry?.firstMaterial?.transparency = 0.5
+            self.manMesh = myMesh
+            //add male skeleton
+            let myMesh2 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "skeleready1", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor.white,//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "skin.png",
+                normal: "skin.png"
+                
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+            )
+            myMesh2.node.scale = SCNVector3(2.5,2.5,2.5)
+            self.scene.rootNode.addChildNode(myMesh2.node)
+            //create camera
+            self.camera = SCNCamera()
+            self.camera.zNear = 1
+            self.cameraNode = SCNNode()
+            self.cameraNode.camera = self.camera
+            self.cameraNode.position = SCNVector3(x: 0.0, y: 0.0, z: 25.0)
+            self.scene.rootNode.addChildNode(self.cameraNode)
+            self.scnView.allowsCameraControl = true
+            //create gesture recogniser
+            let tapRecognizer = UITapGestureRecognizer()
+            tapRecognizer.numberOfTapsRequired = 1
+            tapRecognizer.numberOfTouchesRequired = 1
+            tapRecognizer.addTarget(self, action: #selector(self.sceneTapped))//"sceneTapped:")
+            let panRecogniser = UIPanGestureRecognizer()
+            panRecogniser.addTarget(self, action: #selector(self.scenePanned))
+            self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser]
+            //create lights
+            let light = SCNLight()
+            light.type = SCNLight.LightType.omni
+            let lightNode = SCNNode()
+            lightNode.light = light
+            lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
+            light.intensity = CGFloat(300)
+            self.scene.rootNode.addChildNode(lightNode)
+            let light2 = SCNLight()
+            let light2Node = SCNNode()
+            light2.type = SCNLight.LightType.omni
+            light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
+            light2.intensity = CGFloat(700)
+            light2Node.light = light2
+            self.scene.rootNode.addChildNode(light2Node)
+            let light3 = SCNLight()
+            let light3Node = SCNNode()
+            light3.type = SCNLight.LightType.omni
+            light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
+            light3.intensity = CGFloat(400)
+            light3Node.light = light3
+            self.scene.rootNode.addChildNode(light3Node)
+            let light4 = SCNLight()
+            let light4Node = SCNNode()
+            light4.type = SCNLight.LightType.omni
+            light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
+            light4.intensity = CGFloat(400)
+            light4Node.light = light4
+            self.scene.rootNode.addChildNode(light4Node)
+            //create swap button
+            let width = 130
+            let middle = Float(self.view.frame.size.width/2) - Float(width/2)
+            let CentreX = Int(middle)
+            let button = UIButton(frame: CGRect(x: CentreX, y: 670, width: width, height: 30))
+            button.backgroundColor = .white
+            button.setTitle("Swap", for: .normal)
+            button.addTarget(self, action: #selector(self.swapAction), for: .touchUpInside)
+            button.backgroundColor = UIColor.black
+            button.layer.cornerRadius = 8
+            self.view.addSubview(button)
+            self.isLoading = false
+            guard let activityIndicator = self.activityIndicator else { return }
+            UIView.animate(withDuration: 0.35, animations: {
+                activityIndicator.alpha = 0
+                }, completion: { _ in
+                    activityIndicator.removeFromSuperview()
+            })
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkStatus()
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
+    
+    func checkStatus() {
+        if hasLoaded == false {
+            hasLoaded = true
+            updateQueue.async { [weak self] in
+                self?.loadScene()
+            }
+        }
+    }
+  
     @objc func swapAction(sender: UIButton){
         if(manMesh.node.isHidden){
             manMesh.node.isHidden = false
@@ -68,9 +187,6 @@ class HomeController: UIViewController {
             manMesh.node.isHidden = true
         }
     }
-    
-    
-    
     
     private func createEnvironmentLighting(cubeMap: [String], intensity: CGFloat){
         let cubeMap = cubeMap
@@ -82,35 +198,7 @@ class HomeController: UIViewController {
             scene.background.contents = cubeMap
         }
     }
-    
-    
-    
-  
-    
-    private func createGestureRecogniser(){
-        
-        let tapRecognizer = UITapGestureRecognizer()
-        tapRecognizer.numberOfTapsRequired = 1
-        tapRecognizer.numberOfTouchesRequired = 1
-        tapRecognizer.addTarget(self, action: #selector(sceneTapped))//"sceneTapped:")
-        
-        
-        let panRecogniser = UIPanGestureRecognizer()
-        
-        panRecogniser.addTarget(self, action: #selector(scenePanned))
-        
-        
-        
-        
-        //scnView.allowsCameraControl = true
-        //scnView.cameraControlConfiguration.
-        
-        scnView.gestureRecognizers = [tapRecognizer,panRecogniser]
-        
-        //#selector(ClassName.funcName)
-    }
-    
-    
+
     @objc private func scenePanned(recognizer: UIPanGestureRecognizer) {
 
         let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
@@ -190,153 +278,7 @@ class HomeController: UIViewController {
         }
     }
     
-    
-    
-    //Sets up the scene view
-    private func createScene(){
-        scnView = SCNView(frame: view.frame)
-        view.addSubview(scnView)
-        scene = SCNScene()
-        scene.background.contents = UIImage(named: "bg.jpg")
-        scnView.scene = scene;
-        
-       // scnView.backgroundColor = UIColor.black//.contents = UIImage(named: "earth.jpg")
-        
-        
-        //scnView.
-    }
-    
-    private func createLights(){
-        let light = SCNLight()
-        light.type = SCNLight.LightType.omni
-        let lightNode = SCNNode()
-        lightNode.light = light
-        lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
-        light.intensity = CGFloat(300)
-        scene.rootNode.addChildNode(lightNode)
 
-        let light2 = SCNLight()
-        let light2Node = SCNNode()
-        light2.type = SCNLight.LightType.omni
-        light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
-        light2.intensity = CGFloat(700)
-        light2Node.light = light2
-        scene.rootNode.addChildNode(light2Node)
-
-        let light3 = SCNLight()
-        let light3Node = SCNNode()
-        light3.type = SCNLight.LightType.omni
-        light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
-        light3.intensity = CGFloat(400)
-        light3Node.light = light3
-        scene.rootNode.addChildNode(light3Node)
-
-        let light4 = SCNLight()
-        let light4Node = SCNNode()
-        light4.type = SCNLight.LightType.omni
-        light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
-        light4.intensity = CGFloat(400)
-        light4Node.light = light4
-        scene.rootNode.addChildNode(light4Node)
-        
-        
-    }
-    
-    private func createCamera(){
-        camera = SCNCamera()
-        camera.zNear = 1
-        cameraNode = SCNNode()
-        cameraNode.camera = camera
-        cameraNode.position = SCNVector3(x: 0.0, y: 0.0, z: 25.0)
-        scene.rootNode.addChildNode(cameraNode)
-        scnView.allowsCameraControl = true
-        
-    }
-    
- 
-
-    //Adds the male or female mesh too the scene
-    private func addMeshToScene() {
-       // let coinflip = Int(arc4random_uniform(2))
-       // if(coinflip == 0){
-            addMale()
-            addMaleSkele()
-       // }else{
-        //    addFemale()
-       // }
-        
-    }
-    
-
-    private func addMale() {
-        let myMesh = ObjectWrapper(
-            // mesh: asset.object(at: 0),   //childObjects(of: MDLObject)[0],//manGeo.geometry!,   //mesh: MeshLoader.loadMeshWith(name: "basicmangeometry", ofType: "obj"),
-            mesh: MeshLoader.loadMeshWith(name: "ManReady1", ofType: "obj"),
-            material: MaterialWrapper(
-                diffuse: UIColor.white,//"skin.png",
-                roughness: NSNumber(value: 0.3),
-                metalness: "tex.png",
-                normal: "tex.png"
-                
-            ),
-            
-            position: SCNVector3Make(0, -8, 0),
-            rotation: SCNVector4Make(0, 1, 0,
-                                     GLKMathDegreesToRadians(20))
-            )
-        myMesh.node.geometry?.firstMaterial?.transparency = 0.5
-        //myMesh.node.geometry?.firstMaterial?.transparency
-        //myMesh.node.geometry?.firstMaterial?.fresnelExponent = CGFloat(0.1)
-        //myMesh.node.geometry?.firstMaterial?.emission.intensity = 0.8
-        myMesh.node.scale = SCNVector3(2.5,2.5,2.5)
-        //myMesh.node.isHidden = true
-        
-      //  let nodeMaterial = myMesh.node.geometry?.firstMaterial
-       // nodeMaterial?.emission.contents = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5)
-      //  nodeMaterial?.transparencyMode = .rgbZero
-       // nodeMaterial?.transparent.contents = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.4)
-        
-        
-        scene.rootNode.addChildNode(myMesh.node)
-        
-        myMesh.node.geometry?.firstMaterial = MaterialWrapper(
-            diffuse: UIColor.white,
-            roughness: NSNumber(value: 0.3),
-            metalness: "tex.jpg",
-            normal: "tex.jpg"
-            ).material
-        myMesh.node.geometry?.firstMaterial?.transparency = 0.5
-        
-        manMesh = myMesh
-    }
-    
-    
-    
-    private func addMaleSkele() {
-        let myMesh = ObjectWrapper(
-            // mesh: asset.object(at: 0),   //childObjects(of: MDLObject)[0],//manGeo.geometry!,   //mesh: MeshLoader.loadMeshWith(name: "basicmangeometry", ofType: "obj"),
-            mesh: MeshLoader.loadMeshWith(name: "skeleready1", ofType: "obj"),
-            material: MaterialWrapper(
-                diffuse: UIColor.white,//"skin.png",
-                roughness: NSNumber(value: 0.3),
-                metalness: "skin.png",
-                normal: "skin.png"
-                
-            ),
-            
-            position: SCNVector3Make(0, -8, 0),
-            rotation: SCNVector4Make(0, 1, 0,
-                                     GLKMathDegreesToRadians(20))
-        )
-        myMesh.node.scale = SCNVector3(2.5,2.5,2.5)
-        scene.rootNode.addChildNode(myMesh.node)
-    }
-    
-    
-    
-    
-    
-    
     private func addFemale() {
         
         let myMesh = ObjectWrapper(
@@ -362,80 +304,6 @@ class HomeController: UIViewController {
         scene.rootNode.addChildNode(myMesh.node)
         
     }
-    
-    
-
-    //A Node which holds A mesh and a position
-    
-    class Object {
-        let node: SCNNode
-        
-        init(position: SCNVector3, rotation: SCNVector4) {
-            node = SCNNode()
-            //node.castsShadow = true
-            set(position: position, rotation: rotation)
-        }
-        
-        init(mesh: MDLObject, position: SCNVector3, rotation: SCNVector4) {
-            node = SCNNode(mdlObject: mesh)
-            //node.castsShadow = true
-            set(position: position, rotation: rotation)
-        }
-        
-        private func set(position: SCNVector3, rotation: SCNVector4) {
-            node.position = position
-            node.rotation = rotation
-        }
-    }
-    
-    
-    class ObjectWrapper: Object {
-        init(mesh: MDLObject, material: MaterialWrapper, position: SCNVector3, rotation: SCNVector4) {
-            super.init(mesh: mesh, position: position, rotation: rotation)
-            node.geometry?.firstMaterial = material.material
-            node.geometry?.firstMaterial?.isDoubleSided = true
-            
-         
-           // print("test")
-            //print(node.geometry?)
-       
-            //node.geometry?.firstMaterial?.fresnelExponent = CGFloat(0.8)
-            //node.geometry?.firstMaterial?.transparency = 0.5
-            
-            
-        }
-    }
-    
-  
-    
-    
-    class MeshLoader {
-        static func loadMeshWith(name: String, ofType type: String) -> MDLObject {
-            let path = Bundle.main.path(forResource: name, ofType: type)!
-            let asset = MDLAsset(url: URL(fileURLWithPath: path))
-            return asset[0]!
-        }
-    }
-        
-    class MaterialWrapper {
-            let material: SCNMaterial
-            init(diffuse: Any, roughness: Any, metalness: Any, normal: Any, ambientOcclusion: Any? = nil) {
-                material = SCNMaterial()
-                material.lightingModel = .phong //.physicallyBased
-                material.diffuse.contents = diffuse//diffuse
-                //material.roughness.contents = roughness
-                //material.metalness.contents = metalness
-                //material.normal.contents = normal
-                //material.ambientOcclusion.contents = ambientOcclusion
-                
-                //material.fresnelExponent = CGFloat(500)
-                // material.transparency = 0.5
-                
-            }
-            
-        }
-    
-    
     
 }
 

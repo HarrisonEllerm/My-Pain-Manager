@@ -34,6 +34,10 @@
 		6F26AA982095952E009A3446 /* NoButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AA972095952E009A3446 /* NoButtonCell.swift */; };
 		6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AA9920959580009A3446 /* GenericHeader.swift */; };
 		6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AA9B20959707009A3446 /* ButtonCell.swift */; };
+		6F26AAB120974470009A3446 /* MaterialWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB020974470009A3446 /* MaterialWrapper.swift */; };
+		6F26AAB3209744D9009A3446 /* MeshLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB2209744D9009A3446 /* MeshLoader.swift */; };
+		6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB4209744FE009A3446 /* ObjectWrapper.swift */; };
+		6F26AAB720974524009A3446 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB620974524009A3446 /* Object.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
 		6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */; };
 		7A4A89FAE877BC3236763333 /* Pods_MPM_Sft_Eng_Proj.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 170DB7D019CDD8B183E3A47D /* Pods_MPM_Sft_Eng_Proj.framework */; };
@@ -95,6 +99,10 @@
 		6F26AA972095952E009A3446 /* NoButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoButtonCell.swift; sourceTree = "<group>"; };
 		6F26AA9920959580009A3446 /* GenericHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericHeader.swift; sourceTree = "<group>"; };
 		6F26AA9B20959707009A3446 /* ButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCell.swift; sourceTree = "<group>"; };
+		6F26AAB020974470009A3446 /* MaterialWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialWrapper.swift; sourceTree = "<group>"; };
+		6F26AAB2209744D9009A3446 /* MeshLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshLoader.swift; sourceTree = "<group>"; };
+		6F26AAB4209744FE009A3446 /* ObjectWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectWrapper.swift; sourceTree = "<group>"; };
+		6F26AAB620974524009A3446 /* Object.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowWorker.swift; sourceTree = "<group>"; };
 		8CF67229C7499DF2B37AEE21 /* Pods-MPM-Sft-Eng-ProjTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjTests/Pods-MPM-Sft-Eng-ProjTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -172,8 +180,9 @@
 		6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */ = {
 			isa = PBXGroup;
 			children = (
+				6F26AAAF20974454009A3446 /* Material Utils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
-				6F6A008520946E7400A8E5DA /* 3Dobjects */,
+				6F6A008520946E7400A8E5DA /* 3D objects */,
 				6F1705DD2085EF2F00F6265C /* Domain */,
 				6F1705DC2085EF1D00F6265C /* Utils */,
 				6F1705DB2085EEF500F6265C /* ViewControllers */,
@@ -246,7 +255,18 @@
 			path = "Custom TableCells";
 			sourceTree = "<group>";
 		};
-		6F6A008520946E7400A8E5DA /* 3Dobjects */ = {
+		6F26AAAF20974454009A3446 /* Material Utils */ = {
+			isa = PBXGroup;
+			children = (
+				6F26AAB020974470009A3446 /* MaterialWrapper.swift */,
+				6F26AAB2209744D9009A3446 /* MeshLoader.swift */,
+				6F26AAB4209744FE009A3446 /* ObjectWrapper.swift */,
+				6F26AAB620974524009A3446 /* Object.swift */,
+			);
+			path = "Material Utils";
+			sourceTree = "<group>";
+		};
+		6F6A008520946E7400A8E5DA /* 3D objects */ = {
 			isa = PBXGroup;
 			children = (
 				381611272095942300801604 /* bg.jpg */,
@@ -258,7 +278,7 @@
 				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
 				384D7CBA2092B46900DBE5E3 /* malemesh.obj */,
 			);
-			path = 3Dobjects;
+			path = "3D objects";
 			sourceTree = "<group>";
 		};
 		9EF82062E76845780E55E19C /* Frameworks */ = {
@@ -596,14 +616,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F26AAB120974470009A3446 /* MaterialWrapper.swift in Sources */,
 				38324DF1208B14FC005605B9 /* SummaryController.swift in Sources */,
 				6F1705D02085E84700F6265C /* UserController.swift in Sources */,
 				6F1705D82085E92000F6265C /* UIWindowExtension.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
+				6F26AAB3209744D9009A3446 /* MeshLoader.swift in Sources */,
 				6F26AA982095952E009A3446 /* NoButtonCell.swift in Sources */,
 				6F1705D42085E8D300F6265C /* Extensions.swift in Sources */,
 				6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */,
+				6F26AAB720974524009A3446 /* Object.swift in Sources */,
 				6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */,
+				6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */,
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,
 				6F1705D62085E8EF00F6265C /* Service.swift in Sources */,
 				6F1705CE2085E81E00F6265C /* SignUserUpController.swift in Sources */,
