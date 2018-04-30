@@ -10,9 +10,10 @@ import UIKit
 
 class GenericHeader: UITableViewHeaderFooterView {
     
+    var textInHeader: String?
+    
     var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Settings"
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -31,5 +32,12 @@ class GenericHeader: UITableViewHeaderFooterView {
         addSubview(nameLabel)
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-10-[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-5-[v0]-5-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0" : nameLabel]))
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let txt = textInHeader {
+            nameLabel.text = txt
+        }
     }
 }

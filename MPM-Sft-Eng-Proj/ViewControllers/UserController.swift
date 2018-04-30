@@ -27,7 +27,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     let settingsTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
-        t.isScrollEnabled = false
+        t.isScrollEnabled = true
         t.tableFooterView = UIView(frame: .zero)
         return t
     }()
@@ -218,6 +218,14 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return data.count
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        NSLog("You selected cell number: \(indexPath.row)!")
+        if(indexPath.row == 0) {
+            let healthProfileController = HealthProfileController()
+            self.present(healthProfileController, animated: true, completion: nil)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
@@ -261,7 +269,9 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "genericHeader")
+        let header = self.settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "genericHeader") as! GenericHeader
+        header.textInHeader = "Settings"
+        return header
     }
 
 }
