@@ -32,28 +32,34 @@ class HomeController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
-        
-        scnView = SCNView(frame: view.frame)
-        view.addSubview(scnView)
-        scene = SCNScene()
-        scene.background.contents = UIImage(named: "bg.jpg")
-        scnView.scene = scene;
-        
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        /*
+           Activity Indicator Used to show users that the model is being loaded,
+           which can take around a second since it is reading in large files to render
+           the body.
+         */
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
         activityIndicator.startAnimating()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
         view.addSubview(activityIndicator)
-        NSLayoutConstraint.activate([view.centerXAnchor.constraint(equalTo: activityIndicator.centerXAnchor, constant: 0),
-                                     view.centerYAnchor.constraint(equalTo: activityIndicator.centerYAnchor, constant: 0)])
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.activityIndicator = activityIndicator
     }
     
     
     func loadScene() {
-        //Several of the opperations are required to be executed
-        //on the main thread mandatorily
+        /*
+           Several of the opperations are required to be executed
+           on the main thread mandatorily, this also guarantees
+           that everything is executed sequentially
+        */
         DispatchQueue.main.async {
+            //add scene
+            self.scnView = SCNView(frame: self.view.frame)
+            self.view.addSubview(self.scnView)
+            self.scene = SCNScene()
+            self.scene.background.contents = UIImage(named: "bg.jpg")
+            self.scnView.scene = self.scene;
             //add male
             let myMesh = ObjectWrapper(
                 mesh: MeshLoader.loadMeshWith(name: "ManReady1", ofType: "obj"),
@@ -232,10 +238,7 @@ class HomeController: UIViewController {
         }
         
     }
-    
-    
-    
-    
+  
     //@objc lets a private function be visible in objective c
     @objc private func sceneTapped(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: scnView)
@@ -304,7 +307,6 @@ class HomeController: UIViewController {
         scene.rootNode.addChildNode(myMesh.node)
         
     }
-    
 }
 
 
