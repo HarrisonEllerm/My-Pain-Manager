@@ -136,6 +136,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
                 return
             }
             SwiftSpinner.hide()
+            self.view.endEditing(true)
             self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
         }
     }

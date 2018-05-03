@@ -146,6 +146,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     
     @objc func signInAction() {
         let welcomeController = WelcomeController()
+        self.view.endEditing(true)
         self.present(welcomeController, animated: true, completion: nil)
     }
     

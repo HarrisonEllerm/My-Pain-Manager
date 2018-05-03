@@ -100,6 +100,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
                 SettingsCellData.init(image: #imageLiteral(resourceName: "healthAppIcon"), message: "Integrate Health App"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Weekly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Monthly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "humanIcon"), message: "Model Options")]
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sign Out", style: .done, target: self, action: #selector(handleSignOutButtonTapped))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
+        self.settingsTableView.rowHeight = 44.0
     }
     
   
@@ -222,7 +223,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         NSLog("You selected cell number: \(indexPath.row)!")
         if(indexPath.row == 0) {
             let healthProfileController = HealthProfileController()
-            self.present(healthProfileController, animated: true, completion: nil)
+            self.navigationController?.pushViewController(healthProfileController, animated: true)
         }
     }
     
@@ -231,6 +232,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 0
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -238,30 +240,35 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 1
             return cell
         } else if indexPath.row == 2 {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 2
             return cell
         } else if indexPath.row == 3 {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 3
             return cell
         } else if indexPath.row == 4 {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 4
             return cell
         } else {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 5
             cell.accessoryType = .disclosureIndicator
             return cell

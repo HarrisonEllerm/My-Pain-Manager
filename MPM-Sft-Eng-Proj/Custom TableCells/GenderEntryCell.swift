@@ -1,17 +1,21 @@
 //
-//  TextEntryCell.swift
+//  GenderEntryCell.swift
 //  MPM-Sft-Eng-Proj
 //
-//  Created by Harrison Ellerm on 1/05/18.
+//  Created by Harrison Ellerm on 3/05/18.
 //  Copyright © 2018 Harrison Ellerm. All rights reserved.
 //
+
+import Foundation
 import UIKit
 
-class DateEntryCell: UITableViewCell {
+class GenderEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataSource {
     
+    let options = ["Select", "Male", "Female", "Other"]
     var textFieldName: String?
     var textFieldValue: String?
-    var delegate: TextEntryCellDelegate?
+    var delegate: GenderEntryCellDelegate?
+
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -30,12 +34,7 @@ class DateEntryCell: UITableViewCell {
         return tf
     }()
     
-    let dp: UIDatePicker = {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.maximumDate = Date()
-        return datePicker
-    }()
+    let gp = UIPickerView()
     
     let inputAccessoryToolbar: UIToolbar = {
         let toolBar = UIToolbar()
@@ -45,35 +44,27 @@ class DateEntryCell: UITableViewCell {
         return toolBar
     }()
     
-
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
-        dp.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        
+        gp.delegate = self
         let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(doneClick))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         inputAccessoryToolbar.setItems([ spaceButton, doneButton], animated: false)
-        textField.inputView = dp
+        textField.inputView = gp
         textField.inputAccessoryView = inputAccessoryToolbar
         
         let gesture = UITapGestureRecognizer(target: self, action: #selector(DateEntryCell.didSelectCell))
         addGestureRecognizer(gesture)
     }
     
-    @objc func datePickerChanged(sender: UIDatePicker) {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        textFieldValue = formatter.string(from: sender.date)
-        layoutSubviews()
-    }
-    
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     @objc func doneClick() {
+        
         self.endEditing(true)
     }
     
@@ -85,12 +76,10 @@ class DateEntryCell: UITableViewCell {
         nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
         
-        //textField.leftAnchor.constraint(equalTo: nameLabel.rightAnchor, constant: 20).isActive = true
         textField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
         
- 
     }
     
     open override func layoutSubviews() {
@@ -103,9 +92,28 @@ class DateEntryCell: UITableViewCell {
         }
     }
     
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return options.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return options[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if(row != 0) {
+            textFieldValue = options[row] as String
+            layoutSubviews()
+        }
+    }
+    
 }
 
-extension DateEntryCell {
+extension GenderEntryCell {
     
     @objc func didSelectCell() {
         textField.becomeFirstResponder()

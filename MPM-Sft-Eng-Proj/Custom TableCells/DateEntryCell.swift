@@ -11,7 +11,7 @@ class DateEntryCell: UITableViewCell {
     
     var textFieldName: String?
     var textFieldValue: String?
-    var delegate: TextEntryCellDelegate?
+    var delegate: DateEntryCellDelegate?
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -85,7 +85,6 @@ class DateEntryCell: UITableViewCell {
         nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
         
-        //textField.leftAnchor.constraint(equalTo: nameLabel.rightAnchor, constant: 20).isActive = true
         textField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true

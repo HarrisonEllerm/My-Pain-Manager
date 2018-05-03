@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol TextEntryCellDelegate {
-    func textFieldInCell(didSelect cell:TextEntryCell)
-    func textFieldInCell(cell:TextEntryCell, editingChangedInTextField newText:String)
+protocol DateEntryCellDelegate {
+    func textFieldInCell(didSelect cell:DateEntryCell)
+    func textFieldInCell(cell:DateEntryCell, editingChangedInTextField newText:String)
 }

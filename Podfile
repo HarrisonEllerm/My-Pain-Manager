@@ -21,7 +21,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'GoogleSignIn'
     pod 'Charts'
     pod 'SwiftSpinner'
-
+    
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths
     # Pods for testing

@@ -14,12 +14,18 @@ import FirebaseStorage
 import Photos
 import SwiftSpinner
 
-class HealthProfileController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+struct HealthCellData {
+    let message : String?
+    let value : String?
+}
+
+
+class HealthProfileController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var window: UIWindow?
     var selectedImage: UIImage?
     
-    let settingsTableView : UITableView = {
+    let healthTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = true
@@ -27,22 +33,51 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         return t
     }()
     
-    var data = [SettingsCellData]()
+    
+    lazy var saveButton: UIButton = {
+        var button = UIButton(type: .system)
+        button.setTitle("Save", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
+        button.setTitleColor(Service.buttonTitleColor, for: .normal)
+        button.backgroundColor = Service.buttonBackgroundColorSignInAnon
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = Service.buttonCornerRadius
+//        button.addTarget(self, action: #selector(handleSignOutButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    
+    let label = UILabel()
+    
+    var data = [HealthCellData]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        navigationItem.title = "User Profile"
+        navigationItem.title = "Health Profile"
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
+        
+        let vc = navigationController?.viewControllers.first
+        let button = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: nil)
+        vc?.navigationItem.backBarButtonItem = button
+        
         setUpViews()
-        settingsTableView.delegate = self
-        settingsTableView.dataSource = self
-        data = [SettingsCellData.init(image: #imageLiteral(resourceName: "healthIcon"), message: "Health Profile"), SettingsCellData.init(image: #imageLiteral(resourceName: "notifIcon"), message: "Notifications"),
-                SettingsCellData.init(image: #imageLiteral(resourceName: "healthAppIcon"), message: "Integrate Health App"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Weekly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "reportIcon"), message: "Monthly Reports"), SettingsCellData.init(image: #imageLiteral(resourceName: "humanIcon"), message: "Model Options")]
+        healthTableView.delegate = self
+        healthTableView.dataSource = self
+        healthTableView.rowHeight = 44
+        healthTableView.isScrollEnabled = false
+        data = [HealthCellData.init(message: "Birth Date", value: "Not set"),
+                HealthCellData.init(message: "Gender", value: "Not set"),
+                HealthCellData.init(message: "Height", value: "Not set"),
+                HealthCellData.init(message: "Weight", value: "Not set")]
+        
     }
     
+    
+    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.statusBarStyle = .default
@@ -53,44 +88,59 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
 
     fileprivate func setUpViews() {
         
-        view.addSubview(settingsTableView)
+        view.addSubview(healthTableView)
+        view.addSubview(saveButton)
+        view.addSubview(label)
         
-        settingsTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-        settingsTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        settingsTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-        settingsTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        healthTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
+        healthTableView.register(GenderEntryCell.self, forCellReuseIdentifier: "genderEntry")
+        healthTableView.register(HeightEntryCell.self, forCellReuseIdentifier: "heightEntry")
+        healthTableView.register(WeightEntryCell.self, forCellReuseIdentifier: "weightEntry")
+        healthTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+        healthTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        healthTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+        healthTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
-        settingsTableView.register(TextEntryCell.self, forCellReuseIdentifier: "textEntryCell")
-        settingsTableView.register(GenericHeader.self, forHeaderFooterViewReuseIdentifier: "genericHeader")
-        settingsTableView.sectionHeaderHeight = 50
-        
+        saveButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
+    
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count
     }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "textEntryCell") as! TextEntryCell
-        cell.textFieldName = "test"
-        cell.textField.delegate = self
-        return cell
+        if (indexPath.row == 0) {
+            let cell = self.healthTableView.dequeueReusableCell(withIdentifier: "dateEntry") as! DateEntryCell
+            cell.textFieldName = data[indexPath.row].message
+            cell.textFieldValue = data[indexPath.row].value
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        } else if (indexPath.row == 1) {
+            let cell = self.healthTableView.dequeueReusableCell(withIdentifier: "genderEntry") as! GenderEntryCell
+            cell.textFieldName = data[indexPath.row].message
+            cell.textFieldValue = data[indexPath.row].value
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        } else if (indexPath.row == 2) {
+            let cell = self.healthTableView.dequeueReusableCell(withIdentifier: "heightEntry") as! HeightEntryCell
+            cell.textFieldName = data[indexPath.row].message
+            cell.textFieldUnits = data[indexPath.row].value
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        } else {
+            let cell = self.healthTableView.dequeueReusableCell(withIdentifier: "weightEntry") as! WeightEntryCell
+            cell.textFieldName = data[indexPath.row].message
+            cell.textFieldUnits = data[indexPath.row].value
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        }
     }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = self.settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "genericHeader") as! GenericHeader
-        header.textInHeader = "Health Profile"
-        return header
-    }
-    
-    //Allows text fields to dissapear once they have been delegated
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
 }
+
+
