@@ -42,7 +42,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         button.backgroundColor = Service.buttonBackgroundColorSignInAnon
         button.layer.masksToBounds = true
         button.layer.cornerRadius = Service.buttonCornerRadius
-//        button.addTarget(self, action: #selector(handleSignOutButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleSave), for: .touchUpInside)
         return button
     }()
     
@@ -57,7 +57,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         navigationItem.title = "Health Profile"
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.black
+        navigationController?.navigationBar.barTintColor = UIColor.white
         
         let vc = navigationController?.viewControllers.first
         let button = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: nil)
@@ -68,6 +68,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         healthTableView.dataSource = self
         healthTableView.rowHeight = 44
         healthTableView.isScrollEnabled = false
+        //TODO: go to firebase to get the values
         data = [HealthCellData.init(message: "Birth Date", value: "Not set"),
                 HealthCellData.init(message: "Gender", value: "Not set"),
                 HealthCellData.init(message: "Height", value: "Not set"),
@@ -75,9 +76,11 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         
     }
     
+    //TODO: go to firebase to save the values
+    @objc func handleSave() {
+        print("Saving")
+    }
     
-    
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.statusBarStyle = .default

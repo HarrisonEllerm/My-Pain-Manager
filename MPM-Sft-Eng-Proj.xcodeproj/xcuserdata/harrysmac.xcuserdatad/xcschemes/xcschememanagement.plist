@@ -4,10 +4,28 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>MPM-Sft-Eng-Proj.xcscheme</key>
+		<key>MPM-Sft-Eng-Proj.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>14</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>6F1705952085DFE100F6265C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6F1705A92085DFE100F6265C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6F1705B42085DFE100F6265C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
