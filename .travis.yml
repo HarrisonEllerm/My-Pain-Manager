@@ -4,11 +4,13 @@ osx_image: xcode9.3
 notifications:
   email:
     recipients:
-      - harryellerm@gmail.com
       - baspeden21@gmail.com
     on_success: always # default: never
     on_failure: always # default: always
-
+  slack: cosc345supergroup:gwKJ6Lflx1vOwrifl3NfGT7r
+    on_success: always # default: never
+    on_failure: always # default: always
+    
 branches:
   only:
     - master
