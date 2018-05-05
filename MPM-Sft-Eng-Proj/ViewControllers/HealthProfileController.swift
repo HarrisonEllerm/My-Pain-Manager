@@ -57,7 +57,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         navigationItem.title = "Health Profile"
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.white
+        navigationController?.navigationBar.barTintColor = UIColor.black
         
         let vc = navigationController?.viewControllers.first
         let button = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: nil)
