@@ -2,9 +2,7 @@ language: objective-c
 osx_image: xcode9.3
 
 notifications:
-  slack: cosc345supergroup:gwKJ6Lflx1vOwrifl3NfGT7r
-    on_success: always # default: never
-    on_failure: always # default: always
+    slack: cosc345supergroup:SsDTyqgw1oI7wdQnPT0FKIrU
     
 branches:
   only:
