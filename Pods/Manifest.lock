@@ -1,7 +1,4 @@
 PODS:
-  - Charts (3.1.1):
-    - Charts/Core (= 3.1.1)
-  - Charts/Core (3.1.1)
   - Firebase/Auth (4.13.0):
     - Firebase/Core
     - FirebaseAuth (= 4.6.1)
@@ -70,7 +67,6 @@ PODS:
   - SwiftyJSON (4.1.0)
 
 DEPENDENCIES:
-  - Charts
   - Firebase/Auth
   - Firebase/Database
   - Firebase/Storage
@@ -92,7 +88,6 @@ CHECKOUT OPTIONS:
     :git: https://github.com/jpotts18/SwiftValidator.git
 
 SPEC CHECKSUMS:
-  Charts: 90a4d61da0f6e06684c591e3bcab11940fe61736
   Firebase: 5ec5e863d269d82d66b4bf56856726f8fb8f0fb3
   FirebaseAnalytics: 7ef69e76a5142f643aeb47c780e1cdce4e23632e
   FirebaseAuth: bf22cacf22c60ab454bf2636f556d8892b10b53f
@@ -112,6 +107,6 @@ SPEC CHECKSUMS:
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: ca146e96bf221862fe04f131fa1403f1b011354c
+PODFILE CHECKSUM: fb6c021afd206a26d099f3efab90aa9961937171
 
 COCOAPODS: 1.4.0
