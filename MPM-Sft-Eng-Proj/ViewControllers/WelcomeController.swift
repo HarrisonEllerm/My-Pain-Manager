@@ -137,7 +137,9 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
             }
             SwiftSpinner.hide()
             self.view.endEditing(true)
-            self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
+            })
         }
     }
     

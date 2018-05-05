@@ -19,6 +19,7 @@ class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
     var textFieldValue: String?
     var textFieldUnits: String?
     var delegate: HeightEntryCellDelegate?
+    var notSet = true
     
     
     let nameLabel: UILabel = {
@@ -76,8 +77,6 @@ class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
         unitsTextField.inputAccessoryView = inputAccessoryToolbar
         valueTextField.inputView = gp
         valueTextField.inputAccessoryView = inputAccessoryToolbar
-        
-        gp.selectRow(160, inComponent: 0, animated: true)
         
         let gesture = UITapGestureRecognizer(target: self, action: #selector(DateEntryCell.didSelectCell))
         addGestureRecognizer(gesture)
@@ -146,6 +145,7 @@ class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        print("did select row at called")
         if component == 0 {
             textFieldValue = String(options[row])
             layoutSubviews()
@@ -163,6 +163,16 @@ class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
 extension HeightEntryCell {
     
     @objc func didSelectCell() {
+        if(notSet) {
+            //Auto select option
+            print("Not set auto setting")
+            gp.selectRow(160, inComponent: 0, animated: true)
+            gp.delegate?.pickerView!(gp, didSelectRow: 160, inComponent: 0)
+            gp.selectRow(1, inComponent: 1, animated: true)
+            gp.delegate?.pickerView!(gp, didSelectRow: 1, inComponent: 1)
+            notSet = false
+        }
+        print("Set not auto setting")
         valueTextField.becomeFirstResponder()
         delegate?.textFieldInCell(didSelect: self)
     }
