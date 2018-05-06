@@ -37,20 +37,28 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     }()
     
     let loginImg: UIImageView = {
-        let img = UIImageView(image: UIImage(named: "loginText"))
+        let img = UIImageView(image: UIImage(named: "MPM_logo2"))
         img.contentMode = .scaleAspectFit
         return img
     }()
+    
+    
+    let logoText: UIImageView = {
+        let img = UIImageView(image: UIImage(named: "words"))
+        img.contentMode = .scaleAspectFit
+        return img
+    }()
+    
     
     let emailTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = Service.greenTheme
+        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) //Service.greenTheme
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "mail")
-        textField.setBottomBorder(backgroundColor: Service.greenTheme, borderColor: .white)
+        textField.setBottomBorder(backgroundColor: UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1), borderColor: .white)
         return textField
     }()
     
@@ -58,12 +66,12 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = Service.greenTheme
+        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) //Service.greenTheme
         textField.textColor = UIColor.white
         textField.isSecureTextEntry = true
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "password")
-        textField.setBottomBorder(backgroundColor: Service.greenTheme, borderColor: .white)
+        textField.setBottomBorder(backgroundColor: UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1), borderColor: .white)
         return textField
     }()
     
@@ -73,7 +81,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         button.setTitleColor(.white, for: .normal)
         button.setTitle("Login", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
-        button.backgroundColor = Service.loginButtonBackgroundColor
+        button.backgroundColor = UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)//Service.loginButtonBackgroundColor
         button.layer.cornerRadius = Service.buttonCornerRadius
         button.addTarget(self, action: #selector(handleNormalLogin), for: .touchUpInside)
         return button
@@ -88,7 +96,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     let dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = Service.greenTheme
+        button.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 48/255, alpha: 1)//Service.greenTheme
         let attributeTitle = NSMutableAttributedString(string: "Don't have an account? ",
             attributes: [NSAttributedStringKey.foregroundColor: Service.dontHaveAccountTextColor,
                          NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
@@ -102,7 +110,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = Service.greenTheme
+        view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) // Service.greenTheme
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         setUpViews()
         //assign the text fields delegate to self, to allow text fields to dissapear
@@ -161,6 +169,9 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         view.addSubview(loginImg)
         anchorLoginImg(loginImg)
         
+        view.addSubview(logoText)
+        anchorLogoText(logoText)
+        
         view.addSubview(emailTextField)
         anchorEmailTextField(emailTextField)
         
@@ -179,11 +190,16 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     }
     
     fileprivate func anchorLoginImg(_ image: UIImageView) {
-        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 180, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 50)
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 60, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 250)
     }
     
+    fileprivate func anchorLogoText(_ image: UIImageView) {
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 260, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 100)
+    }
+    
+    
     fileprivate func anchorEmailTextField(_ textField: UITextField) {
-        textField.anchor(loginImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(loginImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 100, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorPasswordTextField(_ textField: UITextField) {
