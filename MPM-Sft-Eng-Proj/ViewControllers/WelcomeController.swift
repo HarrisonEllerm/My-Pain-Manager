@@ -132,14 +132,11 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
                 print("Error signing in: \(error)")
                 SwiftSpinner.show("Failed to sign in...")
                 SwiftSpinner.hide()
-                //Service.dismissHud(self.hud, text: "Error", detailText: error.localizedDescription, delay: 3)
                 return
             }
             SwiftSpinner.hide()
             self.view.endEditing(true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
-            })
+            self.appDelegate.handleLogin(withWindow: self.appDelegate.window)
         }
     }
     

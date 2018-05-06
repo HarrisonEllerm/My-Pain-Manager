@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import FirebaseDatabase
+import FirebaseAuth
 
 class WeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -86,8 +88,14 @@ class WeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     @objc func doneClick() {
-        
         self.endEditing(true)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let valueText = valueTextField.text else { return }
+        guard let unitsText = unitsTextField.text else { return }
+        var outputString = ""
+        outputString.append(valueText)
+        outputString.append(" \(unitsText)")
+        Database.database().reference().child("users").child(uid).updateChildValues(["weight": outputString])
     }
     
     func setupViews() {

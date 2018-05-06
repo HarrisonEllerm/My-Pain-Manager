@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import FirebaseDatabase
+import FirebaseAuth
 
 class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -87,8 +89,14 @@ class HeightEntryCell: UITableViewCell, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     @objc func doneClick() {
-        
         self.endEditing(true)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let valueText = valueTextField.text else { return }
+        guard let unitsText = unitsTextField.text else { return }
+        var outputString = ""
+        outputString.append(valueText)
+        outputString.append(" \(unitsText)")
+        Database.database().reference().child("users").child(uid).updateChildValues(["height": outputString])
     }
     
     func setupViews() {
@@ -164,15 +172,12 @@ extension HeightEntryCell {
     
     @objc func didSelectCell() {
         if(notSet) {
-            //Auto select option
-            print("Not set auto setting")
             gp.selectRow(160, inComponent: 0, animated: true)
             gp.delegate?.pickerView!(gp, didSelectRow: 160, inComponent: 0)
             gp.selectRow(1, inComponent: 1, animated: true)
             gp.delegate?.pickerView!(gp, didSelectRow: 1, inComponent: 1)
             notSet = false
         }
-        print("Set not auto setting")
         valueTextField.becomeFirstResponder()
         delegate?.textFieldInCell(didSelect: self)
     }

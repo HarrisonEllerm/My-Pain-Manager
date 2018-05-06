@@ -9,6 +9,7 @@
 import UIKit
 import FirebaseAuth
 import LBTAComponents
+import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 import Photos
@@ -23,13 +24,14 @@ struct HealthCellData {
 class HealthProfileController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var window: UIWindow?
-    var selectedImage: UIImage?
     
     let healthTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = true
         t.tableFooterView = UIView(frame: .zero)
+        t.allowsSelection = true
+        t.allowsMultipleSelection = false
         return t
     }()
     
@@ -42,7 +44,6 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         button.backgroundColor = Service.buttonBackgroundColorSignInAnon
         button.layer.masksToBounds = true
         button.layer.cornerRadius = Service.buttonCornerRadius
-        button.addTarget(self, action: #selector(handleSave), for: .touchUpInside)
         return button
     }()
     
@@ -68,27 +69,28 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         healthTableView.dataSource = self
         healthTableView.rowHeight = 44
         healthTableView.isScrollEnabled = false
+        healthTableView.allowsSelection = true
         //TODO: go to firebase to get the values
-        data = [HealthCellData.init(message: "Birth Date", value: "Not set"),
-                HealthCellData.init(message: "Gender", value: "Not set"),
-                HealthCellData.init(message: "Height", value: "Not set"),
-                HealthCellData.init(message: "Weight", value: "Not set")]
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         
+        DispatchQueue.main.async {
+            Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value) { (snapshot) in
+                if let values = snapshot.value as? [String : AnyObject] {
+                    let birthdate = values["birthdate"] as! String
+                    let gender = values["gender"] as! String
+                    let height = values["height"] as! String
+                    let weight = values["weight"] as! String
+                  
+                    self.data = [HealthCellData.init(message: "Birth Date", value: birthdate),
+                                 HealthCellData.init(message: "Gender", value: gender),
+                                 HealthCellData.init(message: "Height", value: height),
+                                 HealthCellData.init(message: "Weight", value: weight)]
+                    self.healthTableView.reloadData()
+                }
+            }
+        }
     }
     
-    //TODO: go to firebase to save the values
-    @objc func handleSave() {
-        print("Saving")
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        UIApplication.shared.statusBarStyle = .default
-    }
-    override var preferredStatusBarStyle : UIStatusBarStyle {
-        return .lightContent
-    }
-
     fileprivate func setUpViews() {
         
         view.addSubview(healthTableView)

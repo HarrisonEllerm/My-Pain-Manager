@@ -90,7 +90,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     }
     
     func validationSuccessful() {
-        SwiftSpinner.show("Signing up...")
+        SwiftSpinner.show("Signing up")
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
             SwiftSpinner.show("Sign up error...").addTapHandler({
                 SwiftSpinner.hide()
@@ -116,7 +116,10 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                 })
                 return
             }
-            let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicUrl]
+            let dictionaryValues = ["name": name, "email": email,
+                                    "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicUrl,
+                                    "birthdate": "Not set", "gender": "Not set", "height": "Not set",
+                                    "weight": "Not set"]
             let values = [uid: dictionaryValues]
             
             Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, dbRef) in

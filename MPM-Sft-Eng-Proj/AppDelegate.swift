@@ -91,12 +91,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                 if !snapshot.hasChild(uid) {
                     print("User does not exist, creating new user...")
                     let altProfilePicURL = Service.defaultProfilePicUrl
-                    let dictionaryValues = ["name": name, "email": email, "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL]
+                    let dictionaryValues = ["name": name, "email": email,
+                                            "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL,
+                                            "birthdate": "Not set", "gender": "Not set", "height": "Not set",
+                                            "weight": "Not set"]
                     let values = [uid: dictionaryValues]
                     Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
                         if let error = error {
                             SwiftSpinner.show("Error Signing Up...").addTapHandler({
-                                SwiftSpinner.hide()
                                 print(error)
                             })
                             return
@@ -115,9 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     func completeSignIn() {
         SwiftSpinner.hide()
         //present mainTabBar
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-            self.handleLogin(withWindow: self.window)
-        })
+        self.handleLogin(withWindow: self.window)
     }
     
     
@@ -148,15 +148,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    func refreshApplicationState() {
-        print("Refreshing Applicaton State....")
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        let rootViewController = MainTabBarController()
-        UIView.transition(with: self.window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromLeft, animations: {
-            self.window?.rootViewController = rootViewController
-            self.window?.makeKeyAndVisible()
-        }, completion: nil)
-    }
 }
 
 

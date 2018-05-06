@@ -41,6 +41,7 @@ class HomeController: UIViewController {
         activityIndicator.startAnimating()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
+        view.backgroundColor = UIColor.black
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.activityIndicator = activityIndicator

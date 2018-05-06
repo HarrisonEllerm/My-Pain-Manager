@@ -187,6 +187,10 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         if Auth.auth().currentUser != nil {
             SwiftSpinner.show("Loading User Profile")
             guard let uid = Auth.auth().currentUser?.uid else { return }
+           
+            let usersRef = Database.database().reference(withPath: "users").child(uid)
+            usersRef.keepSynced(true)
+            
             Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
                 guard let dict = snapshot.value as? [String: Any] else { return }
                 let user = User(uid: uid, dictionary: dict)
@@ -220,7 +224,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        NSLog("You selected cell number: \(indexPath.row)!")
         if(indexPath.row == 0) {
             let healthProfileController = HealthProfileController()
             self.navigationController?.pushViewController(healthProfileController, animated: true)

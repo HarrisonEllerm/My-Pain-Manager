@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import FirebaseAuth
+import FirebaseDatabase
 
 class GenderEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -64,8 +66,10 @@ class GenderEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataS
     }
     
     @objc func doneClick() {
-        
         self.endEditing(true)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard let inputText = textField.text else { return }
+        Database.database().reference().child("users").child(uid).updateChildValues(["gender": inputText])
     }
     
     func setupViews() {
