@@ -20,15 +20,9 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     //Validator for text fields
     let validator = Validator()
     
-    let signUpBelowImg: UIImageView = {
-        let img = UIImageView(image: UIImage(named: "signUpBelow"))
-        img.contentMode = .scaleAspectFit
-        return img
-    }()
-    
+   
     let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = Service.greenTheme
         let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.dontHaveAccountTextColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
         button.setAttributedTitle(attributeTitle, for: .normal)
         attributeTitle.append(NSAttributedString(string: "Sign In" , attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]))
@@ -40,7 +34,6 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "name", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = Service.greenTheme
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "name")
@@ -53,7 +46,6 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = Service.greenTheme
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "mail")
@@ -65,8 +57,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = Service.greenTheme
-        textField.textColor = UIColor.white
+        textField.textColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         textField.isSecureTextEntry = true
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "password")
@@ -76,11 +67,11 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     
     lazy var registerButton: UIButton = {
         var button = UIButton(type: .system)
-        button.setTitleColor(.white, for: .normal)
         button.setTitle("Register", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
         button.backgroundColor = Service.loginButtonBackgroundColor
         button.layer.cornerRadius = Service.buttonCornerRadius
+        button.setTitleColor(UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1), for: .normal)
         button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
         return button
     }()
@@ -164,6 +155,13 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         emailTextField.delegate = self
         passwordTextField.delegate = self
         nameTextField.delegate = self
+         view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        nameTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        emailTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        passwordTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        registerButton.backgroundColor = UIColor.white
+        alreadyHaveAccountButton.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        
         //register text fields that will be validated
         validator.registerField(emailTextField,
                                 rules: [RequiredRule(message: "Please provide a email!"),
@@ -175,11 +173,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     }
     
     fileprivate func setUpView() {
-        view.backgroundColor = Service.greenTheme
-        
-        view.addSubview(signUpBelowImg)
-        anchorSignUpBelowImg(signUpBelowImg)
-        
+  
         view.addSubview(nameTextField)
         anchorNameTextField(nameTextField)
         
@@ -197,13 +191,8 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         
     }
     
-    fileprivate func anchorSignUpBelowImg(_ image: UIImageView) {
-        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 180, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 75)
-        
-    }
-    
     fileprivate func anchorNameTextField(_ textField: UITextField) {
-        textField.anchor(signUpBelowImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 320, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorEmailTextField(_ textField: UITextField) {

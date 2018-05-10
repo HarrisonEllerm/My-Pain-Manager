@@ -101,8 +101,6 @@
 		38B9E590209EF5CC00773B0F /* forearmR2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E538209EF5CB00773B0F /* forearmR2.obj */; };
 		38B9E591209EF5CC00773B0F /* neck_R.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E539209EF5CB00773B0F /* neck_R.obj */; };
 		38B9E592209EF5CC00773B0F /* triceptR.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E53A209EF5CC00773B0F /* triceptR.obj */; };
-		38B9E5A1209EF80700773B0F /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E59F209EF80600773B0F /* Man_Skin.obj */; };
-		38B9E5A2209EF80700773B0F /* man_skele.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E5A0209EF80700773B0F /* man_skele.obj */; };
 		6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */; };
 		6F04659A209AC2FF0066FA14 /* GenderEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */; };
 		6F04659C209ACB860066FA14 /* HeightEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659B209ACB860066FA14 /* HeightEntryCell.swift */; };
@@ -706,7 +704,6 @@
 				38B9E56C209EF5CC00773B0F /* forearm3L.obj in Resources */,
 				38B9E55F209EF5CC00773B0F /* outerShoulder_R.obj in Resources */,
 				38B9E562209EF5CC00773B0F /* thighR3.obj in Resources */,
-				38B9E5A1209EF80700773B0F /* Man_Skin.obj in Resources */,
 				38B9E561209EF5CC00773B0F /* lowerback_L.obj in Resources */,
 				38B9E546209EF5CC00773B0F /* forarmR.obj in Resources */,
 				38B9E572209EF5CC00773B0F /* topback_L.obj in Resources */,
@@ -764,7 +761,6 @@
 				38B9E578209EF5CC00773B0F /* calfL4.obj in Resources */,
 				381611282095942300801604 /* bg.jpg in Resources */,
 				38B9E577209EF5CC00773B0F /* calfL.obj in Resources */,
-				38B9E5A2209EF80700773B0F /* man_skele.obj in Resources */,
 				38B9E563209EF5CC00773B0F /* upperback_R.obj in Resources */,
 				38B9E541209EF5CC00773B0F /* AbsR.obj in Resources */,
 				38B9E543209EF5CC00773B0F /* hipR.obj in Resources */,

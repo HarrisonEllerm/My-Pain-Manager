@@ -1642,6 +1642,7 @@ class HomeController: UIViewController {
         )
         
         upperLegFrontL2.node.scale = SCNVector3(2.5,2.5,2.5)
+        
         self.scene.rootNode.addChildNode(upperLegFrontL2.node)
         
         let upperlegLside = ObjectWrapper(
@@ -1658,6 +1659,7 @@ class HomeController: UIViewController {
         )
         
         upperlegLside.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperlegLside.node.name = "upperlegLside"
         self.scene.rootNode.addChildNode(upperlegLside.node)
         
         

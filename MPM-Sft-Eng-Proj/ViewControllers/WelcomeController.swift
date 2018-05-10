@@ -37,14 +37,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     }()
     
     let loginImg: UIImageView = {
-        let img = UIImageView(image: UIImage(named: "MPM_logo2"))
-        img.contentMode = .scaleAspectFit
-        return img
-    }()
-    
-    
-    let logoText: UIImageView = {
-        let img = UIImageView(image: UIImage(named: "words"))
+        let img = UIImageView(image: UIImage(named: "revisedLogo"))
         img.contentMode = .scaleAspectFit
         return img
     }()
@@ -52,7 +45,7 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     let emailTextField: UITextField = {
         let textField = UITextField()
-        let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
+        let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.backgroundColor: UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)])
         textField.attributedPlaceholder = attributedPlaceholder
         textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) //Service.greenTheme
         textField.textColor = UIColor.white
@@ -78,10 +71,9 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     var loginButton: UIButton = {
         var button = UIButton(type: .system)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1), for: .normal)
         button.setTitle("Login", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
-        button.backgroundColor = UIColor(red: 60/255, green: 60/255, blue: 60/255, alpha: 1)//Service.loginButtonBackgroundColor
         button.layer.cornerRadius = Service.buttonCornerRadius
         button.addTarget(self, action: #selector(handleNormalLogin), for: .touchUpInside)
         return button
@@ -110,7 +102,10 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) // Service.greenTheme
+        view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) 
+        emailTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        passwordTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        loginButton.backgroundColor = UIColor.white
         self.navigationController?.setNavigationBarHidden(true, animated: false)
         setUpViews()
         //assign the text fields delegate to self, to allow text fields to dissapear
@@ -169,9 +164,6 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
         view.addSubview(loginImg)
         anchorLoginImg(loginImg)
         
-        view.addSubview(logoText)
-        anchorLogoText(logoText)
-        
         view.addSubview(emailTextField)
         anchorEmailTextField(emailTextField)
         
@@ -190,16 +182,16 @@ class WelcomeController: UIViewController, UITextFieldDelegate, ValidationDelega
     }
     
     fileprivate func anchorLoginImg(_ image: UIImageView) {
-        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 60, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 250)
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 60, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 300)
     }
     
-    fileprivate func anchorLogoText(_ image: UIImageView) {
-        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 260, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 100)
-    }
+//    fileprivate func anchorLogoText(_ image: UIImageView) {
+//        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 260, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 100)
+//    }
     
     
     fileprivate func anchorEmailTextField(_ textField: UITextField) {
-        textField.anchor(loginImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 100, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(loginImg.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 30, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorPasswordTextField(_ textField: UITextField) {
