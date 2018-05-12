@@ -20,10 +20,18 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     //Validator for text fields
     let validator = Validator()
     
-   
+    let signUpLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Sign up below"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "HelveticaNeue-Thin", size: 30)
+        label.textColor = UIColor.white
+        return label
+    }()
+    
     let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.dontHaveAccountTextColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
+        let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0), NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
         button.setAttributedTitle(attributeTitle, for: .normal)
         attributeTitle.append(NSAttributedString(string: "Sign In" , attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]))
         button.addTarget(self, action: #selector(signInAction), for: .touchUpInside)
@@ -57,7 +65,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.textColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        textField.textColor = UIColor.white
         textField.isSecureTextEntry = true
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "password")
@@ -82,6 +90,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     
     func validationSuccessful() {
         SwiftSpinner.show("Signing up")
+        self.view.endEditing(true)
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
             SwiftSpinner.show("Sign up error...").addTapHandler({
                 SwiftSpinner.hide()
@@ -125,7 +134,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                 SwiftSpinner.hide()
                 self.registerButton.isUserInteractionEnabled = false
                 let welcomeController = WelcomeController()
-                self.present(welcomeController, animated: true, completion: nil)
+                self.navigationController?.pushViewController(welcomeController, animated: true)
             })
         }
     }
@@ -141,7 +150,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     @objc func signInAction() {
         let welcomeController = WelcomeController()
         self.view.endEditing(true)
-        self.present(welcomeController, animated: true, completion: nil)
+        self.navigationController?.pushViewController(welcomeController, animated: true)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -151,16 +160,20 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     
     override func viewDidLoad() {
         setUpView()
+        setupNavBar()
         //assign the text fields delegate to self, to allow text fields to dissapear
         emailTextField.delegate = self
         passwordTextField.delegate = self
         nameTextField.delegate = self
-         view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        
+        view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         nameTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         emailTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         passwordTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         registerButton.backgroundColor = UIColor.white
         alreadyHaveAccountButton.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        
+        
         
         //register text fields that will be validated
         validator.registerField(emailTextField,
@@ -172,7 +185,21 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         validator.registerField(nameTextField, rules: [FullNameRule(message: "Please enter your full name!")])
     }
     
+    fileprivate func setupNavBar() {
+        navigationController?.navigationBar.isTranslucent = false
+        let navigationBarAppearnce = UINavigationBar.appearance()
+        navigationBarAppearnce.barTintColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        navigationBarAppearnce.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
+        self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationController!.navigationBar.topItem!.title = ""
+    }
+    
+    
     fileprivate func setUpView() {
+        
+        view.addSubview(signUpLabel)
+        anchorSignupLabel(signUpLabel)
   
         view.addSubview(nameTextField)
         anchorNameTextField(nameTextField)
@@ -191,8 +218,13 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         
     }
     
+    fileprivate func anchorSignupLabel(_ label: UILabel) {
+        label.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+    }
+    
     fileprivate func anchorNameTextField(_ textField: UITextField) {
-        textField.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 320, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        textField.anchor(signUpLabel.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorEmailTextField(_ textField: UITextField) {

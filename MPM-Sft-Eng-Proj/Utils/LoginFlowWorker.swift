@@ -29,7 +29,8 @@ extension LoginFlowWorker {
         window?.subviews.forEach { $0.removeFromSuperview() }
         window?.rootViewController = nil
         let welcomeController = WelcomeController()
-        window?.rootViewController = welcomeController
+        let welcomeConrollerNav = UINavigationController(rootViewController: welcomeController)
+        window?.rootViewController = welcomeConrollerNav
         window?.makeKeyAndVisible()
     }
     

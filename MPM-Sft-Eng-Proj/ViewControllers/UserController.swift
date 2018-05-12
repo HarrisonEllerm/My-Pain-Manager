@@ -121,6 +121,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     @objc func handleSignOutButtonTapped() {
         let signOutAction = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in
             do {
+                //Now sign out
                 try Auth.auth().signOut()
                 let welcomeControl = WelcomeController()
                 let welcomeNavCon = UINavigationController(rootViewController: welcomeControl)
@@ -187,13 +188,13 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         if Auth.auth().currentUser != nil {
             SwiftSpinner.show("Loading User Profile")
             guard let uid = Auth.auth().currentUser?.uid else { return }
-           
-            let usersRef = Database.database().reference(withPath: "users").child(uid)
-            usersRef.keepSynced(true)
             
-            Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            let usersRef = Database.database().reference(withPath: "users").child(uid)
+           
+            usersRef.observeSingleEvent(of: .value, with: { (snapshot) in
                 guard let dict = snapshot.value as? [String: Any] else { return }
                 let user = User(uid: uid, dictionary: dict)
+                
                 //Load user defined profile image if they have set one
                 if(user.altProfileImageUrl != Service.defaultProfilePicUrl) {
                     print("loaded alt image")
