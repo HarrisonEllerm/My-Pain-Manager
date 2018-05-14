@@ -13,6 +13,9 @@
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
 		384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBD2092BC0D00DBE5E3 /* tex.jpg */; };
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
+		386048BE20A699E500E0F2CD /* hitmaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BD20A699E400E0F2CD /* hitmaps.bundle */; };
+		386048C020A6CB2A00E0F2CD /* hitmaps2.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */; };
+		386048C220A6D83C00E0F2CD /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 386048C120A6D83C00E0F2CD /* Man_Skin.obj */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
 		38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E5209EF5BE00773B0F /* forearmR4.obj */; };
@@ -79,7 +82,6 @@
 		38B9E57A209EF5CC00773B0F /* throat_R.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E522209EF5C900773B0F /* throat_R.obj */; };
 		38B9E57B209EF5CC00773B0F /* bumL.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E523209EF5C900773B0F /* bumL.obj */; };
 		38B9E57C209EF5CC00773B0F /* thighR2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E524209EF5C900773B0F /* thighR2.obj */; };
-		38B9E57D209EF5CC00773B0F /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E525209EF5CA00773B0F /* Man_Skin.obj */; };
 		38B9E57E209EF5CC00773B0F /* thighR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E526209EF5CA00773B0F /* thighR4.obj */; };
 		38B9E57F209EF5CC00773B0F /* biceptR.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E527209EF5CA00773B0F /* biceptR.obj */; };
 		38B9E580209EF5CC00773B0F /* tricept2L.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E528209EF5CA00773B0F /* tricept2L.obj */; };
@@ -164,6 +166,9 @@
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
 		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
+		386048BD20A699E400E0F2CD /* hitmaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps.bundle; sourceTree = "<group>"; };
+		386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps2.bundle; sourceTree = "<group>"; };
+		386048C120A6D83C00E0F2CD /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = ../../../../../../345_08/Man_Skin.obj; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
 		38B9E4E5209EF5BE00773B0F /* forearmR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR4.obj; sourceTree = "<group>"; };
@@ -230,7 +235,6 @@
 		38B9E522209EF5C900773B0F /* throat_R.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = throat_R.obj; sourceTree = "<group>"; };
 		38B9E523209EF5C900773B0F /* bumL.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bumL.obj; sourceTree = "<group>"; };
 		38B9E524209EF5C900773B0F /* thighR2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = thighR2.obj; sourceTree = "<group>"; };
-		38B9E525209EF5CA00773B0F /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Man_Skin.obj; sourceTree = "<group>"; };
 		38B9E526209EF5CA00773B0F /* thighR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = thighR4.obj; sourceTree = "<group>"; };
 		38B9E527209EF5CA00773B0F /* biceptR.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = biceptR.obj; sourceTree = "<group>"; };
 		38B9E528209EF5CA00773B0F /* tricept2L.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tricept2L.obj; sourceTree = "<group>"; };
@@ -346,6 +350,7 @@
 		38B9E4E2209EF4EF00773B0F /* Muscles */ = {
 			isa = PBXGroup;
 			children = (
+				386048C120A6D83C00E0F2CD /* Man_Skin.obj */,
 				38B9E530209EF5CB00773B0F /* AbsL.obj */,
 				38B9E4E9209EF5BE00773B0F /* AbsR.obj */,
 				38B9E513209EF5C500773B0F /* bicept2L.obj */,
@@ -395,7 +400,6 @@
 				38B9E509209EF5C400773B0F /* lowerback_L.obj */,
 				38B9E503209EF5C200773B0F /* Lowerback_R.obj */,
 				38B9E52B209EF5CA00773B0F /* man_skele.obj */,
-				38B9E525209EF5CA00773B0F /* Man_Skin.obj */,
 				38B9E52C209EF5CB00773B0F /* midback_L.obj */,
 				38B9E4EC209EF5BF00773B0F /* midback_R.obj */,
 				38B9E511209EF5C500773B0F /* neck_L.obj */,
@@ -463,6 +467,8 @@
 		6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */ = {
 			isa = PBXGroup;
 			children = (
+				386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */,
+				386048BD20A699E400E0F2CD /* hitmaps.bundle */,
 				6F26AAAF20974454009A3446 /* Material Utils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
 				6F6A008520946E7400A8E5DA /* 3D objects */,
@@ -561,10 +567,10 @@
 		6F6A008520946E7400A8E5DA /* 3D objects */ = {
 			isa = PBXGroup;
 			children = (
+				38B9E59F209EF80600773B0F /* Man_Skin.obj */,
 				38B9E4E2209EF4EF00773B0F /* Muscles */,
 				381611272095942300801604 /* bg.jpg */,
 				38B9E5A0209EF80700773B0F /* man_skele.obj */,
-				38B9E59F209EF80600773B0F /* Man_Skin.obj */,
 				384D7CBF2092BE3D00DBE5E3 /* skin.png */,
 				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
 				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
@@ -730,6 +736,7 @@
 				38B9E557209EF5CC00773B0F /* forearm6L.obj in Resources */,
 				384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */,
 				38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */,
+				386048C020A6CB2A00E0F2CD /* hitmaps2.bundle in Resources */,
 				38B9E575209EF5CC00773B0F /* forearm7L.obj in Resources */,
 				38B9E589209EF5CC00773B0F /* innerShoulder_L.obj in Resources */,
 				38B9E57F209EF5CC00773B0F /* biceptR.obj in Resources */,
@@ -754,6 +761,7 @@
 				38B9E550209EF5CC00773B0F /* upperleg2InnerL.obj in Resources */,
 				38B9E590209EF5CC00773B0F /* forearmR2.obj in Resources */,
 				38B9E54D209EF5CC00773B0F /* triceptR2.obj in Resources */,
+				386048BE20A699E500E0F2CD /* hitmaps.bundle in Resources */,
 				38B9E551209EF5CC00773B0F /* upperlegBackL.obj in Resources */,
 				38B9E556209EF5CC00773B0F /* biceptR3.obj in Resources */,
 				38B9E545209EF5CC00773B0F /* forearm5L.obj in Resources */,
@@ -773,8 +781,8 @@
 				38B9E582209EF5CC00773B0F /* calfR6.obj in Resources */,
 				38B9E584209EF5CC00773B0F /* midback_L.obj in Resources */,
 				38B9E56B209EF5CC00773B0F /* bicept2L.obj in Resources */,
-				38B9E57D209EF5CC00773B0F /* Man_Skin.obj in Resources */,
 				38B9E540209EF5CC00773B0F /* topback_R.obj in Resources */,
+				386048C220A6D83C00E0F2CD /* Man_Skin.obj in Resources */,
 				38B9E57B209EF5CC00773B0F /* bumL.obj in Resources */,
 				38B9E544209EF5CC00773B0F /* midback_R.obj in Resources */,
 				38B9E58B209EF5CC00773B0F /* frontshoulderR.obj in Resources */,

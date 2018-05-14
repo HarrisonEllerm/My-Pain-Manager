@@ -77,6 +77,7 @@ class HomeController: UIViewController {
             )
             manMesh.node.geometry?.firstMaterial?.transparency = 0.5
             manMesh.node.scale = SCNVector3(2.5,2.5,2.5)
+            manMesh.node.name = "Man_Skin"
             self.scene.rootNode.addChildNode(manMesh.node)
             
             manMesh.node.geometry?.firstMaterial = MaterialWrapper(
@@ -279,53 +280,104 @@ class HomeController: UIViewController {
         
         if hitResults.count > 0 {
            
-            print("HIT")
+            //print("HIT")
             let result = hitResults[0] //as! SCNHitTestResult
             let node = result.node
             let name = node.name
             
             
-            if(wasClicked){
-                 print(wasClicked)
-                if(name != "man_skele"){
-               
-//                node.geometry?.firstMaterial = MaterialWrapper(
-//                    diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 0.5),
-//                    roughness: NSNumber(value: 0.3),
-//                    metalness: "tex.jpg",
-//                    normal: "tex.jpg"
-//                    ).material
-//
+            if(wasClicked){ //wasClicked
+               // print(node.geometry?.firstMaterial?.emission.contents)
+                if(name != "man_skele" && name != "Man_Skin"){
                 wasClicked = false
-                    
                     node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
                 }
-            //node.removeFromParentNode()
             }else{
                 
-                if(name != "man_skele"){
+                if(name != "man_skele" && name != "Man_Skin"){
                
-//                node.geometry?.firstMaterial = MaterialWrapper(
-//                    diffuse: UIColor.white,
-//                    roughness: NSNumber(value: 0.3),
-//                    metalness: "tex.jpg",
-//                    normal: "tex.jpg"
-//                    ).material
-//
+
                 wasClicked = true;
                     
                      node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
-                    
                 }
             }
             
-        
-        //else{
-        // scnView.allowsCameraControl = true
-        //}
-           // node.geometry?.firstMaterial?.transparency = 0.5
+            if(name == "Man_Skin"){
+               
+                let channel = node.geometry!.firstMaterial!.diffuse.mappingChannel
+                let texcoord = result.textureCoordinates(withMappingChannel: channel)
+                //print(texcoord)
+                
+                // The Array of Image names
+                //var cocktailImagesArray : [String] = []
+                
+                let fileManager = FileManager.default
+                let bundleURL = Bundle.main.bundleURL
+                let assetURL = bundleURL.appendingPathComponent("hitmaps2.bundle")   //    .URLByAppendingPathComponent("Images.bundle")
+                let contents = try! fileManager.contentsOfDirectory(at: assetURL, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
+                
+                let y = 512 - (512 * texcoord.y)
+                let x = (512 * texcoord.x)
+                
+                for url in contents{
+                  
+                    let data = try? Data(contentsOf: url)
+                    let image = UIImage(data: data!)
+
+                    let point = CGPoint(x: x,y: y)
+                    let color = getPixelColor(image!, point)
+                    
+                    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+                    color.getRed(&r, green: &g, blue: &b, alpha: &a)
+
+                    if color.cgColor.alpha == 1{
+
+                        //Flips UVS horizontally
+                        node.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
+                        
+                        node.geometry?.firstMaterial?.emission.contents = image
+ 
+                    }
+                }
+ 
+            }
+            
+            
         }
     }
+    
+    func getPixelColor(_ image:UIImage, _ point: CGPoint) -> UIColor {
+        let cgImage : CGImage = image.cgImage!
+        guard let pixelData = CGDataProvider(data: (cgImage.dataProvider?.data)!)?.data else {
+            return UIColor.clear
+        }
+        let data = CFDataGetBytePtr(pixelData)!
+        let x = Int(point.x)
+        let y = Int(point.y)
+        let index = Int(image.size.width) * y + x
+        let expectedLengthA = Int(image.size.width * image.size.height)
+        let expectedLengthRGB = 3 * expectedLengthA
+        let expectedLengthRGBA = 4 * expectedLengthA
+        let numBytes = CFDataGetLength(pixelData)
+        switch numBytes {
+        case expectedLengthA:
+            return UIColor(red: 0, green: 0, blue: 0, alpha: CGFloat(data[index])/255.0)
+        case expectedLengthRGB:
+            return UIColor(red: CGFloat(data[3*index])/255.0, green: CGFloat(data[3*index+1])/255.0, blue: CGFloat(data[3*index+2])/255.0, alpha: 1.0)
+        case expectedLengthRGBA:
+            return UIColor(red: CGFloat(data[4*index])/255.0, green: CGFloat(data[4*index+1])/255.0, blue: CGFloat(data[4*index+2])/255.0, alpha: CGFloat(data[4*index+3])/255.0)
+        default:
+            // unsupported format
+            return UIColor.clear
+        }
+    }
+    
+    
+    
+    
+    
+    
     
     private func addMuscles(){
         
@@ -882,6 +934,111 @@ class HomeController: UIViewController {
         
         forearm7L.node.scale = SCNVector3(2.5,2.5,2.5)
         self.scene.rootNode.addChildNode(forearm7L.node)
+        
+        
+        
+        
+        let  forearmR2 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR2", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR2.node)
+        
+        
+        let  forearmR3 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR3", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR3.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR3.node)
+        
+        
+        let  forearmR4 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR4", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR4.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR2.node)
+        
+        
+        let  forearmR5 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR5", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR5.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR2.node)
+        
+        let  forearmR6 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR6", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR6.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR6.node)
+        
+        
+        let  forearmR7 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "forearmR7", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        forearmR7.node.scale = SCNVector3(2.5,2.5,2.5)
+        self.scene.rootNode.addChildNode(forearmR7.node)
+        
+    
         
         
         let  frontshoulderR = ObjectWrapper(
