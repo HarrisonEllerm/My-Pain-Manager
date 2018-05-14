@@ -43,11 +43,11 @@ class Service {
         on.present(alert, animated: true, completion: completion)
     }
     
-    //Convienience method used to dismuss a HUD
-    static func dismissHud(_ hud: JGProgressHUD, text: String, detailText: String, delay: TimeInterval) {
-        hud.textLabel.text = text
-        hud.detailTextLabel.text = detailText
-        hud.dismiss(afterDelay: delay, animated: true)
+    static func delayBySeconds(_ seconds: Double, completion: @escaping () -> ()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            completion()
+        }
     }
+
 }
 

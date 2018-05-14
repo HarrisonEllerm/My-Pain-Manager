@@ -13,10 +13,22 @@ import FirebaseDatabase
 import FirebaseStorage
 import Photos
 import SwiftSpinner
+import Alamofire
 
 struct SettingsCellData {
     let image : UIImage?
     let message : String?
+}
+
+/*
+ Connectivity solution adapted from:
+ https://stackoverflow.com/questions/30743408/check-for-internet-connection-with-swift
+*/
+struct Connectivity {
+    static let instance = NetworkReachabilityManager()!
+    static var connected:Bool {
+        return self.instance.isReachable
+    }
 }
 
 class UserController : UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -121,6 +133,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     @objc func handleSignOutButtonTapped() {
         let signOutAction = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in
             do {
+                //Now sign out
                 try Auth.auth().signOut()
                 let welcomeControl = WelcomeController()
                 let welcomeNavCon = UINavigationController(rootViewController: welcomeControl)
@@ -185,36 +198,83 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     
     @objc func loadCurrentUser() {
         if Auth.auth().currentUser != nil {
-            SwiftSpinner.show("Loading User Profile")
-            guard let uid = Auth.auth().currentUser?.uid else { return }
-           
-            let usersRef = Database.database().reference(withPath: "users").child(uid)
-            usersRef.keepSynced(true)
             
-            Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            SwiftSpinner.show("Loading User Profile")
+            
+            if (Connectivity.connected) {
+            
+            guard let uid = Auth.auth().currentUser?.uid else { return }
+            let usersRef = Database.database().reference(withPath: "users").child(uid)
+           
+            usersRef.observeSingleEvent(of: .value, with: { (snapshot) in
+                
                 guard let dict = snapshot.value as? [String: Any] else { return }
                 let user = User(uid: uid, dictionary: dict)
-                //Load user defined profile image if they have set one
-                if(user.altProfileImageUrl != Service.defaultProfilePicUrl) {
-                    print("loaded alt image")
-                    self.profileImageView.loadImage(urlString: user.altProfileImageUrl, completion: {
-                        SwiftSpinner.hide()
-                        self.nameLabel.text = user.name
-                        self.emailLabel.text = user.email
-                        self.tapThis.isHidden = false
-                    })
-                } else {
-                    print("loaded preset image")
-                    //Load either preset profile image provided by google, or default
-                    self.profileImageView.loadImage(urlString: user.profileImageURL, completion: {
-                        SwiftSpinner.hide()
-                        self.nameLabel.text = user.name
-                        self.emailLabel.text = user.email
-                        self.tapThis.isHidden = false
-                    })
-                }
+                self.pullProfileFromServer(user)
+            
             }, withCancel: { (err) in
+                SwiftSpinner.hide()
                 print(err)
+                })
+            
+        } else {
+                /*
+                 This only ever occurs if the user successfully logs in,
+                 then loses connection before Firebase is able to query their
+                 profile info. In this case:
+                 
+                  -> Display information to the user telling them that
+                     they have lost their connection.
+                 
+                 In the case where the above query is successfully executed,
+                 and the user goes offline, their profile is persistant.
+                */
+                warnUserIsOffline()
+            }
+        }
+    }
+    
+    fileprivate func warnUserIsOffline() {
+        SwiftSpinner.show("You are offline, attempting to reconnect")
+        //Try to reconnect for 10 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            
+            //If still not connected after 10 seconds
+            if !Connectivity.connected {
+                
+            SwiftSpinner.show(duration: 3.0, title: "Reconnection Failed, Profile will refresh when connected", animated: false).addTapHandler({
+                SwiftSpinner.hide()
+            })
+                
+        } else if Connectivity.connected {
+                
+                //If connection restablishes after 10 seconds
+                SwiftSpinner.show(duration: 3.0, title: "Reconnected successfully", animated: false)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    self.loadCurrentUser()
+                }
+            }
+        }
+    }
+    
+    fileprivate func pullProfileFromServer(_ user: User) {
+        print("user connected to internet, loading from server")
+        if(user.altProfileImageUrl != Service.defaultProfilePicUrl) {
+            print("loaded user provided image")
+            self.profileImageView.loadImage(urlString: user.altProfileImageUrl, completion: {
+                SwiftSpinner.hide()
+                self.nameLabel.text = user.name
+                self.emailLabel.text = user.email
+                self.tapThis.isHidden = false
+            })
+        } else {
+            print("loaded preset image")
+            //Load either preset profile image provided by google, or default
+            self.profileImageView.loadImage(urlString: user.profileImageURL, completion: {
+                SwiftSpinner.hide()
+                self.nameLabel.text = user.name
+                self.emailLabel.text = user.email
+                self.tapThis.isHidden = false
             })
         }
     }

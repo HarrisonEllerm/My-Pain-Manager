@@ -23,6 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //Configure Firebase
         FirebaseApp.configure()
+        //Enable Disk Persistence
+        Database.database().isPersistenceEnabled = true
         //Client ID for Google Sign In
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
@@ -86,7 +88,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
              Important to use observeSingleEvent here as we don't want the callback to be executed
              multiple times. 
             */
-            
             Database.database().reference().child("users").observeSingleEvent(of: .value, with: { (snapshot) in
                 if !snapshot.hasChild(uid) {
                     print("User does not exist, creating new user...")
@@ -103,18 +104,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                             })
                             return
                         }
-                        self.completeSignIn()
+                        self.completeSignIn(uid)
                     })
                 } else {
                     print("user exists...")
-                    self.completeSignIn()
+                    self.completeSignIn(uid)
                 }
             })
 
         }
     }
     
-    func completeSignIn() {
+    func completeSignIn(_ uid: String) {
         SwiftSpinner.hide()
         //present mainTabBar
         self.handleLogin(withWindow: self.window)
