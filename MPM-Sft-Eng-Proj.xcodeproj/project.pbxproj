@@ -15,7 +15,6 @@
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
 		386048BE20A699E500E0F2CD /* hitmaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BD20A699E400E0F2CD /* hitmaps.bundle */; };
 		386048C020A6CB2A00E0F2CD /* hitmaps2.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */; };
-		386048C220A6D83C00E0F2CD /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 386048C120A6D83C00E0F2CD /* Man_Skin.obj */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
 		38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E5209EF5BE00773B0F /* forearmR4.obj */; };
@@ -133,6 +132,7 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
+		6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F7C1B5420A988EA005E884D /* Man_Skin.obj */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
 		6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */; };
@@ -169,7 +169,6 @@
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
 		386048BD20A699E400E0F2CD /* hitmaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps.bundle; sourceTree = "<group>"; };
 		386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps2.bundle; sourceTree = "<group>"; };
-		386048C120A6D83C00E0F2CD /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = ../../../../../../345_08/Man_Skin.obj; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
 		38B9E4E5209EF5BE00773B0F /* forearmR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR4.obj; sourceTree = "<group>"; };
@@ -296,6 +295,7 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F7C1B5420A988EA005E884D /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = "MPM-Sft-Eng-Proj/3D objects/Man_Skin.obj"; sourceTree = SOURCE_ROOT; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowWorker.swift; sourceTree = "<group>"; };
@@ -352,7 +352,7 @@
 		38B9E4E2209EF4EF00773B0F /* Muscles */ = {
 			isa = PBXGroup;
 			children = (
-				386048C120A6D83C00E0F2CD /* Man_Skin.obj */,
+				6F7C1B5420A988EA005E884D /* Man_Skin.obj */,
 				38B9E530209EF5CB00773B0F /* AbsL.obj */,
 				38B9E4E9209EF5BE00773B0F /* AbsR.obj */,
 				38B9E513209EF5C500773B0F /* bicept2L.obj */,
@@ -785,7 +785,7 @@
 				38B9E584209EF5CC00773B0F /* midback_L.obj in Resources */,
 				38B9E56B209EF5CC00773B0F /* bicept2L.obj in Resources */,
 				38B9E540209EF5CC00773B0F /* topback_R.obj in Resources */,
-				386048C220A6D83C00E0F2CD /* Man_Skin.obj in Resources */,
+				6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */,
 				38B9E57B209EF5CC00773B0F /* bumL.obj in Resources */,
 				38B9E544209EF5CC00773B0F /* midback_R.obj in Resources */,
 				38B9E58B209EF5CC00773B0F /* frontshoulderR.obj in Resources */,

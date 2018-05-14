@@ -220,11 +220,14 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         } else {
                 /*
                  This only ever occurs if the user successfully logs in,
-                 then loses connection before Firebase is able to query their
-                 profile info. In this case:
+                 then loses connection before Firebase is able to query and
+                 cache their profile info. In this case:
                  
                   -> Display information to the user telling them that
                      they have lost their connection.
+                  -> Try to reconnect for 10 seconds. If sucessful, reload
+                     profile. If not, dismiss spinner and let user know
+                     their profile will be refreshed when they are online.
                  
                  In the case where the above query is successfully executed,
                  and the user goes offline, their profile is persistant.
