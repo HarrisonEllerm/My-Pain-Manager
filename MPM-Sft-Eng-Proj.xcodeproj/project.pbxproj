@@ -132,8 +132,8 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
+		6F26C8F320AAD62B001DB091 /* skele2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F26C8F220AAD62B001DB091 /* skele2.mp4 */; };
 		6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F7C1B5420A988EA005E884D /* Man_Skin.obj */; };
-		6F8BFD5820AABEF60048D106 /* skele2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F8BFD5720AABEF60048D106 /* skele2.mp4 */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
 		6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */; };
@@ -296,8 +296,8 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F26C8F220AAD62B001DB091 /* skele2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = skele2.mp4; sourceTree = "<group>"; };
 		6F7C1B5420A988EA005E884D /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = "MPM-Sft-Eng-Proj/3D objects/Man_Skin.obj"; sourceTree = SOURCE_ROOT; };
-		6F8BFD5720AABEF60048D106 /* skele2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = skele2.mp4; path = ../../../../Downloads/skele2.mp4; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowWorker.swift; sourceTree = "<group>"; };
@@ -471,7 +471,6 @@
 		6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */ = {
 			isa = PBXGroup;
 			children = (
-				6F8BFD5620AABEDD0048D106 /* Video Files */,
 				386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */,
 				386048BD20A699E400E0F2CD /* hitmaps.bundle */,
 				6F26AAAF20974454009A3446 /* Material Utils */,
@@ -573,6 +572,7 @@
 		6F6A008520946E7400A8E5DA /* 3D objects */ = {
 			isa = PBXGroup;
 			children = (
+				6F26C8F220AAD62B001DB091 /* skele2.mp4 */,
 				38B9E59F209EF80600773B0F /* Man_Skin.obj */,
 				38B9E4E2209EF4EF00773B0F /* Muscles */,
 				381611272095942300801604 /* bg.jpg */,
@@ -582,14 +582,6 @@
 				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
 			);
 			path = "3D objects";
-			sourceTree = "<group>";
-		};
-		6F8BFD5620AABEDD0048D106 /* Video Files */ = {
-			isa = PBXGroup;
-			children = (
-				6F8BFD5720AABEF60048D106 /* skele2.mp4 */,
-			);
-			path = "Video Files";
 			sourceTree = "<group>";
 		};
 		9EF82062E76845780E55E19C /* Frameworks */ = {
@@ -722,7 +714,6 @@
 				38B9E54C209EF5CC00773B0F /* thighR_5.obj in Resources */,
 				38B9E54F209EF5CC00773B0F /* shoulderR2.obj in Resources */,
 				38B9E56C209EF5CC00773B0F /* forearm3L.obj in Resources */,
-				6F8BFD5820AABEF60048D106 /* skele2.mp4 in Resources */,
 				38B9E55F209EF5CC00773B0F /* outerShoulder_R.obj in Resources */,
 				38B9E562209EF5CC00773B0F /* thighR3.obj in Resources */,
 				38B9E561209EF5CC00773B0F /* lowerback_L.obj in Resources */,
@@ -814,6 +805,7 @@
 				38B9E57E209EF5CC00773B0F /* thighR4.obj in Resources */,
 				38B9E55C209EF5CC00773B0F /* thighR_7.obj in Resources */,
 				38B9E55B209EF5CC00773B0F /* Lowerback_R.obj in Resources */,
+				6F26C8F320AAD62B001DB091 /* skele2.mp4 in Resources */,
 				38B9E585209EF5CC00773B0F /* outershoulder_L.obj in Resources */,
 				38B9E580209EF5CC00773B0F /* tricept2L.obj in Resources */,
 				38B9E58D209EF5CC00773B0F /* thighR1.obj in Resources */,
