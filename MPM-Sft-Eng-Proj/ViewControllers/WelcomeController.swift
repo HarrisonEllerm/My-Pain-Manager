@@ -18,17 +18,17 @@ import FirebaseDatabase
 import SwiftValidator
 import GoogleSignIn
 import SwiftSpinner
-
+import AVKit
 
 class WelcomeController: UIViewController {
     
     var name: String?
     var email: String?
     var profilePicture: UIImage?
-    
+    var videoPlayer: AVPlayer?
     
     let loginImg: UIImageView = {
-        let img = UIImageView(image: UIImage(named: "MPM_logo"))
+        let img = UIImageView(image: UIImage(named: "MPM_logo_revised"))
         img.contentMode = .scaleAspectFit
         return img
     }()
@@ -36,7 +36,6 @@ class WelcomeController: UIViewController {
     
     lazy var dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 48/255, alpha: 1)//Service.greenTheme
         let attributeTitle = NSMutableAttributedString(string: "Don't have an account? ",
             attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0),
                          NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
@@ -61,16 +60,50 @@ class WelcomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        //view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
       
         loginButton.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
+        dontHaveAccountButton.backgroundColor = UIColor.clear
+        
+        let videoURL: NSURL = Bundle.main.url(forResource: "skele2", withExtension: "mp4")! as NSURL
+        videoPlayer = AVPlayer(url: videoURL as URL)
+        videoPlayer?.actionAtItemEnd = .none
+        videoPlayer?.isMuted = true
+        
+        let playerLayer = AVPlayerLayer(player: videoPlayer)
+        playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        playerLayer.zPosition = -1
+        
+        playerLayer.frame = view.frame
+        
+        view.layer.addSublayer(playerLayer)
+        
+        videoPlayer?.play()
+        var isPlayingInNegative = false
+        // add observer to watch for video end in order to loop video
+        
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                object: self.videoPlayer?.currentItem, queue: nil) {
+                    (_) in
+                    if !isPlayingInNegative {
+                        self.videoPlayer?.seek(to: self.videoPlayer!.currentItem!.asset.duration)
+                        self.videoPlayer?.play()
+                        self.videoPlayer!.rate = -1.0
+                        isPlayingInNegative = true
+                    } else {
+                        self.videoPlayer?.pause()
+                        self.videoPlayer?.seek(to: kCMTimeZero)
+                        self.videoPlayer?.play()
+                        isPlayingInNegative = false
+                }
+        }
         
         view.addSubview(loginImg)
         anchorLoginImg(loginImg)
-        
+
         view.addSubview(dontHaveAccountButton)
         anchorDontHaveAccountButton(dontHaveAccountButton)
-        
+
         view.addSubview(loginButton)
         anchorLoginButton(loginButton)
         
