@@ -65,7 +65,7 @@ class WelcomeController: UIViewController {
         loginButton.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
         dontHaveAccountButton.backgroundColor = UIColor.clear
         
-        let videoURL: NSURL = Bundle.main.url(forResource: "skele2", withExtension: "mp4")! as NSURL
+        let videoURL: NSURL = Bundle.main.url(forResource: "skele8", withExtension: "mp4")! as NSURL
         videoPlayer = AVPlayer(url: videoURL as URL)
         videoPlayer?.actionAtItemEnd = .none
         videoPlayer?.isMuted = true
