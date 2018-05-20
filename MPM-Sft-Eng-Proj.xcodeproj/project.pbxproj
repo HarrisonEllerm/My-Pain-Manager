@@ -131,7 +131,6 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
-		6F26C8F320AAD62B001DB091 /* skele2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F26C8F220AAD62B001DB091 /* skele2.mp4 */; };
 		6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F7C1B5420A988EA005E884D /* Man_Skin.obj */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
@@ -294,7 +293,6 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
-		6F26C8F220AAD62B001DB091 /* skele2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = skele2.mp4; sourceTree = "<group>"; };
 		6F7C1B5420A988EA005E884D /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = "MPM-Sft-Eng-Proj/3D objects/Man_Skin.obj"; sourceTree = SOURCE_ROOT; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -472,7 +470,7 @@
 				6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */,
 				6F26AAAF20974454009A3446 /* MaterialUtils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
-				6F6A008520946E7400A8E5DA /* 3Dobjects */,
+				6F6A008520946E7400A8E5DA /* 3D objects */,
 				6F1705DD2085EF2F00F6265C /* Domain */,
 				6F1705DC2085EF1D00F6265C /* Utils */,
 				6F1705DB2085EEF500F6265C /* ViewControllers */,
@@ -566,10 +564,9 @@
 			path = MaterialUtils;
 			sourceTree = "<group>";
 		};
-		6F6A008520946E7400A8E5DA /* 3Dobjects */ = {
+		6F6A008520946E7400A8E5DA /* 3D objects */ = {
 			isa = PBXGroup;
 			children = (
-				6F26C8F220AAD62B001DB091 /* skele2.mp4 */,
 				38B9E59F209EF80600773B0F /* Man_Skin.obj */,
 				38B9E4E2209EF4EF00773B0F /* Muscles */,
 				381611272095942300801604 /* bg.jpg */,
@@ -578,7 +575,7 @@
 				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
 				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
 			);
-			path = 3Dobjects;
+			path = "3D objects";
 			sourceTree = "<group>";
 		};
 		9EF82062E76845780E55E19C /* Frameworks */ = {
@@ -801,7 +798,6 @@
 				38B9E57E209EF5CC00773B0F /* thighR4.obj in Resources */,
 				38B9E55C209EF5CC00773B0F /* thighR_7.obj in Resources */,
 				38B9E55B209EF5CC00773B0F /* Lowerback_R.obj in Resources */,
-				6F26C8F320AAD62B001DB091 /* skele2.mp4 in Resources */,
 				38B9E585209EF5CC00773B0F /* outershoulder_L.obj in Resources */,
 				38B9E580209EF5CC00773B0F /* tricept2L.obj in Resources */,
 				38B9E58D209EF5CC00773B0F /* thighR1.obj in Resources */,
