@@ -473,9 +473,9 @@
 			children = (
 				386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */,
 				386048BD20A699E400E0F2CD /* hitmaps.bundle */,
-				6F26AAAF20974454009A3446 /* Material Utils */,
+				6F26AAAF20974454009A3446 /* MaterialUtils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
-				6F6A008520946E7400A8E5DA /* 3D objects */,
+				6F6A008520946E7400A8E5DA /* 3Dobjects */,
 				6F1705DD2085EF2F00F6265C /* Domain */,
 				6F1705DC2085EF1D00F6265C /* Utils */,
 				6F1705DB2085EEF500F6265C /* ViewControllers */,
@@ -558,7 +558,7 @@
 			path = "Custom TableCells";
 			sourceTree = "<group>";
 		};
-		6F26AAAF20974454009A3446 /* Material Utils */ = {
+		6F26AAAF20974454009A3446 /* MaterialUtils */ = {
 			isa = PBXGroup;
 			children = (
 				6F26AAB020974470009A3446 /* MaterialWrapper.swift */,
@@ -566,10 +566,10 @@
 				6F26AAB4209744FE009A3446 /* ObjectWrapper.swift */,
 				6F26AAB620974524009A3446 /* Object.swift */,
 			);
-			path = "Material Utils";
+			path = MaterialUtils;
 			sourceTree = "<group>";
 		};
-		6F6A008520946E7400A8E5DA /* 3D objects */ = {
+		6F6A008520946E7400A8E5DA /* 3Dobjects */ = {
 			isa = PBXGroup;
 			children = (
 				6F26C8F220AAD62B001DB091 /* skele2.mp4 */,
@@ -581,7 +581,7 @@
 				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
 				384D7CB92092B46800DBE5E3 /* femalemesh.obj */,
 			);
-			path = "3D objects";
+			path = 3Dobjects;
 			sourceTree = "<group>";
 		};
 		9EF82062E76845780E55E19C /* Frameworks */ = {
