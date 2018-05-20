@@ -1,5 +1,7 @@
 PODS:
   - Alamofire (4.7.2)
+  - Cosmos (15.0.0)
+  - DynamicBlurView (2.0.2)
   - Firebase/Auth (4.13.0):
     - Firebase/Core
     - FirebaseAuth (= 4.6.1)
@@ -63,18 +65,22 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
+  - PopupDialog (0.7.1):
+    - DynamicBlurView (~> 2.0)
   - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
   - SwiftyJSON (4.1.0)
 
 DEPENDENCIES:
   - Alamofire
+  - Cosmos
   - Firebase/Auth
   - Firebase/Database
   - Firebase/Storage
   - GoogleSignIn
   - JGProgressHUD
   - LBTAComponents
+  - PopupDialog (~> 0.7)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
   - SwiftyJSON
@@ -91,6 +97,8 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  Cosmos: a6dbd3d0baa0cc8f51f8598f7508d5a09d0a9ade
+  DynamicBlurView: aa6db4defc6e537eb86fc5e58dd3991666178399
   Firebase: 5ec5e863d269d82d66b4bf56856726f8fb8f0fb3
   FirebaseAnalytics: 7ef69e76a5142f643aeb47c780e1cdce4e23632e
   FirebaseAuth: bf22cacf22c60ab454bf2636f556d8892b10b53f
@@ -106,10 +114,11 @@ SPEC CHECKSUMS:
   LBTAComponents: c4c8863e0ef6715e378300db148b96a09df656f7
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: 8476951ba8f8b1b6065b5365fd62daf7d4357fb0
+PODFILE CHECKSUM: 6cb4919447c0c94d385bc83af2bf4921ff37f9ec
 
 COCOAPODS: 1.4.0

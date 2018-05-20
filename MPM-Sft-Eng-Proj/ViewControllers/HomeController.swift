@@ -270,7 +270,7 @@ class HomeController: UIViewController {
         let anglePan = sqrt(pow(pan_x,2)+pow(pan_y,2))*(Float)(Double.pi)/1200  //180.0
         
         var rotationVector = SCNVector4()
-        rotationVector.x = pan_y
+        //rotationVector.x = pan_y
         rotationVector.y = -pan_x
         rotationVector.z = 0
         rotationVector.w = anglePan

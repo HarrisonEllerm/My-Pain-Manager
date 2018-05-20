@@ -21,6 +21,8 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'GoogleSignIn'
     pod 'SwiftSpinner'
     pod 'Alamofire'
+    pod 'PopupDialog', '~> 0.7'
+    pod 'Cosmos'
     
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths
