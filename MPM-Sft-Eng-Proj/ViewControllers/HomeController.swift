@@ -24,7 +24,7 @@ class HomeController: UIViewController {
     var hasLoaded = false
     let updateQueue = DispatchQueue(label: "updateQueue")
     weak var activityIndicator: UIActivityIndicatorView?
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,9 +33,9 @@ class HomeController: UIViewController {
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
         /*
-           Activity Indicator Used to show users that the model is being loaded,
-           which can take around a second since it is reading in large files to render
-           the body.
+         Activity Indicator Used to show users that the model is being loaded,
+         which can take around a second since it is reading in large files to render
+         the body.
          */
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
         activityIndicator.startAnimating()
@@ -50,150 +50,134 @@ class HomeController: UIViewController {
     
     func loadScene() {
         /*
-           Several of the opperations are required to be executed
-           on the main thread mandatorily, this also guarantees
-           that everything is executed sequentially
-        */
+         Several of the opperations are required to be executed
+         on the main thread mandatorily, this also guarantees
+         that everything is executed sequentially
+         */
         DispatchQueue.main.async {
             //add scene
             self.scnView = SCNView(frame: self.view.frame)
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
-            self.scene.background.contents = UIImage(named: "bg.jpg")
+            //black bakcground
+            self.scene.background.contents = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
+            
+            // self.scene.background.contents = UIImage(named: "bg.jpg")
             self.scnView.scene = self.scene;
             
-            //add male
-            let manMesh = ObjectWrapper(
-                mesh: MeshLoader.loadMeshWith(name: "Man_Skin", ofType: "obj"),
-                material: MaterialWrapper(
-                diffuse: UIColor.white,//"skin.png",
-                roughness: NSNumber(value: 0.3),
-                metalness: "tex.png",
-                normal: "tex.png"
-            ),
-            position: SCNVector3Make(0, -8, 0),
-            rotation: SCNVector4Make(0, 1, 0,
-                                     GLKMathDegreesToRadians(20))
-            )
-            manMesh.node.geometry?.firstMaterial?.transparency = 0.5
-            manMesh.node.scale = SCNVector3(2.5,2.5,2.5)
-            manMesh.node.name = "Man_Skin"
-            self.scene.rootNode.addChildNode(manMesh.node)
-            
-            manMesh.node.geometry?.firstMaterial = MaterialWrapper(
-            diffuse: UIColor.white,
-            roughness: NSNumber(value: 0.3),
-            metalness: "tex.jpg",
-            normal: "tex.jpg"
-            ).material
-            manMesh.node.geometry?.firstMaterial?.transparency = 0.5
-            self.manMesh = manMesh
-            
-            
-            
-            
-            //add male skeleton
-            let man_skele = ObjectWrapper(
-            mesh: MeshLoader.loadMeshWith(name: "man_skele", ofType: "obj"),
-            material: MaterialWrapper(
-                diffuse: UIColor.white,//"skin.png",
-                roughness: NSNumber(value: 0.3),
-                metalness: "skin.png",
-                normal: "skin.png"
-                
-            ),
-            position: SCNVector3Make(0, -8, 0),
-            rotation: SCNVector4Make(0, 1, 0,
-                                     GLKMathDegreesToRadians(20))
-            )
-            man_skele.node.scale = SCNVector3(2.5,2.5,2.5)
-            man_skele.node.name = "man_skele"
-            
-            let skelemat = SCNMaterial()
-            skelemat.diffuse.contents = UIColor.white
-            let materials = man_skele.node.geometry?.materials
-            
-            var materialarraysize = materials?.count ?? 0
-            materialarraysize = Int(materialarraysize)
-            
-            for index in 0...materialarraysize-1{
-                man_skele.node.geometry?.materials[index] = skelemat
-            }
-            
-            self.scene.rootNode.addChildNode(man_skele.node)
-            
-            
+            self.addMaleSkin()
+            self.addMaleSkeleton()
             self.addMuscles()
+            self.createCamera()
+            self.createTapRecognizer()
             
             
-            
-            
-            
-            
-            //create camera
-            self.camera = SCNCamera()
-            self.camera.zNear = 1
-            self.cameraNode = SCNNode()
-            self.cameraNode.camera = self.camera
-            self.cameraNode.position = SCNVector3(x: 0.0, y: 0.0, z: 25.0)
-            self.scene.rootNode.addChildNode(self.cameraNode)
-            self.scnView.allowsCameraControl = true
-            //create gesture recogniser
-            let tapRecognizer = UITapGestureRecognizer()
-            tapRecognizer.numberOfTapsRequired = 1
-            tapRecognizer.numberOfTouchesRequired = 1
-            tapRecognizer.addTarget(self, action: #selector(self.sceneTapped))//"sceneTapped:")
-            let panRecogniser = UIPanGestureRecognizer()
-            panRecogniser.addTarget(self, action: #selector(self.scenePanned))
-            self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser]
-            //create lights
-            let light = SCNLight()
-            light.type = SCNLight.LightType.omni
-            let lightNode = SCNNode()
-            lightNode.light = light
-            lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
-            light.intensity = CGFloat(300)
-            self.scene.rootNode.addChildNode(lightNode)
-            let light2 = SCNLight()
-            let light2Node = SCNNode()
-            light2.type = SCNLight.LightType.omni
-            light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
-            light2.intensity = CGFloat(700)
-            light2Node.light = light2
-            self.scene.rootNode.addChildNode(light2Node)
-            let light3 = SCNLight()
-            let light3Node = SCNNode()
-            light3.type = SCNLight.LightType.omni
-            light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
-            light3.intensity = CGFloat(400)
-            light3Node.light = light3
-            self.scene.rootNode.addChildNode(light3Node)
-            let light4 = SCNLight()
-            let light4Node = SCNNode()
-            light4.type = SCNLight.LightType.omni
-            light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
-            light4.intensity = CGFloat(400)
-            light4Node.light = light4
-            self.scene.rootNode.addChildNode(light4Node)
-            //create swap button
-            let width = 130
-            let middle = Float(self.view.frame.size.width/2) - Float(width/2)
-            let CentreX = Int(middle)
-            let button = UIButton(frame: CGRect(x: CentreX, y: 670, width: width, height: 30))
-            button.backgroundColor = .white
-            button.setTitle("Swap", for: .normal)
-            button.addTarget(self, action: #selector(self.swapAction), for: .touchUpInside)
-            button.backgroundColor = UIColor.black
-            button.layer.cornerRadius = 8
-            self.view.addSubview(button)
-            self.isLoading = false
-            guard let activityIndicator = self.activityIndicator else { return }
-            UIView.animate(withDuration: 0.35, animations: {
-                activityIndicator.alpha = 0
-                }, completion: { _ in
-                    activityIndicator.removeFromSuperview()
-            })
+            self.createLights()
+            self.createSwapButton()
         }
+    }
+    
+    
+    
+    func createTapRecognizer(){
+        
+        let tapRecognizer = UITapGestureRecognizer()
+        tapRecognizer.numberOfTapsRequired = 1
+        tapRecognizer.numberOfTouchesRequired = 1
+        tapRecognizer.addTarget(self, action: #selector(self.sceneTapped))//"sceneTapped:")
+        
+        let panRecogniser = UIPanGestureRecognizer()
+        panRecogniser.addTarget(self, action: #selector(self.scenePanned))
+        
+        let pinchRecogniser = UIPinchGestureRecognizer()
+        pinchRecogniser.addTarget(self, action: #selector(self.sceneZoom))
+        
+        
+        self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,pinchRecogniser]
+    }
+    
+    
+    func createCamera(){
+        self.camera = SCNCamera()
+        self.camera.zNear = 1
+        self.cameraNode = SCNNode()
+        self.cameraNode.camera = self.camera
+        self.cameraNode.position = SCNVector3(x: 0.0, y: 0.0, z: 25.0)
+        self.scene.rootNode.addChildNode(self.cameraNode)
+        self.scnView.allowsCameraControl = true
+    }
+    
+    func createLights(){
+        //Create light 1
+        let light = SCNLight()
+        light.type = SCNLight.LightType.omni
+        let lightNode = SCNNode()
+        lightNode.light = light
+        lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
+        light.intensity = CGFloat(300)
+        self.scene.rootNode.addChildNode(lightNode)
+        //Create light 2
+        let light2 = SCNLight()
+        let light2Node = SCNNode()
+        light2.type = SCNLight.LightType.omni
+        light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
+        light2.intensity = CGFloat(1700) //700
+        light2Node.light = light2
+        self.scene.rootNode.addChildNode(light2Node)
+        //Create light 3
+        let light3 = SCNLight()
+        let light3Node = SCNNode()
+        light3.type = SCNLight.LightType.omni
+        light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
+        light3.intensity = CGFloat(400)
+        light3Node.light = light3
+        self.scene.rootNode.addChildNode(light3Node)
+        //Create light 4
+        let light4 = SCNLight()
+        let light4Node = SCNNode()
+        light4.type = SCNLight.LightType.omni
+        light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
+        light4.intensity = CGFloat(400)
+        light4Node.light = light4
+        self.scene.rootNode.addChildNode(light4Node)
+        
+        let light5 = SCNLight()
+        let light5Node = SCNNode()
+        light5.type = SCNLight.LightType.ambient
+        light5Node.position = SCNVector3(x: 1.5, y: -50, z: 1.5)
+        light5.intensity = CGFloat(200)
+        light5Node.light = light5
+        self.scene.rootNode.addChildNode(light5Node)
+        
+        
+        
+    }
+    
+    
+    func createSwapButton(){
+        let width = 130
+        let middle = Float(self.view.frame.size.width/2) - Float(width/2)
+        let CentreX = Int(middle)
+        let button = UIButton(frame: CGRect(x: CentreX, y: 670, width: width, height: 30))
+        //button.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
+        button.setTitle("Swap", for: .normal)
+        
+        button.addTarget(self, action: #selector(self.swapAction), for: .touchUpInside)
+        button.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        
+        
+        
+        button.layer.cornerRadius = 8
+        self.view.addSubview(button)
+        self.isLoading = false
+        guard let activityIndicator = self.activityIndicator else { return }
+        UIView.animate(withDuration: 0.35, animations: {
+            activityIndicator.alpha = 0
+        }, completion: { _ in
+            activityIndicator.removeFromSuperview()
+        })
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -215,7 +199,7 @@ class HomeController: UIViewController {
             }
         }
     }
-  
+    
     @objc func swapAction(sender: UIButton){
         if(manMesh.node.isHidden){
             manMesh.node.isHidden = false
@@ -224,19 +208,52 @@ class HomeController: UIViewController {
         }
     }
     
-    private func createEnvironmentLighting(cubeMap: [String], intensity: CGFloat){
-        let cubeMap = cubeMap
-        let intensity = intensity
+    
+    //Adapted from stack overflow
+    @objc func sceneZoom(gesture: UIPinchGestureRecognizer) {
+        // let view = self.view as! SCNView
+        // let node = view.scene!.rootNode.childNode(withName: "Camera", recursively: false)
+        let node = cameraNode
+        let scale = gesture.velocity
+        //let point = gesture.location(in: gesture.view!)
+        // let point1 = gesture.location(ofTouch: 0, in: gesture.view!)
+        // let point2 = gesture.location(ofTouch: 1, in: gesture.view!)
         
-        func setLightingEnviromentFor(scene: SCNScene) {
-            scene.lightingEnvironment.contents = cubeMap
-            scene.lightingEnvironment.intensity = intensity
-            scene.background.contents = cubeMap
+        //let point3 = CGPoint(abs(point1.x-point2.x), abs(point1.y-point2.y))
+        // cameraNode.camera.
+        
+        // print(point)
+        
+        // print("p1 and p2")
+        // print(point1)
+        // print(point2)
+        
+        let maximumFOV:CGFloat = 25 //This is what determines the farthest point you can zoom in to
+        let minimumFOV:CGFloat = 90 //This is what determines the farthest point you can zoom out to
+        
+        switch gesture.state {
+        case .began:
+            break
+        case .changed:
+            node!.camera!.fieldOfView = node!.camera!.fieldOfView - CGFloat(scale)
+            if node!.camera!.fieldOfView <= maximumFOV {
+                node!.camera!.fieldOfView = maximumFOV
+            }
+            if node!.camera!.fieldOfView >= minimumFOV {
+                node!.camera!.fieldOfView = minimumFOV
+            }
+            break
+        default: break
         }
     }
-
+    
+    
+    
+    
+    // Allows the user to rotate the camera around the object
+    //Adapted from stack overflow.
     @objc private func scenePanned(recognizer: UIPanGestureRecognizer) {
-
+        
         let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
         let cameraOrbit = cameraNode
         //camera = SCNCamera()
@@ -245,7 +262,7 @@ class HomeController: UIViewController {
         let changePivot = SCNMatrix4Invert(cameraOrbit!.transform)
         cameraOrbit!.pivot = SCNMatrix4Mult(changePivot, currentPivot)
         cameraOrbit!.transform = SCNMatrix4Identity
-       // let translation = sender.translation(in: sender.view!)
+        // let translation = sender.translation(in: sender.view!)
         
         let pan_x = Float(translation.x)
         let pan_y = Float(-translation.y)
@@ -253,11 +270,11 @@ class HomeController: UIViewController {
         let anglePan = sqrt(pow(pan_x,2)+pow(pan_y,2))*(Float)(Double.pi)/1200  //180.0
         
         var rotationVector = SCNVector4()
-        //rotationVector.x = -pan_y
+        rotationVector.x = pan_y
         rotationVector.y = -pan_x
         rotationVector.z = 0
         rotationVector.w = anglePan
-       // rotContainer.rotation = rotationVector
+        // rotContainer.rotation = rotationVector
         cameraOrbit!.rotation = rotationVector
         
         if(recognizer.state == UIGestureRecognizerState.ended) {
@@ -268,18 +285,14 @@ class HomeController: UIViewController {
         }
         
     }
-  
+    
     //@objc lets a private function be visible in objective c
     @objc private func sceneTapped(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: scnView)
         let hitResults = scnView.hitTest(location, options: nil)
         
-        
-        
-        
-        
         if hitResults.count > 0 {
-           
+            
             //print("HIT")
             let result = hitResults[0] //as! SCNHitTestResult
             let node = result.node
@@ -287,24 +300,24 @@ class HomeController: UIViewController {
             
             
             if(wasClicked){ //wasClicked
-               // print(node.geometry?.firstMaterial?.emission.contents)
+                // print(node.geometry?.firstMaterial?.emission.contents)
                 if(name != "man_skele" && name != "Man_Skin"){
-                wasClicked = false
+                    wasClicked = false
                     node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
                 }
             }else{
                 
                 if(name != "man_skele" && name != "Man_Skin"){
-               
-
-                wasClicked = true;
                     
-                     node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
+                    
+                    wasClicked = true;
+                    
+                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
                 }
             }
             
             if(name == "Man_Skin"){
-               
+                
                 let channel = node.geometry!.firstMaterial!.diffuse.mappingChannel
                 let texcoord = result.textureCoordinates(withMappingChannel: channel)
                 //print(texcoord)
@@ -314,33 +327,35 @@ class HomeController: UIViewController {
                 
                 let fileManager = FileManager.default
                 let bundleURL = Bundle.main.bundleURL
-                let assetURL = bundleURL.appendingPathComponent("hitmaps2.bundle")   //    .URLByAppendingPathComponent("Images.bundle")
+                let assetURL = bundleURL.appendingPathComponent("hitmaps3.bundle")   //    .URLByAppendingPathComponent("Images.bundle")
                 let contents = try! fileManager.contentsOfDirectory(at: assetURL, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
                 
                 let y = 512 - (512 * texcoord.y)
                 let x = (512 * texcoord.x)
                 
                 for url in contents{
-                  
+                    
                     let data = try? Data(contentsOf: url)
+                    
                     let image = UIImage(data: data!)
-
+                    
                     let point = CGPoint(x: x,y: y)
                     let color = getPixelColor(image!, point)
                     
                     var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
                     color.getRed(&r, green: &g, blue: &b, alpha: &a)
-
+                    
                     if color.cgColor.alpha == 1{
-
+                        
+                        
                         //Flips UVS horizontally
                         node.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
                         
                         node.geometry?.firstMaterial?.emission.contents = image
- 
+                        
                     }
                 }
- 
+                
             }
             
             
@@ -378,6 +393,71 @@ class HomeController: UIViewController {
     
     
     
+    private func addMaleSkin(){
+        //add male
+        let manMesh = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "Man_Skin", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor.white,//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        //manMesh.node.geometry?.firstMaterial?.transparency = 0.5
+        
+        manMesh.node.scale = SCNVector3(2.5,2.5,2.5)
+        manMesh.node.name = "Man_Skin"
+        self.scene.rootNode.addChildNode(manMesh.node)
+        
+        manMesh.node.geometry?.firstMaterial = MaterialWrapper(
+            diffuse: UIColor(red: 51/255, green: 153/255, blue: 255/255, alpha: 1), //UIColor.white,
+            roughness: NSNumber(value: 0.3),
+            metalness: "tex.jpg",
+            normal: "tex.jpg"
+            ).material
+        manMesh.node.geometry?.firstMaterial?.transparency = 0.7
+        //manMesh.node.geometry?.firstMaterial?.emission.contents = UIColor(red: 51/255, green: 153/255, blue: 255/255, alpha: 1)
+        
+        self.manMesh = manMesh
+        
+    }
+    
+    
+    
+    private func addMaleSkeleton(){
+        let man_skele = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "man_skele", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor.white,//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "skin.png",
+                normal: "skin.png"
+                
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        man_skele.node.scale = SCNVector3(2.5,2.5,2.5)
+        man_skele.node.name = "man_skele"
+        
+        let skelemat = SCNMaterial()
+        skelemat.diffuse.contents = UIColor.white
+        let materials = man_skele.node.geometry?.materials
+        
+        var materialarraysize = materials?.count ?? 0
+        materialarraysize = Int(materialarraysize)
+        
+        for index in 0...materialarraysize-1{
+            man_skele.node.geometry?.materials[index] = skelemat
+        }
+        self.scene.rootNode.addChildNode(man_skele.node)
+    }
+    
     
     private func addMuscles(){
         
@@ -393,7 +473,7 @@ class HomeController: UIViewController {
             rotation: SCNVector4Make(0, 1, 0,
                                      GLKMathDegreesToRadians(20))
         )
-
+        
         absL.node.scale = SCNVector3(2.5,2.5,2.5)
         self.scene.rootNode.addChildNode(absL.node)
         
@@ -753,10 +833,10 @@ class HomeController: UIViewController {
             rotation: SCNVector4Make(0, 1, 0,
                                      GLKMathDegreesToRadians(20))
         )
-
+        
         deltoidtopl.node.scale = SCNVector3(2.5,2.5,2.5)
         self.scene.rootNode.addChildNode(deltoidtopl.node)
-
+        
         let  deltoidbackl = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "deltoidbackL", ofType: "obj"),
             material: MaterialWrapper(
@@ -1038,7 +1118,7 @@ class HomeController: UIViewController {
         forearmR7.node.scale = SCNVector3(2.5,2.5,2.5)
         self.scene.rootNode.addChildNode(forearmR7.node)
         
-    
+        
         
         
         let  frontshoulderR = ObjectWrapper(
@@ -1819,43 +1899,11 @@ class HomeController: UIViewController {
         upperlegLside.node.name = "upperlegLside"
         self.scene.rootNode.addChildNode(upperlegLside.node)
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
     }
     
     
     
-
+    
     private func addFemale() {
         
         let myMesh = ObjectWrapper(
@@ -1882,7 +1930,3 @@ class HomeController: UIViewController {
         
     }
 }
-
-
-
-

@@ -13,8 +13,6 @@
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
 		384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBD2092BC0D00DBE5E3 /* tex.jpg */; };
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
-		386048BE20A699E500E0F2CD /* hitmaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BD20A699E400E0F2CD /* hitmaps.bundle */; };
-		386048C020A6CB2A00E0F2CD /* hitmaps2.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
 		38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E5209EF5BE00773B0F /* forearmR4.obj */; };
@@ -108,6 +106,7 @@
 		6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */; };
 		6F0465A0209B1EB10066FA14 /* WeightEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */; };
 		6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */; };
+		6F0EFF3E20B18909004AAD2E /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */; };
 		6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705992085DFE100F6265C /* AppDelegate.swift */; };
 		6F1705A12085DFE100F6265C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705A02085DFE100F6265C /* Assets.xcassets */; };
 		6F1705AF2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705AE2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift */; };
@@ -168,8 +167,6 @@
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
 		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
-		386048BD20A699E400E0F2CD /* hitmaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps.bundle; sourceTree = "<group>"; };
-		386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps2.bundle; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
 		38B9E4E5209EF5BE00773B0F /* forearmR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR4.obj; sourceTree = "<group>"; };
@@ -266,6 +263,7 @@
 		6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightEntryCell.swift; sourceTree = "<group>"; };
 		6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = SOURCE_ROOT; };
 		6F1705962085DFE100F6265C /* MPM-Sft-Eng-Proj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MPM-Sft-Eng-Proj.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F1705992085DFE100F6265C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6F1705A02085DFE100F6265C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -471,8 +469,7 @@
 		6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */ = {
 			isa = PBXGroup;
 			children = (
-				386048BF20A6CB2A00E0F2CD /* hitmaps2.bundle */,
-				386048BD20A699E400E0F2CD /* hitmaps.bundle */,
+				6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */,
 				6F26AAAF20974454009A3446 /* MaterialUtils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
 				6F6A008520946E7400A8E5DA /* 3Dobjects */,
@@ -715,6 +712,7 @@
 				38B9E54F209EF5CC00773B0F /* shoulderR2.obj in Resources */,
 				38B9E56C209EF5CC00773B0F /* forearm3L.obj in Resources */,
 				38B9E55F209EF5CC00773B0F /* outerShoulder_R.obj in Resources */,
+				6F0EFF3E20B18909004AAD2E /* hitmaps3.bundle in Resources */,
 				38B9E562209EF5CC00773B0F /* thighR3.obj in Resources */,
 				38B9E561209EF5CC00773B0F /* lowerback_L.obj in Resources */,
 				38B9E546209EF5CC00773B0F /* forarmR.obj in Resources */,
@@ -742,7 +740,6 @@
 				38B9E557209EF5CC00773B0F /* forearm6L.obj in Resources */,
 				384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */,
 				38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */,
-				386048C020A6CB2A00E0F2CD /* hitmaps2.bundle in Resources */,
 				38B9E575209EF5CC00773B0F /* forearm7L.obj in Resources */,
 				38B9E589209EF5CC00773B0F /* innerShoulder_L.obj in Resources */,
 				38B9E57F209EF5CC00773B0F /* biceptR.obj in Resources */,
@@ -767,7 +764,6 @@
 				38B9E550209EF5CC00773B0F /* upperleg2InnerL.obj in Resources */,
 				38B9E590209EF5CC00773B0F /* forearmR2.obj in Resources */,
 				38B9E54D209EF5CC00773B0F /* triceptR2.obj in Resources */,
-				386048BE20A699E500E0F2CD /* hitmaps.bundle in Resources */,
 				38B9E551209EF5CC00773B0F /* upperlegBackL.obj in Resources */,
 				38B9E556209EF5CC00773B0F /* biceptR3.obj in Resources */,
 				38B9E545209EF5CC00773B0F /* forearm5L.obj in Resources */,
