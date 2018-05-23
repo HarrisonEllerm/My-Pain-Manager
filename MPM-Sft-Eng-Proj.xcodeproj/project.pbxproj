@@ -109,6 +109,9 @@
 		6F0EFF3E20B18909004AAD2E /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */; };
 		6F0EFF4220B18F4A004AAD2E /* skele8.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F0EFF4120B18F4A004AAD2E /* skele8.mp4 */; };
 		6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF4420B19274004AAD2E /* AlertDialog.swift */; };
+		6F0EFF6F20B5710F004AAD2E /* OnBoardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF6E20B5710F004AAD2E /* OnBoardController.swift */; };
+		6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF7020B57134004AAD2E /* PageCell.swift */; };
+		6F0EFF7320B57142004AAD2E /* PageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF7220B57142004AAD2E /* PageModel.swift */; };
 		6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705992085DFE100F6265C /* AppDelegate.swift */; };
 		6F1705A12085DFE100F6265C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705A02085DFE100F6265C /* Assets.xcassets */; };
 		6F1705AF2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705AE2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift */; };
@@ -267,6 +270,9 @@
 		6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = SOURCE_ROOT; };
 		6F0EFF4120B18F4A004AAD2E /* skele8.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = skele8.mp4; sourceTree = "<group>"; };
 		6F0EFF4420B19274004AAD2E /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
+		6F0EFF6E20B5710F004AAD2E /* OnBoardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnBoardController.swift; sourceTree = "<group>"; };
+		6F0EFF7020B57134004AAD2E /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
+		6F0EFF7220B57142004AAD2E /* PageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageModel.swift; sourceTree = "<group>"; };
 		6F1705962085DFE100F6265C /* MPM-Sft-Eng-Proj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MPM-Sft-Eng-Proj.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F1705992085DFE100F6265C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6F1705A02085DFE100F6265C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -520,6 +526,7 @@
 				6F1705C92085E7D300F6265C /* HomeController.swift */,
 				6F1705CB2085E7F400F6265C /* MainTabBarController.swift */,
 				6F1705CD2085E81E00F6265C /* SignUserUpController.swift */,
+				6F0EFF6E20B5710F004AAD2E /* OnBoardController.swift */,
 				6F1705CF2085E84700F6265C /* UserController.swift */,
 				6F1705D12085E8B600F6265C /* WelcomeController.swift */,
 				38324DF0208B14FC005605B9 /* SummaryController.swift */,
@@ -533,6 +540,7 @@
 			isa = PBXGroup;
 			children = (
 				6F1705D32085E8D300F6265C /* Extensions.swift */,
+				6F0EFF7220B57142004AAD2E /* PageModel.swift */,
 				6F1705D52085E8EF00F6265C /* Service.swift */,
 				6F1705D72085E92000F6265C /* UIWindowExtension.swift */,
 				6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */,
@@ -553,6 +561,7 @@
 			children = (
 				6F26AA972095952E009A3446 /* NoButtonCell.swift */,
 				6F26AA9920959580009A3446 /* GenericHeader.swift */,
+				6F0EFF7020B57134004AAD2E /* PageCell.swift */,
 				6F26AA9B20959707009A3446 /* ButtonCell.swift */,
 				6F26AABA2097D06D009A3446 /* DateEntryCell.swift */,
 				6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */,
@@ -1025,9 +1034,11 @@
 				6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */,
 				6F1705D82085E92000F6265C /* UIWindowExtension.swift in Sources */,
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
+				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
 				6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */,
 				6F26AAB3209744D9009A3446 /* MeshLoader.swift in Sources */,
+				6F0EFF6F20B5710F004AAD2E /* OnBoardController.swift in Sources */,
 				6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */,
 				6F0465A0209B1EB10066FA14 /* WeightEntryCell.swift in Sources */,
 				6F26AA982095952E009A3446 /* NoButtonCell.swift in Sources */,
@@ -1039,6 +1050,7 @@
 				6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */,
 				6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */,
 				6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */,
+				6F0EFF7320B57142004AAD2E /* PageModel.swift in Sources */,
 				6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */,
 				6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */,
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,

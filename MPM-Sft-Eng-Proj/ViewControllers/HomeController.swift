@@ -1096,6 +1096,7 @@ class HomeController: UIViewController {
             position: SCNVector3Make(0, -8, 0),
             rotation: SCNVector4Make(0, 1, 0,
                                      GLKMathDegreesToRadians(20))
+            
         )
         
         forearmR6.node.scale = SCNVector3(2.5,2.5,2.5)

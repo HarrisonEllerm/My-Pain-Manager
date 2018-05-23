@@ -54,14 +54,12 @@ class WelcomeController: UIViewController {
         button.layer.cornerRadius = Service.buttonCornerRadius
         button.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
         return button
-        
     }()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-      
+  
         loginButton.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
         dontHaveAccountButton.backgroundColor = UIColor.clear
         
@@ -71,13 +69,11 @@ class WelcomeController: UIViewController {
         videoPlayer?.isMuted = true
         
         let playerLayer = AVPlayerLayer(player: videoPlayer)
+        setAVPlayerDontCancelBackgroundAudio()
         playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         playerLayer.zPosition = -1
-        
         playerLayer.frame = view.frame
-        
         view.layer.addSublayer(playerLayer)
-        
         videoPlayer?.play()
         var isPlayingInNegative = false
         // add observer to watch for video end in order to loop video
@@ -107,6 +103,20 @@ class WelcomeController: UIViewController {
         view.addSubview(loginButton)
         anchorLoginButton(loginButton)
         
+    }
+    
+    //Solution adapted from https://stackoverflow.com/questions/31671029/prevent-avplayer-from-canceling-background-audio
+    fileprivate func setAVPlayerDontCancelBackgroundAudio() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)
+        } catch let err as NSError {
+            print(err)
+        }
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch let err as NSError {
+            print(err)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

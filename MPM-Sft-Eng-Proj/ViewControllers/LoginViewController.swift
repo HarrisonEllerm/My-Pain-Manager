@@ -188,7 +188,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         navigationBarAppearnce.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
         self.navigationController?.navigationBar.isHidden = false
-        self.navigationController!.navigationBar.topItem!.title = ""
+        self.navigationController!.navigationBar.topItem!.title = "Back"
     }
     
     fileprivate func setUpViews() {

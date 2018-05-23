@@ -70,14 +70,14 @@ class AlertDialog: UIViewController, UITextViewDelegate {
         bodyArea.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         starView.rating = 0;
+        
         starView.didFinishTouchingCosmos = { rating in
             self.painRating = rating
-            
-            
             guard let rate = self.painRating else { return }
             print("Rate: \(rate)")
             print("Text: \(self.textView.text)")
         }
+        
         view.addSubview(starView)
         starView.topAnchor.constraint(equalTo: bodyArea.bottomAnchor, constant: 20).isActive = true
         starView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true

@@ -28,10 +28,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         //Client ID for Google Sign In
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
-        // Override point for customization after application launch.
+        //Override point for customization after application launch.
         window = UIWindow()
-        window?.makeKeyAndVisible()
-        handleLogin(withWindow: window)
+       //Check if first time opening, if so onboard
+        let defaults = UserDefaults.standard
+        if let _ = defaults.string(forKey: "isAppAlreadyLaunchedOnce"){
+            print("App already launched")
+            handleLogin(withWindow: window)
+    
+        } else {
+            defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
+            print("App launched first time")
+            let onBoard = OnBoardController()
+            let onBoardConrollerNav = UINavigationController(rootViewController: onBoard)
+            window?.rootViewController = onBoardConrollerNav
+            window?.makeKeyAndVisible()
+        }
         return true
     }
     
