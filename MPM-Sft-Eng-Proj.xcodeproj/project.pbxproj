@@ -13,6 +13,7 @@
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
 		384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBD2092BC0D00DBE5E3 /* tex.jpg */; };
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
+		38863BFC20B77E0200427F4A /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38863BFB20B77E0200427F4A /* hitmaps3.bundle */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
 		38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E5209EF5BE00773B0F /* forearmR4.obj */; };
@@ -106,7 +107,6 @@
 		6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */; };
 		6F0465A0209B1EB10066FA14 /* WeightEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */; };
 		6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */; };
-		6F0EFF3E20B18909004AAD2E /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */; };
 		6F0EFF4220B18F4A004AAD2E /* skele8.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6F0EFF4120B18F4A004AAD2E /* skele8.mp4 */; };
 		6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF4420B19274004AAD2E /* AlertDialog.swift */; };
 		6F0EFF6F20B5710F004AAD2E /* OnBoardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0EFF6E20B5710F004AAD2E /* OnBoardController.swift */; };
@@ -171,6 +171,7 @@
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
 		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
+		38863BFB20B77E0200427F4A /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
 		38B9E4E5209EF5BE00773B0F /* forearmR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR4.obj; sourceTree = "<group>"; };
@@ -267,8 +268,7 @@
 		6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightEntryCell.swift; sourceTree = "<group>"; };
 		6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightEntryCellDelegate.swift; sourceTree = "<group>"; };
-		6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = SOURCE_ROOT; };
-		6F0EFF4120B18F4A004AAD2E /* skele8.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = skele8.mp4; sourceTree = "<group>"; };
+		6F0EFF4120B18F4A004AAD2E /* skele8.mp4 */ = {isa = PBXFileReference; lastKnownFileType = text; path = skele8.mp4; sourceTree = "<group>"; };
 		6F0EFF4420B19274004AAD2E /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		6F0EFF6E20B5710F004AAD2E /* OnBoardController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnBoardController.swift; sourceTree = "<group>"; };
 		6F0EFF7020B57134004AAD2E /* PageCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageCell.swift; sourceTree = "<group>"; };
@@ -463,6 +463,7 @@
 		6F17058D2085DFE100F6265C = {
 			isa = PBXGroup;
 			children = (
+				38863BFB20B77E0200427F4A /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
 				6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */,
@@ -486,7 +487,6 @@
 			isa = PBXGroup;
 			children = (
 				6F0EFF4320B191D2004AAD2E /* CustomDialogs */,
-				6F0EFF3D20B18909004AAD2E /* hitmaps3.bundle */,
 				6F26AAAF20974454009A3446 /* MaterialUtils */,
 				6F26AA96209594EB009A3446 /* Custom TableCells */,
 				6F6A008520946E7400A8E5DA /* 3D objects */,
@@ -732,7 +732,6 @@
 				38B9E54F209EF5CC00773B0F /* shoulderR2.obj in Resources */,
 				38B9E56C209EF5CC00773B0F /* forearm3L.obj in Resources */,
 				38B9E55F209EF5CC00773B0F /* outerShoulder_R.obj in Resources */,
-				6F0EFF3E20B18909004AAD2E /* hitmaps3.bundle in Resources */,
 				38B9E562209EF5CC00773B0F /* thighR3.obj in Resources */,
 				38B9E561209EF5CC00773B0F /* lowerback_L.obj in Resources */,
 				38B9E546209EF5CC00773B0F /* forarmR.obj in Resources */,
@@ -742,6 +741,7 @@
 				6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */,
 				38B9E58C209EF5CC00773B0F /* thighR_6.obj in Resources */,
 				38B9E56A209EF5CC00773B0F /* forearm4L.obj in Resources */,
+				38863BFC20B77E0200427F4A /* hitmaps3.bundle in Resources */,
 				38B9E54E209EF5CC00773B0F /* upperbum_L.obj in Resources */,
 				38B9E559209EF5CC00773B0F /* Chest_L.obj in Resources */,
 				38B9E56D209EF5CC00773B0F /* triceptsL.obj in Resources */,

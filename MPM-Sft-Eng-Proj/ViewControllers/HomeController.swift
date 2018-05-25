@@ -24,7 +24,7 @@ class HomeController: UIViewController {
     var hasLoaded = false
     let updateQueue = DispatchQueue(label: "updateQueue")
     weak var activityIndicator: UIActivityIndicatorView?
-    
+    var previousLocation = SCNVector3Make(0,0,0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,13 +87,17 @@ class HomeController: UIViewController {
         tapRecognizer.addTarget(self, action: #selector(self.sceneTapped))//"sceneTapped:")
         
         let panRecogniser = UIPanGestureRecognizer()
-        panRecogniser.addTarget(self, action: #selector(self.scenePanned))
+        panRecogniser.addTarget(self, action: #selector(self.scenePannedOneFinger))
+        
+        let panRecogniser2 = UIPanGestureRecognizer()
+        panRecogniser2.addTarget(self, action: #selector(self.scenePannedTwoFingers))
+        
         
         let pinchRecogniser = UIPinchGestureRecognizer()
         pinchRecogniser.addTarget(self, action: #selector(self.sceneZoom))
         
         
-        self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,pinchRecogniser]
+        self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,panRecogniser2,pinchRecogniser]
     }
     
     
@@ -252,39 +256,92 @@ class HomeController: UIViewController {
     
     // Allows the user to rotate the camera around the object
     //Adapted from stack overflow.
-    @objc private func scenePanned(recognizer: UIPanGestureRecognizer) {
-        
-        let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
-        let cameraOrbit = cameraNode
-        //camera = SCNCamera()
-        
-        let currentPivot = cameraOrbit!.pivot
-        let changePivot = SCNMatrix4Invert(cameraOrbit!.transform)
-        cameraOrbit!.pivot = SCNMatrix4Mult(changePivot, currentPivot)
-        cameraOrbit!.transform = SCNMatrix4Identity
-        // let translation = sender.translation(in: sender.view!)
-        
-        let pan_x = Float(translation.x)
-        let pan_y = Float(-translation.y)
-        
-        let anglePan = sqrt(pow(pan_x,2)+pow(pan_y,2))*(Float)(Double.pi)/1200  //180.0
-        
-        var rotationVector = SCNVector4()
-        //rotationVector.x = pan_y
-        rotationVector.y = -pan_x
-        rotationVector.z = 0
-        rotationVector.w = anglePan
-        // rotContainer.rotation = rotationVector
-        cameraOrbit!.rotation = rotationVector
-        
-        if(recognizer.state == UIGestureRecognizerState.ended) {
+    @objc private func scenePannedOneFinger(recognizer: UIPanGestureRecognizer) {
+        recognizer.maximumNumberOfTouches = 1
+       
+        if(recognizer.numberOfTouches == 1){
+            let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
+            let cameraOrbit = cameraNode
+            //camera = SCNCamera()
+            
             let currentPivot = cameraOrbit!.pivot
             let changePivot = SCNMatrix4Invert(cameraOrbit!.transform)
             cameraOrbit!.pivot = SCNMatrix4Mult(changePivot, currentPivot)
             cameraOrbit!.transform = SCNMatrix4Identity
+            //translation = sender.translation(in: sender.view!)//panning
+            
+            let pan_x = Float(translation.x)
+            let pan_y = Float(-translation.y)
+            
+            let anglePan = sqrt(pow(pan_x,2)+pow(pan_y,2))*(Float)(Double.pi)/1200  //180.0
+            
+            var rotationVector = SCNVector4()
+            //rotationVector.x = pan_y
+            rotationVector.y = -pan_x
+            rotationVector.z = 0
+            rotationVector.w = anglePan
+            // rotContainer.rotation = rotationVector
+            cameraOrbit!.rotation = rotationVector
+            
+            if(recognizer.state == UIGestureRecognizerState.ended) {
+                let currentPivot = cameraOrbit!.pivot
+                let changePivot = SCNMatrix4Invert(cameraOrbit!.transform)
+                cameraOrbit!.pivot = SCNMatrix4Mult(changePivot, currentPivot)
+                cameraOrbit!.transform = SCNMatrix4Identity
+            }
+        }
+    }
+    
+    //Allows the user to pan with two finger touch
+    @objc private func scenePannedTwoFingers(recognizer: UIPanGestureRecognizer) {
+        recognizer.minimumNumberOfTouches = 2
+        
+        if(recognizer.numberOfTouches >= 2){
+            let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
+            let cameraOrbit = cameraNode
+        
+            let constant: Float = 30.0
+            var translateX = Float(translation.y)*sin(.pi/4.0)/cos(.pi/3.0)-Float(translation.x)*cos(.pi/4.0)
+            var translateY = Float(translation.y)*cos(.pi/4.0)/cos(.pi/3.0)+Float(translation.x)*sin(.pi/4.0)
+            translateX = translateX / constant
+            translateY = translateY / constant
+        
+       
+        
+        
+            //if recognizer.state == UIGestureRecognizerState.changed{
+                //previousLocation = cameraOrbit!.position
+            //}
+          //  if recognizer.state == UIGestureRecognizerState.ended{
+                //cameraOrbit!.position = SCNVector3Make((previousLocation.x + translateX), (previousLocation.y + translateY), (previousLocation.z))
+           // }
         }
         
+//        switch recognizer.state {
+//
+//        case .began:
+//            previousLocation = cameraOrbit!.position
+//            break;
+//        case .changed:
+//            cameraNode?.position = SCNVector3Make((previousLocation.x + translateX), (previousLocation.y + translateY), (previousLocation.z))
+//            break;
+//        default:
+//            break;
+//        }
+
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     //@objc lets a private function be visible in objective c
     @objc private func sceneTapped(recognizer: UITapGestureRecognizer) {
@@ -299,10 +356,15 @@ class HomeController: UIViewController {
             let name = node.name
             
             
-            if(wasClicked){ //wasClicked
+            //Model is glowing when clicked and should no longer cast shadows.
+            if(node.castsShadow){ //wasClicked
                 // print(node.geometry?.firstMaterial?.emission.contents)
                 if(name != "man_skele" && name != "Man_Skin"){
-                    wasClicked = false
+                    node.castsShadow = false
+                    //node.canBecomeFocused = false
+                   
+                    
+                    print(node.name!)
                     node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
                 }
             }else{
@@ -310,8 +372,8 @@ class HomeController: UIViewController {
                 if(name != "man_skele" && name != "Man_Skin"){
                     
                     
-                    wasClicked = true;
-                    
+                    node.castsShadow = true;
+                   //
                     node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
                 }
             }
@@ -459,6 +521,10 @@ class HomeController: UIViewController {
     }
     
     
+    
+    
+    //Function that imports all the muscles. The reason this is not in a for loop is so we have
+    //individual control over each object as we import it.
     private func addMuscles(){
         
         let absL = ObjectWrapper(
@@ -475,6 +541,7 @@ class HomeController: UIViewController {
         )
         
         absL.node.scale = SCNVector3(2.5,2.5,2.5)
+        absL.node.name = "Rectus abdominus right"
         self.scene.rootNode.addChildNode(absL.node)
         
         
@@ -493,6 +560,7 @@ class HomeController: UIViewController {
         )
         
         absR.node.scale = SCNVector3(2.5,2.5,2.5)
+        absR.node.name = "Rectus abdominus left"
         self.scene.rootNode.addChildNode(absR.node)
         
         let  bicept2L = ObjectWrapper(
@@ -509,6 +577,7 @@ class HomeController: UIViewController {
         )
         
         bicept2L .node.scale = SCNVector3(2.5,2.5,2.5)
+        bicept2L.node.name = "bicept2L"
         self.scene.rootNode.addChildNode(bicept2L.node)
         
         let  biceptR = ObjectWrapper(
@@ -525,6 +594,7 @@ class HomeController: UIViewController {
         )
         
         biceptR.node.scale = SCNVector3(2.5,2.5,2.5)
+        biceptR.node.name = "biceptR"
         self.scene.rootNode.addChildNode(biceptR.node)
         
         let  biceptR2 = ObjectWrapper(
@@ -541,6 +611,7 @@ class HomeController: UIViewController {
         )
         
         biceptR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        biceptR2.node.name = "biceptR2"
         self.scene.rootNode.addChildNode(biceptR2.node)
         
         let  biceptR3 = ObjectWrapper(
@@ -557,6 +628,7 @@ class HomeController: UIViewController {
         )
         
         biceptR3.node.scale = SCNVector3(2.5,2.5,2.5)
+        biceptR3.node.name = "biceptR3"
         self.scene.rootNode.addChildNode(biceptR3.node)
         
         
@@ -574,6 +646,7 @@ class HomeController: UIViewController {
         )
         
         bicepttopL.node.scale = SCNVector3(2.5,2.5,2.5)
+        bicepttopL.node.name = "bicepttopL"
         self.scene.rootNode.addChildNode(bicepttopL.node)
         
         
@@ -591,6 +664,7 @@ class HomeController: UIViewController {
         )
         
         bumL.node.scale = SCNVector3(2.5,2.5,2.5)
+        bumL.node.name = "Gluteus maximus right"
         self.scene.rootNode.addChildNode(bumL.node)
         
         let  bumR = ObjectWrapper(
@@ -607,6 +681,7 @@ class HomeController: UIViewController {
         )
         
         bumR.node.scale = SCNVector3(2.5,2.5,2.5)
+        bumR.node.name = "Gluteus maximus left"
         self.scene.rootNode.addChildNode(bumR.node)
         
         let  calfL = ObjectWrapper(
@@ -623,6 +698,7 @@ class HomeController: UIViewController {
         )
         
         calfL.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL.node.name = "Gastrocnemius medial right"
         self.scene.rootNode.addChildNode(calfL.node)
         
         let  calfL2 = ObjectWrapper(
@@ -639,6 +715,7 @@ class HomeController: UIViewController {
         )
         
         calfL2.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL2.node.name = "Gastrocnemius lateral right"
         self.scene.rootNode.addChildNode(calfL2.node)
         
         let  calfL3 = ObjectWrapper(
@@ -655,6 +732,7 @@ class HomeController: UIViewController {
         )
         
         calfL3.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL3.node.name = "soleus right"
         self.scene.rootNode.addChildNode(calfL3.node)
         
         let  calfL4 = ObjectWrapper(
@@ -671,6 +749,7 @@ class HomeController: UIViewController {
         )
         
         calfL4.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL4.node.name = "Peroneus longus right"
         self.scene.rootNode.addChildNode(calfL4.node)
         
         
@@ -688,6 +767,7 @@ class HomeController: UIViewController {
         )
         
         calfL5.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL5.node.name = "Tibialis anterior muscle right"
         self.scene.rootNode.addChildNode(calfL5.node)
         
         
@@ -707,6 +787,7 @@ class HomeController: UIViewController {
         )
         
         calfL6.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfL6.node.name = "Medial surface of the tibia right"
         self.scene.rootNode.addChildNode(calfL6.node)
         
         let  calfR = ObjectWrapper(
@@ -723,6 +804,7 @@ class HomeController: UIViewController {
         )
         
         calfR.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR.node.name = "Gastrocnemius lateral left"
         self.scene.rootNode.addChildNode(calfR.node)
         
         let  calfR2 = ObjectWrapper(
@@ -739,6 +821,7 @@ class HomeController: UIViewController {
         )
         
         calfR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR2.node.name = "Gastrocnemius medial left"
         self.scene.rootNode.addChildNode(calfR2.node)
         
         let  calfR3 = ObjectWrapper(
@@ -755,6 +838,7 @@ class HomeController: UIViewController {
         )
         
         calfR3.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR3.node.name = "Soleus left"
         self.scene.rootNode.addChildNode(calfR3.node)
         
         let  calfR4 = ObjectWrapper(
@@ -771,6 +855,7 @@ class HomeController: UIViewController {
         )
         
         calfR4.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR4.node.name = "Peroneus longus left"
         self.scene.rootNode.addChildNode(calfR4.node)
         
         let  calfR6 = ObjectWrapper(
@@ -787,8 +872,28 @@ class HomeController: UIViewController {
         )
         
         calfR6.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR6.node.name = "Medial surface of the tibia left"
         self.scene.rootNode.addChildNode(calfR6.node)
         
+        
+        
+        let  calfR5 = ObjectWrapper(
+            mesh: MeshLoader.loadMeshWith(name: "calfR5", ofType: "obj"),
+            material: MaterialWrapper(
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                roughness: NSNumber(value: 0.3),
+                metalness: "tex.png",
+                normal: "tex.png"
+            ),
+            position: SCNVector3Make(0, -8, 0),
+            rotation: SCNVector4Make(0, 1, 0,
+                                     GLKMathDegreesToRadians(20))
+        )
+        
+        calfR5.node.scale = SCNVector3(2.5,2.5,2.5)
+        calfR5.node.name = "Tibialis anterior muscle left"
+        self.scene.rootNode.addChildNode(calfR5.node)
+     
         let  chestL = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "Chest_L", ofType: "obj"),
             material: MaterialWrapper(
@@ -803,6 +908,7 @@ class HomeController: UIViewController {
         )
         
         chestL.node.scale = SCNVector3(2.5,2.5,2.5)
+        chestL.node.name = "Pectoralis major right"
         self.scene.rootNode.addChildNode(chestL.node)
         
         let  chestR = ObjectWrapper(
@@ -819,6 +925,7 @@ class HomeController: UIViewController {
         )
         
         chestR.node.scale = SCNVector3(2.5,2.5,2.5)
+        chestR.node.name = "Pectoralis major left"
         self.scene.rootNode.addChildNode(chestR.node)
         
         let  deltoidtopl = ObjectWrapper(
@@ -835,6 +942,7 @@ class HomeController: UIViewController {
         )
         
         deltoidtopl.node.scale = SCNVector3(2.5,2.5,2.5)
+        deltoidtopl.node.name = "deltoidtopl"
         self.scene.rootNode.addChildNode(deltoidtopl.node)
         
         let  deltoidbackl = ObjectWrapper(
@@ -851,6 +959,7 @@ class HomeController: UIViewController {
         )
         
         deltoidbackl.node.scale = SCNVector3(2.5,2.5,2.5)
+        deltoidbackl.node.name = "deltoidbackl"
         self.scene.rootNode.addChildNode(deltoidbackl.node)
         
         let  deltoidfront = ObjectWrapper(
@@ -867,6 +976,7 @@ class HomeController: UIViewController {
         )
         
         deltoidfront.node.scale = SCNVector3(2.5,2.5,2.5)
+        deltoidfront.node.name = "deltoidFront"
         self.scene.rootNode.addChildNode(deltoidfront.node)
         
         let  forearmR = ObjectWrapper(
@@ -883,6 +993,7 @@ class HomeController: UIViewController {
         )
         
         forearmR.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearmR.node.name = "forearmR"
         self.scene.rootNode.addChildNode(forearmR.node)
         
         
@@ -900,6 +1011,7 @@ class HomeController: UIViewController {
         )
         
         forearm1L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm1L.node.name = "forearm1L"
         self.scene.rootNode.addChildNode(forearm1L.node)
         
         
@@ -918,6 +1030,7 @@ class HomeController: UIViewController {
         )
         
         forearm2L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm2L.node.name = "forearm2L"
         self.scene.rootNode.addChildNode(forearm2L.node)
         
         
@@ -936,6 +1049,7 @@ class HomeController: UIViewController {
         )
         
         forearm3L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm3L.node.name = "forearm3L"
         self.scene.rootNode.addChildNode(forearm3L.node)
         
         
@@ -956,6 +1070,7 @@ class HomeController: UIViewController {
         )
         
         forearm4L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm4L.node.name = "forearm4L"
         self.scene.rootNode.addChildNode(forearm4L.node)
         
         
@@ -975,6 +1090,7 @@ class HomeController: UIViewController {
         )
         
         forearm5L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm5L.node.name = "forearm5L"
         self.scene.rootNode.addChildNode(forearm5L.node)
         
         
@@ -994,6 +1110,7 @@ class HomeController: UIViewController {
         )
         
         forearm6L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm6L.node.name = "forearm6L"
         self.scene.rootNode.addChildNode(forearm6L.node)
         
         
@@ -1013,6 +1130,7 @@ class HomeController: UIViewController {
         )
         
         forearm7L.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearm7L.node.name = "forearm7L"
         self.scene.rootNode.addChildNode(forearm7L.node)
         
         
@@ -1032,6 +1150,7 @@ class HomeController: UIViewController {
         )
         
         forearmR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearmR2.node.name = "forearmR2"
         self.scene.rootNode.addChildNode(forearmR2.node)
         
         
@@ -1049,6 +1168,7 @@ class HomeController: UIViewController {
         )
         
         forearmR3.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearmR3.node.name = "forearmR3"
         self.scene.rootNode.addChildNode(forearmR3.node)
         
         
@@ -1066,7 +1186,8 @@ class HomeController: UIViewController {
         )
         
         forearmR4.node.scale = SCNVector3(2.5,2.5,2.5)
-        self.scene.rootNode.addChildNode(forearmR2.node)
+        forearmR4.node.name = "forearmR5"
+        self.scene.rootNode.addChildNode(forearmR4.node)
         
         
         let  forearmR5 = ObjectWrapper(
@@ -1083,7 +1204,8 @@ class HomeController: UIViewController {
         )
         
         forearmR5.node.scale = SCNVector3(2.5,2.5,2.5)
-        self.scene.rootNode.addChildNode(forearmR2.node)
+        forearmR5.node.name = "forearmR5"
+        self.scene.rootNode.addChildNode(forearmR5.node)
         
         let  forearmR6 = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "forearmR6", ofType: "obj"),
@@ -1100,6 +1222,7 @@ class HomeController: UIViewController {
         )
         
         forearmR6.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearmR6.node.name = "forearmR6"
         self.scene.rootNode.addChildNode(forearmR6.node)
         
         
@@ -1117,6 +1240,7 @@ class HomeController: UIViewController {
         )
         
         forearmR7.node.scale = SCNVector3(2.5,2.5,2.5)
+        forearmR7.node.name = "forearmR7"
         self.scene.rootNode.addChildNode(forearmR7.node)
         
         
@@ -1136,6 +1260,7 @@ class HomeController: UIViewController {
         )
         
         frontshoulderR.node.scale = SCNVector3(2.5,2.5,2.5)
+        frontshoulderR.node.name = "frontshoulderR"
         self.scene.rootNode.addChildNode(frontshoulderR.node)
         
         
@@ -1153,6 +1278,7 @@ class HomeController: UIViewController {
         )
         
         hipL.node.scale = SCNVector3(2.5,2.5,2.5)
+        hipL.node.name = "Tensor fasciae latae right"
         self.scene.rootNode.addChildNode(hipL.node)
         
         
@@ -1170,6 +1296,7 @@ class HomeController: UIViewController {
         )
         
         hipR.node.scale = SCNVector3(2.5,2.5,2.5)
+        hipR.node.name = "Tensor fasciae latae left"
         self.scene.rootNode.addChildNode(hipR.node)
         
         
@@ -1188,6 +1315,7 @@ class HomeController: UIViewController {
         )
         
         innerShoulder_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        innerShoulder_L.node.name = "Teres minor right"
         self.scene.rootNode.addChildNode(innerShoulder_L.node)
         
         let innerShoulder_R = ObjectWrapper(
@@ -1204,6 +1332,7 @@ class HomeController: UIViewController {
         )
         
         innerShoulder_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        innerShoulder_R.node.name = "Teres minor left"
         self.scene.rootNode.addChildNode(innerShoulder_R.node)
         
         let LegThighL = ObjectWrapper(
@@ -1220,6 +1349,7 @@ class HomeController: UIViewController {
         )
         
         LegThighL.node.scale = SCNVector3(2.5,2.5,2.5)
+        LegThighL.node.name = "Vastus lateralis right"
         self.scene.rootNode.addChildNode(LegThighL.node)
         
         let Lowerback_L = ObjectWrapper(
@@ -1236,6 +1366,7 @@ class HomeController: UIViewController {
         )
         
         Lowerback_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        Lowerback_L.node.name = "Iliocostalis Lumborum right"
         self.scene.rootNode.addChildNode(Lowerback_L.node)
         
         
@@ -1253,6 +1384,7 @@ class HomeController: UIViewController {
         )
         
         Lowerback_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        Lowerback_R.node.name = "Iliocostalis Lumborum left"
         self.scene.rootNode.addChildNode(Lowerback_R.node)
         
         
@@ -1271,6 +1403,7 @@ class HomeController: UIViewController {
         )
         
         midback_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        midback_L.node.name = "Latissimus dorsi right"
         self.scene.rootNode.addChildNode(midback_L.node)
         
         
@@ -1288,6 +1421,7 @@ class HomeController: UIViewController {
         )
         
         midback_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        midback_R.node.name = "Latissimus dorsi left"
         self.scene.rootNode.addChildNode(midback_R.node)
         
         let neck_L = ObjectWrapper(
@@ -1304,6 +1438,7 @@ class HomeController: UIViewController {
         )
         
         neck_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        neck_L.node.name = "splenius capitis right"
         self.scene.rootNode.addChildNode(neck_L.node)
         
         let neck_R = ObjectWrapper(
@@ -1320,6 +1455,7 @@ class HomeController: UIViewController {
         )
         
         neck_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        neck_R.node.name = "splenius capitis left"
         self.scene.rootNode.addChildNode(neck_R.node)
         
         
@@ -1338,6 +1474,7 @@ class HomeController: UIViewController {
         )
         
         outershoulder_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        outershoulder_L.node.name = "Teres major right"
         self.scene.rootNode.addChildNode(outershoulder_L.node)
         
         let outershoulder_R = ObjectWrapper(
@@ -1354,6 +1491,7 @@ class HomeController: UIViewController {
         )
         
         outershoulder_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        outershoulder_R.node.name = "Teres major left"
         self.scene.rootNode.addChildNode(outershoulder_R.node)
         
         let ribmuscles_L = ObjectWrapper(
@@ -1370,6 +1508,7 @@ class HomeController: UIViewController {
         )
         
         ribmuscles_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        ribmuscles_L.node.name = "External intercostals right"
         self.scene.rootNode.addChildNode(ribmuscles_L.node)
         
         let ribmuscles_R = ObjectWrapper(
@@ -1386,6 +1525,7 @@ class HomeController: UIViewController {
         )
         
         ribmuscles_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        ribmuscles_R.node.name = "External intercostals left"
         self.scene.rootNode.addChildNode(ribmuscles_R.node)
         
         let shoulderR = ObjectWrapper(
@@ -1402,6 +1542,7 @@ class HomeController: UIViewController {
         )
         
         shoulderR.node.scale = SCNVector3(2.5,2.5,2.5)
+        shoulderR.node.name = "shoulderR"
         self.scene.rootNode.addChildNode(shoulderR.node)
         
         
@@ -1419,6 +1560,7 @@ class HomeController: UIViewController {
         )
         
         shoulderR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        shoulderR2.node.name = "shoulderR2"
         self.scene.rootNode.addChildNode(shoulderR2.node)
         
         
@@ -1436,6 +1578,7 @@ class HomeController: UIViewController {
         )
         
         thigh_L3.node.scale = SCNVector3(2.5,2.5,2.5)
+        thigh_L3.node.name = "Vastus medialis right"
         self.scene.rootNode.addChildNode(thigh_L3.node)
         
         
@@ -1454,6 +1597,7 @@ class HomeController: UIViewController {
         )
         
         thighR_5.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR_5.node.name = "Semitendinosus left"
         self.scene.rootNode.addChildNode(thighR_5.node)
         
         
@@ -1471,6 +1615,7 @@ class HomeController: UIViewController {
         )
         
         thighR_6.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR_6.node.name = "Vastus lateralis left"
         self.scene.rootNode.addChildNode(thighR_6.node)
         
         
@@ -1488,6 +1633,7 @@ class HomeController: UIViewController {
         )
         
         thighR_7.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR_7.node.name = "Vastus medialis left"
         self.scene.rootNode.addChildNode(thighR_7.node)
         
         let thighR1 = ObjectWrapper(
@@ -1504,6 +1650,7 @@ class HomeController: UIViewController {
         )
         
         thighR1.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR1.node.name = "Bicep femoris Left"
         self.scene.rootNode.addChildNode(thighR1.node)
         
         let thighR2 = ObjectWrapper(
@@ -1520,6 +1667,7 @@ class HomeController: UIViewController {
         )
         
         thighR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR2.node.name = "Iliotibial tract left"
         self.scene.rootNode.addChildNode(thighR2.node)
         
         let thighR3 = ObjectWrapper(
@@ -1536,6 +1684,7 @@ class HomeController: UIViewController {
         )
         
         thighR3.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR3.node.name = "Rectus Femoris left"
         self.scene.rootNode.addChildNode(thighR3.node)
         
         let thighR4 = ObjectWrapper(
@@ -1552,6 +1701,7 @@ class HomeController: UIViewController {
         )
         
         thighR4.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR4.node.name = "Sartorius left"
         self.scene.rootNode.addChildNode(thighR4.node)
         
         
@@ -1570,12 +1720,13 @@ class HomeController: UIViewController {
         )
         
         thighR5.node.scale = SCNVector3(2.5,2.5,2.5)
+        thighR5.node.name = "Adductor magnus Left"
         self.scene.rootNode.addChildNode(thighR5.node)
         
         let throat_R = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "throat_R", ofType: "obj"),
             material: MaterialWrapper(
-                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),
                 roughness: NSNumber(value: 0.3),
                 metalness: "tex.png",
                 normal: "tex.png"
@@ -1586,12 +1737,13 @@ class HomeController: UIViewController {
         )
         
         throat_R .node.scale = SCNVector3(2.5,2.5,2.5)
+        throat_R.node.name = "Platysma Left"
         self.scene.rootNode.addChildNode(throat_R .node)
         
         let throatL = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "throatL", ofType: "obj"),
             material: MaterialWrapper(
-                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),
                 roughness: NSNumber(value: 0.3),
                 metalness: "tex.png",
                 normal: "tex.png"
@@ -1602,12 +1754,13 @@ class HomeController: UIViewController {
         )
         
         throatL .node.scale = SCNVector3(2.5,2.5,2.5)
+        throatL.node.name = "Platysma right"
         self.scene.rootNode.addChildNode(throatL .node)
         
         let topback_L  = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "topback_L", ofType: "obj"),
             material: MaterialWrapper(
-                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
+                diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),
                 roughness: NSNumber(value: 0.3),
                 metalness: "tex.png",
                 normal: "tex.png"
@@ -1618,6 +1771,7 @@ class HomeController: UIViewController {
         )
         
         topback_L .node.scale = SCNVector3(2.5,2.5,2.5)
+        topback_L.node.name = "Upper trapezius right"//topback_L" //Upper trapezius right
         self.scene.rootNode.addChildNode(topback_L .node)
         
         
@@ -1635,6 +1789,7 @@ class HomeController: UIViewController {
         )
         
         topback_R .node.scale = SCNVector3(2.5,2.5,2.5)
+        topback_R.node.name = "Upper trapezius left"//topback_R" // Upper trapezius left
         self.scene.rootNode.addChildNode(topback_R .node)
         
         
@@ -1654,6 +1809,7 @@ class HomeController: UIViewController {
         )
         
         tricept2L.node.scale = SCNVector3(2.5,2.5,2.5)
+        tricept2L.node.name = "Inner tricept right"//tricept2L" //Inner tricept right
         self.scene.rootNode.addChildNode(tricept2L .node)
         
         
@@ -1672,6 +1828,7 @@ class HomeController: UIViewController {
         )
         
         triceptR.node.scale = SCNVector3(2.5,2.5,2.5)
+        triceptR.node.name = "Tricepts Left"//triceptR" //Tricepts Left
         self.scene.rootNode.addChildNode(triceptR .node)
         
         
@@ -1690,6 +1847,7 @@ class HomeController: UIViewController {
         )
         
         triceptR2.node.scale = SCNVector3(2.5,2.5,2.5)
+        triceptR2.node.name = "Inner Tricepts Left"//triceptR2" //Inner Tricepts Left
         self.scene.rootNode.addChildNode(triceptR2 .node)
         
         
@@ -1707,6 +1865,7 @@ class HomeController: UIViewController {
         )
         
         triceptsL.node.scale = SCNVector3(2.5,2.5,2.5)
+        triceptsL.node.name = "Tricepts right"//"triceptsL" // Tricepts right
         self.scene.rootNode.addChildNode(triceptsL.node)
         
         
@@ -1724,6 +1883,7 @@ class HomeController: UIViewController {
         )
         
         upperarm_outerL.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperarm_outerL.node.name = "brachio radialis right"//"upperarm_outerL" // brachio radialis right
         self.scene.rootNode.addChildNode(upperarm_outerL.node)
         
         
@@ -1743,6 +1903,7 @@ class HomeController: UIViewController {
         )
         
         upperback_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperback_L.node.name = "lower trapezius right"//"upperback_L" // lower trapezius right
         self.scene.rootNode.addChildNode(upperback_L.node)
         
         
@@ -1761,6 +1922,7 @@ class HomeController: UIViewController {
         )
         
         upperback_R.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperback_R.node.name = "lower trapezius left"//"upperback_R" //lower trapezius left
         self.scene.rootNode.addChildNode(upperback_R.node)
         
         
@@ -1778,6 +1940,7 @@ class HomeController: UIViewController {
         )
         
         upperbum_L.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperbum_L.node.name = "Gluteus medius Left"//"upperbum_L" //Gluteus maximus Left
         self.scene.rootNode.addChildNode(upperbum_L.node)
         
         
@@ -1796,6 +1959,7 @@ class HomeController: UIViewController {
         )
         
         upperbumR.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperbumR.node.name = "Gluteus medius right"//"upperbumR" //Gluteus maximus right
         self.scene.rootNode.addChildNode(upperbumR.node)
         
         
@@ -1813,6 +1977,7 @@ class HomeController: UIViewController {
         )
         
         upperleg2Inner.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperleg2Inner.node.name = "Adductor magnus right"//"upperleg2InnerL" //adductor magnus right
         self.scene.rootNode.addChildNode(upperleg2Inner.node)
         
         
@@ -1830,6 +1995,7 @@ class HomeController: UIViewController {
         )
         
         upperlegBack.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperlegBack.node.name = "biceps femoris right"//"upperlegBackL" //biceps femoris, long head Right
         self.scene.rootNode.addChildNode(upperlegBack.node)
         
         
@@ -1847,7 +2013,10 @@ class HomeController: UIViewController {
         )
         
         upperLegbackL2.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperLegbackL2.node.name = "Semitendinosus right"//"upperlegbackL2" //Semitendinosus right
         self.scene.rootNode.addChildNode(upperLegbackL2.node)
+        
+        
         
         let upperLegFrontL = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperLegFrontL", ofType: "obj"),
@@ -1863,7 +2032,9 @@ class HomeController: UIViewController {
         )
         
         upperLegFrontL.node.scale = SCNVector3(2.5,2.5,2.5)
+        upperLegFrontL.node.name = "Rectus femoris right"
         self.scene.rootNode.addChildNode(upperLegFrontL.node)
+        
         
         
         let upperLegFrontL2 = ObjectWrapper(
@@ -1880,8 +2051,13 @@ class HomeController: UIViewController {
         )
         
         upperLegFrontL2.node.scale = SCNVector3(2.5,2.5,2.5)
-        
+        upperLegFrontL2.node.name = "Sartorius right"    //"upperlegFrontL2"
         self.scene.rootNode.addChildNode(upperLegFrontL2.node)
+        
+        
+        
+        
+        
         
         let upperlegLside = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperlegLside", ofType: "obj"),
@@ -1897,7 +2073,7 @@ class HomeController: UIViewController {
         )
         
         upperlegLside.node.scale = SCNVector3(2.5,2.5,2.5)
-        upperlegLside.node.name = "upperlegLside"
+        upperlegLside.node.name = "Iliotibial tract right" //"upperlegLside"
         self.scene.rootNode.addChildNode(upperlegLside.node)
         
     }
@@ -1921,6 +2097,7 @@ class HomeController: UIViewController {
         )
         
         myMesh.node.scale = SCNVector3(10,10,10)
+        
         
         let nodeMaterial = myMesh.node.geometry?.firstMaterial
         nodeMaterial?.emission.contents = UIColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 0.5)
