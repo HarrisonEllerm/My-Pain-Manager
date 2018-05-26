@@ -62,10 +62,8 @@ class HomeController: UIViewController {
             self.scnView = SCNView(frame: self.view.frame)
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
-            //black bakcground
             self.scene.background.contents = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
             
-            // self.scene.background.contents = UIImage(named: "bg.jpg")
             self.scnView.scene = self.scene;
             
             self.addMaleSkin()
@@ -81,7 +79,6 @@ class HomeController: UIViewController {
     }
     
     
-    
     func createTapRecognizer(){
         
         let tapRecognizer = UITapGestureRecognizer()
@@ -92,15 +89,12 @@ class HomeController: UIViewController {
         let panRecogniser = UIPanGestureRecognizer()
         panRecogniser.addTarget(self, action: #selector(self.scenePannedOneFinger))
         
-        let panRecogniser2 = UIPanGestureRecognizer()
-        panRecogniser2.addTarget(self, action: #selector(self.scenePannedTwoFingers))
-        
-        
+
         let pinchRecogniser = UIPinchGestureRecognizer()
         pinchRecogniser.addTarget(self, action: #selector(self.sceneZoom))
         
         
-        self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,panRecogniser2,pinchRecogniser]
+        self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,pinchRecogniser]
     }
     
     
@@ -156,11 +150,10 @@ class HomeController: UIViewController {
         light5Node.light = light5
         self.scene.rootNode.addChildNode(light5Node)
         
-        
+
         
     }
-    
-    
+
     func createSwapButton(){
         let width = 130
         let middle = Float(self.view.frame.size.width/2) - Float(width/2)
@@ -218,25 +211,10 @@ class HomeController: UIViewController {
     
     //Adapted from stack overflow
     @objc func sceneZoom(gesture: UIPinchGestureRecognizer) {
-        // let view = self.view as! SCNView
-        // let node = view.scene!.rootNode.childNode(withName: "Camera", recursively: false)
         let node = cameraNode
         let scale = gesture.velocity
-        //let point = gesture.location(in: gesture.view!)
-        // let point1 = gesture.location(ofTouch: 0, in: gesture.view!)
-        // let point2 = gesture.location(ofTouch: 1, in: gesture.view!)
-        
-        //let point3 = CGPoint(abs(point1.x-point2.x), abs(point1.y-point2.y))
-        // cameraNode.camera.
-        
-        // print(point)
-        
-        // print("p1 and p2")
-        // print(point1)
-        // print(point2)
-        
-        let maximumFOV:CGFloat = 25 //This is what determines the farthest point you can zoom in to
-        let minimumFOV:CGFloat = 90 //This is what determines the farthest point you can zoom out to
+        let maximumFOV:CGFloat = 35 //This is what determines the farthest point you can zoom in to
+        let minimumFOV:CGFloat = 60 //This is what determines the farthest point you can zoom out to
         
         switch gesture.state {
         case .began:
@@ -295,92 +273,30 @@ class HomeController: UIViewController {
         }
     }
     
-    //Allows the user to pan with two finger touch
-    @objc private func scenePannedTwoFingers(recognizer: UIPanGestureRecognizer) {
-        recognizer.minimumNumberOfTouches = 2
-        
-        if(recognizer.numberOfTouches >= 2){
-            let translation = recognizer.translation(in: recognizer.view!)      // let panResults = scnView
-            let cameraOrbit = cameraNode
-        
-            let constant: Float = 30.0
-            var translateX = Float(translation.y)*sin(.pi/4.0)/cos(.pi/3.0)-Float(translation.x)*cos(.pi/4.0)
-            var translateY = Float(translation.y)*cos(.pi/4.0)/cos(.pi/3.0)+Float(translation.x)*sin(.pi/4.0)
-            translateX = translateX / constant
-            translateY = translateY / constant
-        
-       
-        
-        
-            //if recognizer.state == UIGestureRecognizerState.changed{
-                //previousLocation = cameraOrbit!.position
-            //}
-          //  if recognizer.state == UIGestureRecognizerState.ended{
-                //cameraOrbit!.position = SCNVector3Make((previousLocation.x + translateX), (previousLocation.y + translateY), (previousLocation.z))
-           // }
-        }
-        
-//        switch recognizer.state {
-//
-//        case .began:
-//            previousLocation = cameraOrbit!.position
-//            break;
-//        case .changed:
-//            cameraNode?.position = SCNVector3Make((previousLocation.x + translateX), (previousLocation.y + translateY), (previousLocation.z))
-//            break;
-//        default:
-//            break;
-//        }
 
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     //@objc lets a private function be visible in objective c
     @objc private func sceneTapped(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: scnView)
         let hitResults = scnView.hitTest(location, options: nil)
         
         if hitResults.count > 0 {
-            //print("HIT")
-            let result = hitResults[0] //as! SCNHitTestResult
+            let result = hitResults[0]
             let node = result.node
             let name = node.name
             
             
             //Model is glowing when clicked and should no longer cast shadows.
             if(node.castsShadow){ //wasClicked
-                // print(node.geometry?.firstMaterial?.emission.contents)
                 if(name != "man_skele" && name != "Man_Skin"){
                     node.castsShadow = false
-                    //node.canBecomeFocused = false
-                   
-                    
                     print(node.name!)
-                    
 
-                       displayAlertDialog(image: nil, node: node, url: nil)
-                    
-//                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
+                    displayAlertDialog(image: nil, node: node, url: nil)
                 }
             }else{
-                
                 if(name != "man_skele" && name != "Man_Skin"){
-                    
-                    
                     node.castsShadow = true;
-                   //
-//                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
                 }
             }
             
@@ -388,14 +304,10 @@ class HomeController: UIViewController {
                 
                 let channel = node.geometry!.firstMaterial!.diffuse.mappingChannel
                 let texcoord = result.textureCoordinates(withMappingChannel: channel)
-                //print(texcoord)
-                
-                // The Array of Image names
-                //var cocktailImagesArray : [String] = []
                 
                 let fileManager = FileManager.default
                 let bundleURL = Bundle.main.bundleURL
-                let assetURL = bundleURL.appendingPathComponent("hitmaps3.bundle")   //    .URLByAppendingPathComponent("Images.bundle")
+                let assetURL = bundleURL.appendingPathComponent("hitmaps3.bundle")  
                 let contents = try! fileManager.contentsOfDirectory(at: assetURL, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
                 
                 let y = 512 - (512 * texcoord.y)
@@ -512,10 +424,7 @@ class HomeController: UIViewController {
         }
     }
     
-    
-    
-    
-    
+
     
     private func addMaleSkin(){
         //add male
@@ -531,8 +440,6 @@ class HomeController: UIViewController {
             rotation: SCNVector4Make(0, 1, 0,
                                      GLKMathDegreesToRadians(20))
         )
-        //manMesh.node.geometry?.firstMaterial?.transparency = 0.5
-        
         manMesh.node.scale = SCNVector3(2.5,2.5,2.5)
         manMesh.node.name = "Man_Skin"
         self.scene.rootNode.addChildNode(manMesh.node)
@@ -544,8 +451,6 @@ class HomeController: UIViewController {
             normal: "tex.jpg"
             ).material
         manMesh.node.geometry?.firstMaterial?.transparency = 0.7
-        //manMesh.node.geometry?.firstMaterial?.emission.contents = UIColor(red: 51/255, green: 153/255, blue: 255/255, alpha: 1)
-        
         self.manMesh = manMesh
         
     }

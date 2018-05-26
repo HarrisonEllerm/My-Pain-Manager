@@ -13,7 +13,7 @@
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
 		384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBD2092BC0D00DBE5E3 /* tex.jpg */; };
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
-		38863BFC20B77E0200427F4A /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38863BFB20B77E0200427F4A /* hitmaps3.bundle */; };
+		3876397F20B90A5A009AA4F9 /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3876397E20B90A59009AA4F9 /* hitmaps3.bundle */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
 		38B9E53D209EF5CC00773B0F /* forearmR4.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E5209EF5BE00773B0F /* forearmR4.obj */; };
@@ -170,7 +170,7 @@
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
 		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
-		38863BFB20B77E0200427F4A /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = "<group>"; };
+		3876397E20B90A59009AA4F9 /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
 		38B9E4E5209EF5BE00773B0F /* forearmR4.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR4.obj; sourceTree = "<group>"; };
@@ -461,7 +461,7 @@
 		6F17058D2085DFE100F6265C = {
 			isa = PBXGroup;
 			children = (
-				38863BFB20B77E0200427F4A /* hitmaps3.bundle */,
+				3876397E20B90A59009AA4F9 /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
 				6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */,
@@ -738,7 +738,6 @@
 				6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */,
 				38B9E58C209EF5CC00773B0F /* thighR_6.obj in Resources */,
 				38B9E56A209EF5CC00773B0F /* forearm4L.obj in Resources */,
-				38863BFC20B77E0200427F4A /* hitmaps3.bundle in Resources */,
 				38B9E54E209EF5CC00773B0F /* upperbum_L.obj in Resources */,
 				38B9E559209EF5CC00773B0F /* Chest_L.obj in Resources */,
 				38B9E56D209EF5CC00773B0F /* triceptsL.obj in Resources */,
@@ -787,6 +786,7 @@
 				38B9E545209EF5CC00773B0F /* forearm5L.obj in Resources */,
 				38B9E566209EF5CC00773B0F /* bicepttopL.obj in Resources */,
 				38B9E578209EF5CC00773B0F /* calfL4.obj in Resources */,
+				3876397F20B90A5A009AA4F9 /* hitmaps3.bundle in Resources */,
 				381611282095942300801604 /* bg.jpg in Resources */,
 				38B9E577209EF5CC00773B0F /* calfL.obj in Resources */,
 				38B9E563209EF5CC00773B0F /* upperback_R.obj in Resources */,
