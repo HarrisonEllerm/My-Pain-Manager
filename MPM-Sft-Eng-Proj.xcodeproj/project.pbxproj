@@ -124,7 +124,6 @@
 		6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705D12085E8B600F6265C /* WelcomeController.swift */; };
 		6F1705D42085E8D300F6265C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705D32085E8D300F6265C /* Extensions.swift */; };
 		6F1705D62085E8EF00F6265C /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705D52085E8EF00F6265C /* Service.swift */; };
-		6F1705D82085E92000F6265C /* UIWindowExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705D72085E92000F6265C /* UIWindowExtension.swift */; };
 		6F1705DA2085E94300F6265C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705D92085E94300F6265C /* User.swift */; };
 		6F26AA982095952E009A3446 /* NoButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AA972095952E009A3446 /* NoButtonCell.swift */; };
 		6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AA9920959580009A3446 /* GenericHeader.swift */; };
@@ -291,7 +290,6 @@
 		6F1705D12085E8B600F6265C /* WelcomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeController.swift; sourceTree = "<group>"; };
 		6F1705D32085E8D300F6265C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6F1705D52085E8EF00F6265C /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
-		6F1705D72085E92000F6265C /* UIWindowExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIWindowExtension.swift; sourceTree = "<group>"; };
 		6F1705D92085E94300F6265C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6F26AA972095952E009A3446 /* NoButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoButtonCell.swift; sourceTree = "<group>"; };
 		6F26AA9920959580009A3446 /* GenericHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericHeader.swift; sourceTree = "<group>"; };
@@ -542,7 +540,6 @@
 				6F1705D32085E8D300F6265C /* Extensions.swift */,
 				6F0EFF7220B57142004AAD2E /* PageModel.swift */,
 				6F1705D52085E8EF00F6265C /* Service.swift */,
-				6F1705D72085E92000F6265C /* UIWindowExtension.swift */,
 				6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */,
 			);
 			path = Utils;
@@ -1032,7 +1029,6 @@
 				38324DF1208B14FC005605B9 /* SummaryController.swift in Sources */,
 				6F1705D02085E84700F6265C /* UserController.swift in Sources */,
 				6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */,
-				6F1705D82085E92000F6265C /* UIWindowExtension.swift in Sources */,
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
 				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,

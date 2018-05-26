@@ -250,7 +250,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             })
                 
         } else if Connectivity.connected {
-                
                 //If connection restablishes after 10 seconds
                 SwiftSpinner.show(duration: 3.0, title: "Reconnected successfully", animated: false)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

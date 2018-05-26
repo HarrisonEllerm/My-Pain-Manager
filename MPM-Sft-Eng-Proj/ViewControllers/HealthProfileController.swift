@@ -8,7 +8,6 @@
 
 import UIKit
 import FirebaseAuth
-import LBTAComponents
 import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
@@ -34,19 +33,6 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         t.allowsMultipleSelection = false
         return t
     }()
-    
-    
-    lazy var saveButton: UIButton = {
-        var button = UIButton(type: .system)
-        button.setTitle("Save", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
-        button.setTitleColor(Service.buttonTitleColor, for: .normal)
-        button.backgroundColor = Service.buttonBackgroundColorSignInAnon
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = Service.buttonCornerRadius
-        return button
-    }()
-    
     
     let label = UILabel()
     
@@ -94,7 +80,6 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
     fileprivate func setUpViews() {
         
         view.addSubview(healthTableView)
-        view.addSubview(saveButton)
         view.addSubview(label)
         
         healthTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
@@ -105,8 +90,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         healthTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         healthTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         healthTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        
-        saveButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 50)
+    
     }
     
     

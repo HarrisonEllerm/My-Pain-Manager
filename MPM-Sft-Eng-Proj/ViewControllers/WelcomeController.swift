@@ -144,19 +144,23 @@ class WelcomeController: UIViewController {
     
    
     fileprivate func anchorDontHaveAccountButton(_ button: UIButton) {
-        button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                      right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8,
+                      rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
-    
     
     
     fileprivate func anchorLoginImg(_ image: UIImageView) {
-        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 80, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 300)
+        image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right:
+            view.safeAreaLayoutGuide.rightAnchor, topConstant: 80, leftConstant: 16, bottomConstant: 0, rightConstant: 16,
+                                                  widthConstant: 0, heightConstant: 300)
     }
     
   
-
     fileprivate func anchorLoginButton(_ button: UIButton) {
-        button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: dontHaveAccountButton.topAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 16, rightConstant: 16, widthConstant: 0, heightConstant: 50)
+        button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: dontHaveAccountButton.topAnchor,
+                      right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 16,
+                      rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
     
 }
