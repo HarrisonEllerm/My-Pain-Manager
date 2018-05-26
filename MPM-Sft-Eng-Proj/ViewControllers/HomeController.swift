@@ -11,8 +11,10 @@ import Firebase
 import SceneKit
 import SceneKit.ModelIO
 
+import PopupDialog
+
 class HomeController: UIViewController {
-    
+
     var manMesh : ObjectWrapper!
     var scene : SCNScene!
     var mesh : SCNNode!
@@ -25,6 +27,7 @@ class HomeController: UIViewController {
     let updateQueue = DispatchQueue(label: "updateQueue")
     weak var activityIndicator: UIActivityIndicatorView?
     var previousLocation = SCNVector3Make(0,0,0)
+    var rating: Double?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -349,7 +352,6 @@ class HomeController: UIViewController {
         let hitResults = scnView.hitTest(location, options: nil)
         
         if hitResults.count > 0 {
-            
             //print("HIT")
             let result = hitResults[0] //as! SCNHitTestResult
             let node = result.node
@@ -365,7 +367,11 @@ class HomeController: UIViewController {
                    
                     
                     print(node.name!)
-                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
+                    
+
+                       displayAlertDialog(image: nil, node: node, url: nil)
+                    
+//                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
                 }
             }else{
                 
@@ -374,7 +380,7 @@ class HomeController: UIViewController {
                     
                     node.castsShadow = true;
                    //
-                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
+//                    node.geometry?.firstMaterial?.emission.contents = UIColor(red: 0/255, green: 0.0/255, blue: 0/255, alpha: 1)
                 }
             }
             
@@ -409,12 +415,8 @@ class HomeController: UIViewController {
                     
                     if color.cgColor.alpha == 1{
                         
-                        
-                        //Flips UVS horizontally
-                        node.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
-                        
-                        node.geometry?.firstMaterial?.emission.contents = image
-                        
+                        displayAlertDialog(image: image, node: node, url: url)
+
                     }
                 }
                 
@@ -422,8 +424,68 @@ class HomeController: UIViewController {
             
             
         }
+        
+        
+        
+        
     }
     
+    
+    
+    func displayAlertDialog(image: UIImage?, node: SCNNode, url: URL?){
+        
+        let alertDialog = AlertDialog()
+        
+        if url != nil{
+            var bodypart = url!.lastPathComponent
+            bodypart.removeLast(4)
+            alertDialog.bodyArea.text = bodypart
+        }else{
+            
+            alertDialog.bodyArea.text = node.name
+            
+        }
+        
+        let popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+        
+        let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
+            let rating = alertDialog.getRating()
+            print("Real Rating: \(rating)")
+            
+            //Flips UVS horizontally
+            if image != nil{
+                node.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
+                node.geometry?.firstMaterial?.emission.contents = image
+                node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+            }else{
+                node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
+                
+                node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+            }
+  
+        }
+        
+        buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        buttonOne.titleColor = UIColor.white
+        buttonOne.separatorColor = UIColor(white: 0.4, alpha: 1)
+        
+        let buttonTwo = DefaultButton(title: "CANCEL") {
+            print("Cancelled")
+        }
+        
+        buttonTwo.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        buttonTwo.titleColor = UIColor(white: 0.6, alpha: 1)
+        buttonTwo.separatorColor = UIColor(white:0.4, alpha: 1)
+        
+        popup.addButtons([buttonOne, buttonTwo])
+        self.present(popup, animated: true, completion: nil)
+        
+        
+        
+    }
+
+    //Adapted from stack overflow
+
     func getPixelColor(_ image:UIImage, _ point: CGPoint) -> UIColor {
         let cgImage : CGImage = image.cgImage!
         guard let pixelData = CGDataProvider(data: (cgImage.dataProvider?.data)!)?.data else {
@@ -577,7 +639,7 @@ class HomeController: UIViewController {
         )
         
         bicept2L .node.scale = SCNVector3(2.5,2.5,2.5)
-        bicept2L.node.name = "bicept2L"
+        bicept2L.node.name = "Inner bicep brachii right"
         self.scene.rootNode.addChildNode(bicept2L.node)
         
         let  biceptR = ObjectWrapper(
@@ -594,7 +656,7 @@ class HomeController: UIViewController {
         )
         
         biceptR.node.scale = SCNVector3(2.5,2.5,2.5)
-        biceptR.node.name = "biceptR"
+        biceptR.node.name = "Bicep brachii left"
         self.scene.rootNode.addChildNode(biceptR.node)
         
         let  biceptR2 = ObjectWrapper(
@@ -611,7 +673,7 @@ class HomeController: UIViewController {
         )
         
         biceptR2.node.scale = SCNVector3(2.5,2.5,2.5)
-        biceptR2.node.name = "biceptR2"
+        biceptR2.node.name = "Brachialis left"
         self.scene.rootNode.addChildNode(biceptR2.node)
         
         let  biceptR3 = ObjectWrapper(
@@ -628,7 +690,7 @@ class HomeController: UIViewController {
         )
         
         biceptR3.node.scale = SCNVector3(2.5,2.5,2.5)
-        biceptR3.node.name = "biceptR3"
+        biceptR3.node.name = "Inner bicep brachii left"
         self.scene.rootNode.addChildNode(biceptR3.node)
         
         
@@ -646,7 +708,7 @@ class HomeController: UIViewController {
         )
         
         bicepttopL.node.scale = SCNVector3(2.5,2.5,2.5)
-        bicepttopL.node.name = "bicepttopL"
+        bicepttopL.node.name = "Bicep brachii right"
         self.scene.rootNode.addChildNode(bicepttopL.node)
         
         
@@ -942,7 +1004,7 @@ class HomeController: UIViewController {
         )
         
         deltoidtopl.node.scale = SCNVector3(2.5,2.5,2.5)
-        deltoidtopl.node.name = "deltoidtopl"
+        deltoidtopl.node.name = "Middle deltoid right"
         self.scene.rootNode.addChildNode(deltoidtopl.node)
         
         let  deltoidbackl = ObjectWrapper(
@@ -959,7 +1021,7 @@ class HomeController: UIViewController {
         )
         
         deltoidbackl.node.scale = SCNVector3(2.5,2.5,2.5)
-        deltoidbackl.node.name = "deltoidbackl"
+        deltoidbackl.node.name = "Back deltoid right"
         self.scene.rootNode.addChildNode(deltoidbackl.node)
         
         let  deltoidfront = ObjectWrapper(
@@ -976,7 +1038,7 @@ class HomeController: UIViewController {
         )
         
         deltoidfront.node.scale = SCNVector3(2.5,2.5,2.5)
-        deltoidfront.node.name = "deltoidFront"
+        deltoidfront.node.name = "Front deltoid right"
         self.scene.rootNode.addChildNode(deltoidfront.node)
         
         let  forearmR = ObjectWrapper(
@@ -993,7 +1055,7 @@ class HomeController: UIViewController {
         )
         
         forearmR.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR.node.name = "forearmR"
+        forearmR.node.name = "Brachioradialis left"
         self.scene.rootNode.addChildNode(forearmR.node)
         
         
@@ -1011,7 +1073,7 @@ class HomeController: UIViewController {
         )
         
         forearm1L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm1L.node.name = "forearm1L"
+        forearm1L.node.name = "Brachioradialus right"
         self.scene.rootNode.addChildNode(forearm1L.node)
         
         
@@ -1030,7 +1092,7 @@ class HomeController: UIViewController {
         )
         
         forearm2L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm2L.node.name = "forearm2L"
+        forearm2L.node.name = "Flexor pollicis longus right"
         self.scene.rootNode.addChildNode(forearm2L.node)
         
         
@@ -1049,7 +1111,7 @@ class HomeController: UIViewController {
         )
         
         forearm3L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm3L.node.name = "forearm3L"
+        forearm3L.node.name = "Flexor carpi radialis right"
         self.scene.rootNode.addChildNode(forearm3L.node)
         
         
@@ -1070,7 +1132,7 @@ class HomeController: UIViewController {
         )
         
         forearm4L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm4L.node.name = "forearm4L"
+        forearm4L.node.name = "Extendor digitorum right"
         self.scene.rootNode.addChildNode(forearm4L.node)
         
         
@@ -1090,7 +1152,7 @@ class HomeController: UIViewController {
         )
         
         forearm5L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm5L.node.name = "forearm5L"
+        forearm5L.node.name = "Flexor superficialis right"
         self.scene.rootNode.addChildNode(forearm5L.node)
         
         
@@ -1110,7 +1172,7 @@ class HomeController: UIViewController {
         )
         
         forearm6L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm6L.node.name = "forearm6L"
+        forearm6L.node.name = "Flexor carpi ulnaris right"
         self.scene.rootNode.addChildNode(forearm6L.node)
         
         
@@ -1130,7 +1192,7 @@ class HomeController: UIViewController {
         )
         
         forearm7L.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearm7L.node.name = "forearm7L"
+        forearm7L.node.name = "Flexor digitorum profundus right"
         self.scene.rootNode.addChildNode(forearm7L.node)
         
         
@@ -1150,7 +1212,7 @@ class HomeController: UIViewController {
         )
         
         forearmR2.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR2.node.name = "forearmR2"
+        forearmR2.node.name = "Flexor pollicis longus left"
         self.scene.rootNode.addChildNode(forearmR2.node)
         
         
@@ -1168,7 +1230,7 @@ class HomeController: UIViewController {
         )
         
         forearmR3.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR3.node.name = "forearmR3"
+        forearmR3.node.name = "Flexor carpi radialis left"
         self.scene.rootNode.addChildNode(forearmR3.node)
         
         
@@ -1186,7 +1248,7 @@ class HomeController: UIViewController {
         )
         
         forearmR4.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR4.node.name = "forearmR5"
+        forearmR4.node.name = "Extensor digitorum left"
         self.scene.rootNode.addChildNode(forearmR4.node)
         
         
@@ -1204,7 +1266,7 @@ class HomeController: UIViewController {
         )
         
         forearmR5.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR5.node.name = "forearmR5"
+        forearmR5.node.name = "Flexor superficialis left"
         self.scene.rootNode.addChildNode(forearmR5.node)
         
         let  forearmR6 = ObjectWrapper(
@@ -1222,7 +1284,7 @@ class HomeController: UIViewController {
         )
         
         forearmR6.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR6.node.name = "forearmR6"
+        forearmR6.node.name = "Flexor carpi ulnaris left"
         self.scene.rootNode.addChildNode(forearmR6.node)
         
         
@@ -1240,7 +1302,7 @@ class HomeController: UIViewController {
         )
         
         forearmR7.node.scale = SCNVector3(2.5,2.5,2.5)
-        forearmR7.node.name = "forearmR7"
+        forearmR7.node.name = "Flexor digitorum profundus left"
         self.scene.rootNode.addChildNode(forearmR7.node)
         
         
@@ -1260,7 +1322,7 @@ class HomeController: UIViewController {
         )
         
         frontshoulderR.node.scale = SCNVector3(2.5,2.5,2.5)
-        frontshoulderR.node.name = "frontshoulderR"
+        frontshoulderR.node.name = "Front deltoid left"
         self.scene.rootNode.addChildNode(frontshoulderR.node)
         
         
@@ -1542,7 +1604,7 @@ class HomeController: UIViewController {
         )
         
         shoulderR.node.scale = SCNVector3(2.5,2.5,2.5)
-        shoulderR.node.name = "shoulderR"
+        shoulderR.node.name = "Middle deltoid left"
         self.scene.rootNode.addChildNode(shoulderR.node)
         
         
@@ -1560,7 +1622,7 @@ class HomeController: UIViewController {
         )
         
         shoulderR2.node.scale = SCNVector3(2.5,2.5,2.5)
-        shoulderR2.node.name = "shoulderR2"
+        shoulderR2.node.name = "Back deltoid left"
         self.scene.rootNode.addChildNode(shoulderR2.node)
         
         
@@ -1828,7 +1890,7 @@ class HomeController: UIViewController {
         )
         
         triceptR.node.scale = SCNVector3(2.5,2.5,2.5)
-        triceptR.node.name = "Tricepts Left"//triceptR" //Tricepts Left
+        triceptR.node.name = "Outer tricep left"//triceptR" //Tricepts Left
         self.scene.rootNode.addChildNode(triceptR .node)
         
         
@@ -1847,7 +1909,7 @@ class HomeController: UIViewController {
         )
         
         triceptR2.node.scale = SCNVector3(2.5,2.5,2.5)
-        triceptR2.node.name = "Inner Tricepts Left"//triceptR2" //Inner Tricepts Left
+        triceptR2.node.name = "Inner tricept left"//triceptR2" //Inner Tricepts Left
         self.scene.rootNode.addChildNode(triceptR2 .node)
         
         
@@ -1865,7 +1927,7 @@ class HomeController: UIViewController {
         )
         
         triceptsL.node.scale = SCNVector3(2.5,2.5,2.5)
-        triceptsL.node.name = "Tricepts right"//"triceptsL" // Tricepts right
+        triceptsL.node.name = "Outer tricept right"//"triceptsL" // Tricepts right
         self.scene.rootNode.addChildNode(triceptsL.node)
         
         
@@ -1883,7 +1945,7 @@ class HomeController: UIViewController {
         )
         
         upperarm_outerL.node.scale = SCNVector3(2.5,2.5,2.5)
-        upperarm_outerL.node.name = "brachio radialis right"//"upperarm_outerL" // brachio radialis right
+        upperarm_outerL.node.name = "Brachialis right"//"upperarm_outerL" // brachio radialis right
         self.scene.rootNode.addChildNode(upperarm_outerL.node)
         
         

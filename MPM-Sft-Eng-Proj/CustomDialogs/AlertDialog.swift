@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import Cosmos
 
-
 class AlertDialog: UIViewController, UITextViewDelegate {
     
     let alertTitle: UILabel = {
@@ -73,9 +72,6 @@ class AlertDialog: UIViewController, UITextViewDelegate {
         
         starView.didFinishTouchingCosmos = { rating in
             self.painRating = rating
-            guard let rate = self.painRating else { return }
-            print("Rate: \(rate)")
-            print("Text: \(self.textView.text)")
         }
         
         view.addSubview(starView)
@@ -103,4 +99,10 @@ class AlertDialog: UIViewController, UITextViewDelegate {
         }
         return true
     }
+    
+    func getRating() -> Double {
+        guard let realRating = self.painRating else { return 0.0 }
+        return realRating
+    }
+ 
 }
