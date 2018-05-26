@@ -333,13 +333,7 @@ class HomeController: UIViewController {
                 }
                 
             }
-            
-            
         }
-        
-        
-        
-        
     }
     
     
@@ -450,7 +444,7 @@ class HomeController: UIViewController {
             metalness: "tex.jpg",
             normal: "tex.jpg"
             ).material
-        manMesh.node.geometry?.firstMaterial?.transparency = 0.7
+        manMesh.node.geometry?.firstMaterial?.transparency = 0.5
         self.manMesh = manMesh
         
     }
