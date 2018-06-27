@@ -88,9 +88,11 @@ class AlertDialog: UIViewController, UITextViewDelegate {
         
     }
     
+    /*
     func textViewDidEndEditing(_ textView: UITextView) {
         print("text view ended editing - set stuff here")
     }
+    */
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if (text == "\n") {
@@ -103,6 +105,11 @@ class AlertDialog: UIViewController, UITextViewDelegate {
     func getRating() -> Double {
         guard let realRating = self.painRating else { return 0.0 }
         return realRating
+    }
+    
+    func getDescription() -> String {
+        guard let descrip = textView.text else { return "" }
+        return descrip;
     }
  
 }

@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 import SceneKit
 import SceneKit.ModelIO
-
+import SwiftSpinner
 import PopupDialog
 
 class HomeController: UIViewController {
@@ -63,16 +63,12 @@ class HomeController: UIViewController {
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
             self.scene.background.contents = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
-            
             self.scnView.scene = self.scene;
-            
             self.addMaleSkin()
             self.addMaleSkeleton()
             self.addMuscles()
             self.createCamera()
             self.createTapRecognizer()
-            
-            
             self.createLights()
             self.createSwapButton()
         }
@@ -341,22 +337,27 @@ class HomeController: UIViewController {
     func displayAlertDialog(image: UIImage?, node: SCNNode, url: URL?){
         
         let alertDialog = AlertDialog()
-        
+        var bodyPart : String
+        //If body area
         if url != nil{
-            var bodypart = url!.lastPathComponent
-            bodypart.removeLast(4)
-            alertDialog.bodyArea.text = bodypart
-        }else{
-            
-            alertDialog.bodyArea.text = node.name
-            
+            bodyPart = url!.lastPathComponent
+            bodyPart.removeLast(4)
+            alertDialog.bodyArea.text = bodyPart
+        } else {
+            //If Muscle
+            guard let area = node.name else { return }
+            bodyPart = area
+            alertDialog.bodyArea.text = bodyPart
         }
-        
-        let popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+
+        let popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: {
+            self.dismiss(animated: true)
+        })
         
         let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
             let rating = alertDialog.getRating()
-            print("Real Rating: \(rating)")
+            let description = alertDialog.getDescription()
+            self.logPainRating(rating, description, bodyPart);
             
             //Flips UVS horizontally
             if image != nil{
@@ -365,10 +366,8 @@ class HomeController: UIViewController {
                 node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
             }else{
                 node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
-                
                 node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
             }
-  
         }
         
         buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
@@ -382,16 +381,39 @@ class HomeController: UIViewController {
         buttonTwo.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         buttonTwo.titleColor = UIColor(white: 0.6, alpha: 1)
         buttonTwo.separatorColor = UIColor(white:0.4, alpha: 1)
-        
         popup.addButtons([buttonOne, buttonTwo])
         self.present(popup, animated: true, completion: nil)
-        
-        
-        
     }
+    
+    //Write pain log to firebase
+    func logPainRating(_ rating: Double, _ description: String, _ area: String) {
+        //get date
+        let dateF : DateFormatter = DateFormatter()
+        dateF.dateFormat = "yyyy-MMM-dd HH:mm:ss"
+        let date = Date()
+        let dateS = dateF.string(from: date)
+        guard let uid = Auth.auth().currentUser?.uid else {
+            SwiftSpinner.show("Error retrieving UID...").addTapHandler({
+                SwiftSpinner.hide()
+            })
+            return
+        }
+        
+        let painDictionary = ["ranking": rating, "description": description] as [String : Any]
 
+        Database.database().reference().child("pain").child(uid).child(area).child(dateS).updateChildValues(painDictionary) { (err, dbRef) in
+            if let error = err {
+                SwiftSpinner.show("Error logging pain...").addTapHandler({
+                    SwiftSpinner.hide()
+                    print(error)
+                    return
+                })
+            }
+            print("Logged to firebase")
+        }
+    }
+    
     //Adapted from stack overflow
-
     func getPixelColor(_ image:UIImage, _ point: CGPoint) -> UIColor {
         let cgImage : CGImage = image.cgImage!
         guard let pixelData = CGDataProvider(data: (cgImage.dataProvider?.data)!)?.data else {
