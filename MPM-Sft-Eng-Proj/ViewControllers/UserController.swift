@@ -286,6 +286,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if(indexPath.row == 0) {
             let healthProfileController = HealthProfileController()
             self.navigationController?.pushViewController(healthProfileController, animated: true)
@@ -297,7 +298,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 0
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -333,7 +333,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
             cell.id = 5
             cell.accessoryType = .disclosureIndicator
             return cell
@@ -344,9 +343,8 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         let header = self.settingsTableView.dequeueReusableHeaderFooterView(withIdentifier: "genericHeader") as! GenericHeader
         header.textInHeader = "Settings"
         return header
+        }
     }
-
-}
 
 extension UserController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
