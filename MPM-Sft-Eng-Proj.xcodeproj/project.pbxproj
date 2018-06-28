@@ -135,7 +135,9 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
+		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
 		6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F7C1B5420A988EA005E884D /* Man_Skin.obj */; };
+		6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
 		6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */; };
@@ -301,7 +303,9 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
 		6F7C1B5420A988EA005E884D /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = "MPM-Sft-Eng-Proj/3D objects/Man_Skin.obj"; sourceTree = SOURCE_ROOT; };
+		6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FatigueAlertDialog.swift; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowWorker.swift; sourceTree = "<group>"; };
@@ -454,6 +458,7 @@
 			isa = PBXGroup;
 			children = (
 				6F0EFF4420B19274004AAD2E /* AlertDialog.swift */,
+				6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */,
 			);
 			path = CustomDialogs;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 		6F17058D2085DFE100F6265C = {
 			isa = PBXGroup;
 			children = (
+				6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */,
 				3876397E20B90A59009AA4F9 /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
@@ -581,6 +587,14 @@
 				6F26AAB620974524009A3446 /* Object.swift */,
 			);
 			path = MaterialUtils;
+			sourceTree = "<group>";
+		};
+		6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */ = {
+			isa = PBXGroup;
+			children = (
+				6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */,
+			);
+			path = ExternalLibraries;
 			sourceTree = "<group>";
 		};
 		6F6A008520946E7400A8E5DA /* 3D objects */ = {
@@ -1032,6 +1046,7 @@
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
 				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
+				6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */,
 				6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */,
 				6F26AAB3209744D9009A3446 /* MeshLoader.swift in Sources */,
 				6F0EFF6F20B5710F004AAD2E /* OnBoardController.swift in Sources */,
@@ -1044,6 +1059,7 @@
 				6F26AAB720974524009A3446 /* Object.swift in Sources */,
 				6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */,
 				6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */,
+				6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */,
 				6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */,
 				6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */,
 				6F0EFF7320B57142004AAD2E /* PageModel.swift in Sources */,

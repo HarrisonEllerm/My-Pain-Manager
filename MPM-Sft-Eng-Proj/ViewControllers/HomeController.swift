@@ -29,12 +29,27 @@ class HomeController: UIViewController {
     var previousLocation = SCNVector3Make(0,0,0)
     var rating: Double?
     
+    internal var intCounter = 0
+    
+    let slider: GradientSlider = {
+        let s = GradientSlider()
+        s.minColor = UIColor.black
+        s.maxColor = UIColor(r: 254, g: 162, b: 25)
+        s.thumbColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        s.tintColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        s.minimumValue = 0
+        s.maximumValue = 100
+        return s
+    }()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Home"
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
+        self.definesPresentationContext = true
         /*
          Activity Indicator Used to show users that the model is being loaded,
          which can take around a second since it is reading in large files to render
@@ -48,6 +63,7 @@ class HomeController: UIViewController {
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.activityIndicator = activityIndicator
+        self.createSlider()
     }
     
     
@@ -70,7 +86,7 @@ class HomeController: UIViewController {
             self.createCamera()
             self.createTapRecognizer()
             self.createLights()
-            self.createSwapButton()
+            self.createSlider()
         }
     }
     
@@ -81,15 +97,10 @@ class HomeController: UIViewController {
         tapRecognizer.numberOfTapsRequired = 1
         tapRecognizer.numberOfTouchesRequired = 1
         tapRecognizer.addTarget(self, action: #selector(self.sceneTapped))//"sceneTapped:")
-        
         let panRecogniser = UIPanGestureRecognizer()
         panRecogniser.addTarget(self, action: #selector(self.scenePannedOneFinger))
-        
-
         let pinchRecogniser = UIPinchGestureRecognizer()
         pinchRecogniser.addTarget(self, action: #selector(self.sceneZoom))
-        
-        
         self.scnView.gestureRecognizers = [tapRecognizer,panRecogniser,pinchRecogniser]
     }
     
@@ -145,41 +156,22 @@ class HomeController: UIViewController {
         light5.intensity = CGFloat(200)
         light5Node.light = light5
         self.scene.rootNode.addChildNode(light5Node)
-        
-
-        
-    }
-
-    func createSwapButton(){
-        let width = 130
-        let middle = Float(self.view.frame.size.width/2) - Float(width/2)
-        let CentreX = Int(middle)
-        let button = UIButton(frame: CGRect(x: CentreX, y: 670, width: width, height: 30))
-        //button.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
-        button.setTitle("Swap", for: .normal)
-        
-        button.addTarget(self, action: #selector(self.swapAction), for: .touchUpInside)
-        button.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-        
-        
-        
-        button.layer.cornerRadius = 8
-        self.view.addSubview(button)
-        self.isLoading = false
-        guard let activityIndicator = self.activityIndicator else { return }
-        UIView.animate(withDuration: 0.35, animations: {
-            activityIndicator.alpha = 0
-        }, completion: { _ in
-            activityIndicator.removeFromSuperview()
-        })
-        
-        
+       
     }
     
+    func createSlider() {
+        slider.frame = CGRect(x: self.view.center.x - 125, y: UIScreen.main.bounds.height*0.85 , width: 250, height: 20)
+        slider.addTarget(self, action: #selector(sliderDidEndSliding), for: [.touchUpInside, .touchUpOutside])
+        self.view.addSubview(slider)
+    }
+    
+    @objc func sliderDidEndSliding(notification: NSNotification) {
+        displayAlertDialog(image: nil, node: nil, url: nil, fatigue: true, fatigueLevel: slider.value)
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkStatus()
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -227,9 +219,6 @@ class HomeController: UIViewController {
         default: break
         }
     }
-    
-    
-    
     
     // Allows the user to rotate the camera around the object
     //Adapted from stack overflow.
@@ -280,27 +269,21 @@ class HomeController: UIViewController {
             let result = hitResults[0]
             let node = result.node
             let name = node.name
-            
-            
             //Model is glowing when clicked and should no longer cast shadows.
             if(node.castsShadow){ //wasClicked
                 if(name != "man_skele" && name != "Man_Skin"){
                     node.castsShadow = false
-                    print(node.name!)
-
-                    displayAlertDialog(image: nil, node: node, url: nil)
+                    displayAlertDialog(image: nil, node: node, url: nil, fatigue: false, fatigueLevel: nil)
                 }
             }else{
                 if(name != "man_skele" && name != "Man_Skin"){
                     node.castsShadow = true;
                 }
             }
-            
             if(name == "Man_Skin"){
                 
                 let channel = node.geometry!.firstMaterial!.diffuse.mappingChannel
                 let texcoord = result.textureCoordinates(withMappingChannel: channel)
-                
                 let fileManager = FileManager.default
                 let bundleURL = Bundle.main.bundleURL
                 let assetURL = bundleURL.appendingPathComponent("hitmaps3.bundle")  
@@ -312,9 +295,7 @@ class HomeController: UIViewController {
                 for url in contents{
                     
                     let data = try? Data(contentsOf: url)
-                    
                     let image = UIImage(data: data!)
-                    
                     let point = CGPoint(x: x,y: y)
                     let color = getPixelColor(image!, point)
                     
@@ -322,86 +303,54 @@ class HomeController: UIViewController {
                     color.getRed(&r, green: &g, blue: &b, alpha: &a)
                     
                     if color.cgColor.alpha == 1{
-                        
-                        displayAlertDialog(image: image, node: node, url: url)
-
+                        displayAlertDialog(image: image, node: node, url: url, fatigue: false, fatigueLevel: nil)
                     }
                 }
-                
             }
         }
     }
     
-    
-    
-    func displayAlertDialog(image: UIImage?, node: SCNNode, url: URL?){
-        
-        let alertDialog = AlertDialog()
-        var bodyPart : String
-        //If body area
-        if url != nil{
+
+    func displayAlertDialog(image: UIImage?, node: SCNNode?, url: URL?, fatigue: Bool, fatigueLevel: CGFloat?){
+
+        var bodyPart : String = ""
+        //If General Body Area Pain
+        if url != nil {
             bodyPart = url!.lastPathComponent
             bodyPart.removeLast(4)
-            alertDialog.bodyArea.text = bodyPart
-        } else {
-            //If Muscle
-            guard let area = node.name else { return }
-            bodyPart = area
-            alertDialog.bodyArea.text = bodyPart
-        }
-
-        let popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: {
-            self.dismiss(animated: true)
-        })
-        
-        let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
-            let rating = alertDialog.getRating()
-            let description = alertDialog.getDescription()
-            self.logPainRating(rating, description, bodyPart);
             
-            //Flips UVS horizontally
-            if image != nil{
-                node.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
-                node.geometry?.firstMaterial?.emission.contents = image
-                node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
-            }else{
-                node.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
-                node.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
-            }
+        //If Muscle Pain
+        } else if node != nil {
+            guard let area = node!.name else { return }
+            bodyPart = area
+            
+        //If General Fatigue
+        } else if fatigue {
+            bodyPart = "General Fatigue"
         }
         
-        buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-        buttonOne.titleColor = UIColor.white
-        buttonOne.separatorColor = UIColor(white: 0.4, alpha: 1)
-        
-        let buttonTwo = DefaultButton(title: "CANCEL") {
-            print("Cancelled")
+        let popup = setupPopup(fatigue, bodyPart, fatigueLevel, image, node)
+        if self.presentedViewController == nil {
+            self.present(popup, animated: true, completion: nil)
         }
-        
-        buttonTwo.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-        buttonTwo.titleColor = UIColor(white: 0.6, alpha: 1)
-        buttonTwo.separatorColor = UIColor(white:0.4, alpha: 1)
-        popup.addButtons([buttonOne, buttonTwo])
-        self.present(popup, animated: true, completion: nil)
     }
     
     //Write pain log to firebase
     func logPainRating(_ rating: Double, _ description: String, _ area: String) {
+        if rating > 0 {
         //get date
-        let dateF : DateFormatter = DateFormatter()
-        dateF.dateFormat = "yyyy-MMM-dd HH:mm:ss"
-        let date = Date()
-        let dateS = dateF.string(from: date)
-        guard let uid = Auth.auth().currentUser?.uid else {
+            let dateF : DateFormatter = DateFormatter()
+            dateF.dateFormat = "yyyy-MMM-dd HH:mm:ss"
+            let date = Date()
+            let dateS = dateF.string(from: date)
+            guard let uid = Auth.auth().currentUser?.uid else {
             SwiftSpinner.show("Error retrieving UID...").addTapHandler({
                 SwiftSpinner.hide()
             })
             return
-        }
-        
-        let painDictionary = ["ranking": rating, "description": description] as [String : Any]
-
-        Database.database().reference().child("pain").child(uid).child(area).child(dateS).updateChildValues(painDictionary) { (err, dbRef) in
+            }
+            let painDictionary = ["ranking": rating, "description": description] as [String : Any]
+            Database.database().reference().child("pain").child(uid).child(area).child(dateS).updateChildValues(painDictionary) { (err, dbRef) in
             if let error = err {
                 SwiftSpinner.show("Error logging pain...").addTapHandler({
                     SwiftSpinner.hide()
@@ -410,9 +359,71 @@ class HomeController: UIViewController {
                 })
             }
             print("Logged to firebase")
+            }
         }
     }
     
+    /*
+        A convienience method that returns a popup, embedded with the correct type of view controller, depending
+        upon if the user is logging general muscle/body group pain or fatigue.
+    */
+    func setupPopup(_ fatigue: Bool, _ area: String, _ fatigueLevel: CGFloat?, _ image: UIImage?, _ node: SCNNode?) -> PopupDialog {
+        var popup : PopupDialog
+        if fatigue {
+            let fatigueAlert = FatigueAlertDialog()
+            fatigueAlert.alertTitle.text = area
+            if let level = fatigueLevel {
+                fatigueAlert.rating.text = level.rounded().description+" / 100"
+            }
+            popup = PopupDialog.init(viewController: fatigueAlert, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+        } else {
+            let alertDialog = AlertDialog()
+            alertDialog.bodyArea.text = area
+            popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+        }
+        
+        let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
+            
+            //Popup Dialog VC is of type Alert Dialog
+            if popup.viewController is AlertDialog {
+                let alertDialog: AlertDialog = popup.viewController as! AlertDialog
+                let rating = alertDialog.getRating()
+                let description = alertDialog.getDescription()
+                self.logPainRating(rating, description, area);
+                //Flips UVS horizontally
+                if image != nil {
+                    guard let nodeg = node else { return }
+                    nodeg.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
+                    nodeg.geometry?.firstMaterial?.emission.contents = image
+                    nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+                } else {
+                    guard let nodeg = node else { return }
+                    nodeg.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
+                    nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+                }
+            
+            //Popup Dialog VC is of type Fatigue Alert Dialog
+            } else {
+                let fatigueAlertDialog : FatigueAlertDialog = popup.viewController as! FatigueAlertDialog
+                let rating = fatigueAlertDialog.getRating()
+                let description = fatigueAlertDialog.getDescription()
+                self.logPainRating(rating, description, area);
+            }
+        }
+        buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        buttonOne.titleColor = UIColor.white
+        buttonOne.separatorColor = UIColor(white: 0.4, alpha: 1)
+        
+        let buttonTwo = DefaultButton(title: "CANCEL") {
+            print("Cancelled")
+        }
+        buttonTwo.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
+        buttonTwo.titleColor = UIColor(white: 0.6, alpha: 1)
+        buttonTwo.separatorColor = UIColor(white:0.4, alpha: 1)
+        popup.addButtons([buttonOne, buttonTwo])
+        return popup
+    }
+
     //Adapted from stack overflow
     func getPixelColor(_ image:UIImage, _ point: CGPoint) -> UIColor {
         let cgImage : CGImage = image.cgImage!

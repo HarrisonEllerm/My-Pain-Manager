@@ -41,7 +41,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.backgroundColor: UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) //Service.greenTheme
+        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "mail")
@@ -53,7 +53,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
-        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1) //Service.greenTheme
+        textField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         textField.textColor = UIColor.white
         textField.isSecureTextEntry = true
         textField.autocapitalizationType = UITextAutocapitalizationType.none
