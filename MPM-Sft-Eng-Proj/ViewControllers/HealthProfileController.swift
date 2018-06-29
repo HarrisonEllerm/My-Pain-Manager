@@ -45,11 +45,9 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         navigationController?.navigationBar.barTintColor = UIColor.black
-        
         let vc = navigationController?.viewControllers.first
         let button = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: nil)
         vc?.navigationItem.backBarButtonItem = button
-        
         setUpViews()
         healthTableView.delegate = self
         healthTableView.dataSource = self
@@ -81,7 +79,6 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         
         view.addSubview(healthTableView)
         view.addSubview(label)
-        
         healthTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
         healthTableView.register(GenderEntryCell.self, forCellReuseIdentifier: "genderEntry")
         healthTableView.register(HeightEntryCell.self, forCellReuseIdentifier: "heightEntry")

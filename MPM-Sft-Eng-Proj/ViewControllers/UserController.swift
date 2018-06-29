@@ -290,6 +290,9 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         if(indexPath.row == 0) {
             let healthProfileController = HealthProfileController()
             self.navigationController?.pushViewController(healthProfileController, animated: true)
+        } else if (indexPath.row == 5) {
+            let chartVC = StackedBarsExample()
+            self.navigationController?.pushViewController(chartVC, animated: true)
         }
     }
     

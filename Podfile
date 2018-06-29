@@ -23,6 +23,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'Alamofire'
     pod 'PopupDialog', '~> 0.7'
     pod 'Cosmos'
+    pod 'SwiftCharts', '~> 0.6.1'
     
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths

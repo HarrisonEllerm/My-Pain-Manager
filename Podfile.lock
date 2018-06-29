@@ -67,6 +67,7 @@ PODS:
   - nanopb/encode (0.3.8)
   - PopupDialog (0.7.1):
     - DynamicBlurView (~> 2.0)
+  - SwiftCharts (0.6.1)
   - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
   - SwiftyJSON (4.1.0)
@@ -81,6 +82,7 @@ DEPENDENCIES:
   - JGProgressHUD
   - LBTAComponents
   - PopupDialog (~> 0.7)
+  - SwiftCharts (~> 0.6.1)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
   - SwiftyJSON
@@ -115,10 +117,11 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
+  SwiftCharts: 77378d6cf667e95f9c79a745b6778e66eed5339c
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: 6cb4919447c0c94d385bc83af2bf4921ff37f9ec
+PODFILE CHECKSUM: ebb3cd8a52da988c203e7bbe24faa6a1829f95db
 
 COCOAPODS: 1.4.0

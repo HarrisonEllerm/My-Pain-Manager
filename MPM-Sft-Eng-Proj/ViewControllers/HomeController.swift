@@ -13,6 +13,7 @@ import SceneKit.ModelIO
 import SwiftSpinner
 import PopupDialog
 
+
 class HomeController: UIViewController {
 
     var manMesh : ObjectWrapper!
@@ -28,6 +29,7 @@ class HomeController: UIViewController {
     weak var activityIndicator: UIActivityIndicatorView?
     var previousLocation = SCNVector3Make(0,0,0)
     var rating: Double?
+    fileprivate var tapCount = 0
     
     internal var intCounter = 0
     
@@ -188,7 +190,7 @@ class HomeController: UIViewController {
         }
     }
     
-    @objc func swapAction(sender: UIButton){
+    @objc func swapAction(){
         if(manMesh.node.isHidden){
             manMesh.node.isHidden = false
         }else{
@@ -265,6 +267,17 @@ class HomeController: UIViewController {
         let location = recognizer.location(in: scnView)
         let hitResults = scnView.hitTest(location, options: nil)
         
+        //If tapped on background
+        if hitResults.count == 0 {
+            tapCount += 1
+            if tapCount == 2 {
+                self.swapAction()
+                tapCount = 0;
+            }
+        } else {
+            tapCount = 0
+        }
+        
         if hitResults.count > 0 {
             let result = hitResults[0]
             let node = result.node
@@ -312,7 +325,6 @@ class HomeController: UIViewController {
     
 
     func displayAlertDialog(image: UIImage?, node: SCNNode?, url: URL?, fatigue: Bool, fatigueLevel: CGFloat?){
-
         var bodyPart : String = ""
         //If General Body Area Pain
         if url != nil {
