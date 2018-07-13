@@ -139,7 +139,7 @@
 		6F7C1B5520A988EA005E884D /* Man_Skin.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F7C1B5420A988EA005E884D /* Man_Skin.obj */; };
 		6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */; };
 		6FB1882920E5A8EB00256767 /* ChartTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB1882820E5A8EB00256767 /* ChartTestViewController.swift */; };
-		6FB1882B20E5B1A500256767 /* exampleDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB1882A20E5B1A500256767 /* exampleDefaults.swift */; };
+		6FB1882B20E5B1A500256767 /* ExampleDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
 		6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */; };
@@ -309,7 +309,7 @@
 		6F7C1B5420A988EA005E884D /* Man_Skin.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin.obj; path = "MPM-Sft-Eng-Proj/3D objects/Man_Skin.obj"; sourceTree = SOURCE_ROOT; };
 		6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FatigueAlertDialog.swift; sourceTree = "<group>"; };
 		6FB1882820E5A8EB00256767 /* ChartTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartTestViewController.swift; sourceTree = "<group>"; };
-		6FB1882A20E5B1A500256767 /* exampleDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = exampleDefaults.swift; sourceTree = "<group>"; };
+		6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDefaults.swift; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginFlowWorker.swift; sourceTree = "<group>"; };
@@ -541,7 +541,7 @@
 				6F26AAB82097C796009A3446 /* HealthProfileController.swift */,
 				6FD4A77820A6D97D00F10250 /* LoginViewController.swift */,
 				6FB1882820E5A8EB00256767 /* ChartTestViewController.swift */,
-				6FB1882A20E5B1A500256767 /* exampleDefaults.swift */,
+				6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -701,7 +701,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0910;
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Harrison Ellerm";
 				TargetAttributes = {
 					6F1705952085DFE100F6265C = {
@@ -1075,7 +1075,7 @@
 				6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */,
 				6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */,
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,
-				6FB1882B20E5B1A500256767 /* exampleDefaults.swift in Sources */,
+				6FB1882B20E5B1A500256767 /* ExampleDefaults.swift in Sources */,
 				6F1705D62085E8EF00F6265C /* Service.swift in Sources */,
 				6F1705CE2085E81E00F6265C /* SignUserUpController.swift in Sources */,
 				6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */,
@@ -1132,6 +1132,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1139,6 +1140,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -1189,6 +1191,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -1196,6 +1199,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

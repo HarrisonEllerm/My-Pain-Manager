@@ -142,9 +142,6 @@ class StackedBarsExample: UIViewController {
         }
         
         
-  
-
-        
         //For each pain thats been logged
         let button1 = UIButton()
         button1.frame = CGRect(x: self.view.frame.size.width - 60, y: 100, width: 60, height: 30)

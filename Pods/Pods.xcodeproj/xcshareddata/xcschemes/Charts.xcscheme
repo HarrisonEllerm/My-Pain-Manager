@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "0940"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -98,7 +98,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7A4487DECD5F8C61F6FCB524FDBC0933"
+               BlueprintIdentifier = "7E2D1205BC789A59D58FB9D27CF20853"
                BuildableName = "Pods_MPM_Sft_Eng_Proj.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-Proj"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -140,7 +140,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A014CEAE6BAFE5AA03B6B8B7D0BC0B40"
+               BlueprintIdentifier = "CDE230449BFB8DAC439BC43FE860B9A0"
                BuildableName = "SwiftSpinner.framework"
                BlueprintName = "SwiftSpinner"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -154,7 +154,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AE1EBE865E871C0467AE899973678BF4"
+               BlueprintIdentifier = "7999E2EBA7A79B657637FBD450B30B9D"
                BuildableName = "SwiftValidator.framework"
                BlueprintName = "SwiftValidator"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -168,7 +168,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C1A6008B1D8C138F3CB3692B923FB007"
+               BlueprintIdentifier = "17329E68A7BD137AB751AD77123B773C"
                BuildableName = "SwiftyJSON.framework"
                BlueprintName = "SwiftyJSON"
                ReferencedContainer = "container:Pods.xcodeproj">

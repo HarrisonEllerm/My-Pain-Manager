@@ -4,15 +4,8 @@
 //
 //  Created by Sebastian Peden on 29/06/18.
 //  Copyright © 2018 Sebastian Peden. All rights reserved.
-
-
-
-
-
 import UIKit
 import SwiftCharts
-
-
 
 // Adapted from gitHub
 

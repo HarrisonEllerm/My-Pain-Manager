@@ -19,10 +19,9 @@ class Service {
     static let buttonFontSize: CGFloat = 16
     static let buttonTitleColor = UIColor.white
     static let buttonCornerRadius: CGFloat = 7
-    static let buttonBackgroundColorSignInAnon = UIColor(r: 54, g: 54, b: 54)
     static let loginButtonBackgroundColor = UIColor(displayP3Red: 89 / 255, green: 156 / 255, blue: 120 / 255, alpha: 1)
-    static let greenTheme = UIColor(displayP3Red: 109/255, green: 201/255, blue: 149/255, alpha: 1 )
     static let dontHaveAccountTextColor = UIColor(red: 89/155, green: 156/255, blue: 120/255, alpha: 1)
+    static let mainThemeColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
     
     //Default profile image used if user signs up with email
     static let defaultProfilePicUrl = "https://firebasestorage.googleapis.com/v0/b/mpmv1-606b6.appspot.com/o/user_name_icon.png?alt=media&token=a7186046-6f73-4948-aa12-3154920b4e3c"

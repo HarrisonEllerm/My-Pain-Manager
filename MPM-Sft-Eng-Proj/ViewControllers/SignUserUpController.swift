@@ -31,7 +31,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
     
     let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0), NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
+        let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.mainThemeColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
         button.setAttributedTitle(attributeTitle, for: .normal)
         attributeTitle.append(NSAttributedString(string: "Sign In" , attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)]))
         button.addTarget(self, action: #selector(signInAction), for: .touchUpInside)
@@ -45,7 +45,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "name")
-        textField.setBottomBorder(backgroundColor: Service.greenTheme, borderColor: .white)
+        textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
     
@@ -57,7 +57,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.textColor = UIColor.white
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "mail")
-        textField.setBottomBorder(backgroundColor: Service.greenTheme, borderColor: .white)
+        textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
     
@@ -69,7 +69,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.isSecureTextEntry = true
         textField.autocapitalizationType = UITextAutocapitalizationType.none
         textField.addIcon(imageName: "password")
-        textField.setBottomBorder(backgroundColor: Service.greenTheme, borderColor: .white)
+        textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
     
@@ -173,8 +173,6 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         registerButton.backgroundColor = UIColor.white
         alreadyHaveAccountButton.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         
-        
-        
         //register text fields that will be validated
         validator.registerField(emailTextField,
                                 rules: [RequiredRule(message: "Please provide a email!"),
@@ -189,10 +187,11 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         navigationController?.navigationBar.isTranslucent = false
         let navigationBarAppearnce = UINavigationBar.appearance()
         navigationBarAppearnce.barTintColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-        navigationBarAppearnce.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
+        navigationBarAppearnce.tintColor = Service.mainThemeColor
         self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
         self.navigationController?.navigationBar.isHidden = false
         self.navigationController!.navigationBar.topItem!.title = "Back"
+        
     }
     
     
@@ -214,8 +213,12 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         anchorRegisterButton(registerButton)
         
         view.addSubview(alreadyHaveAccountButton)
-        alreadyHaveAccountButton.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 30)
+        anchorAlreadyHaveAccountButton(alreadyHaveAccountButton)
         
+    }
+    
+    fileprivate func anchorAlreadyHaveAccountButton(_ button: UIButton) {
+        button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     fileprivate func anchorSignupLabel(_ label: UILabel) {

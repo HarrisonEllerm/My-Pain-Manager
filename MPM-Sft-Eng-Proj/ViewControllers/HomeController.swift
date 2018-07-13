@@ -347,30 +347,50 @@ class HomeController: UIViewController {
         }
     }
     
-    //Write pain log to firebase
-    func logPainRating(_ rating: Double, _ description: String, _ area: String) {
+    /*
+        A function that recieves the information entered into the pain log, and writes it to the
+        database.
+     */
+    func logPainRating(_ rating: Double, _ notesDescription: String, _ medsDescription: String, _ area: String) {
+        
         if rating > 0 {
-        //get date
+            //Get date and use it as a key under the particular pain type
             let dateF : DateFormatter = DateFormatter()
             dateF.dateFormat = "yyyy-MMM-dd HH:mm:ss"
             let date = Date()
             let dateS = dateF.string(from: date)
             guard let uid = Auth.auth().currentUser?.uid else {
-            SwiftSpinner.show("Error retrieving UID...").addTapHandler({
-                SwiftSpinner.hide()
-            })
-            return
+                SwiftSpinner.show("Error retrieving UID...").addTapHandler({
+                    SwiftSpinner.hide()
+                })
+                return
             }
-            let painDictionary = ["ranking": rating, "description": description] as [String : Any]
+            
+            //Check to see which fields are set, and only log those that are set to Firebase
+            var painDictionary: Dictionary<String, Any>
+           
+            if !notesDescription.isEmpty && !medsDescription.isEmpty {
+                painDictionary = ["ranking": rating, "notesDescription": notesDescription, "medsDescription": medsDescription]
+            
+            } else if !notesDescription.isEmpty && medsDescription.isEmpty {
+                painDictionary = ["ranking": rating, "notesDescription": notesDescription]
+            
+            } else if notesDescription.isEmpty && !medsDescription.isEmpty {
+                painDictionary = ["ranking": rating, "medsDescription": medsDescription]
+            
+            } else {
+                painDictionary = ["ranking": rating]
+            }
+            
+            //Write to DB
             Database.database().reference().child("pain").child(uid).child(area).child(dateS).updateChildValues(painDictionary) { (err, dbRef) in
             if let error = err {
                 SwiftSpinner.show("Error logging pain...").addTapHandler({
                     SwiftSpinner.hide()
                     print(error)
                     return
-                })
-            }
-            print("Logged to firebase")
+                    })
+                }
             }
         }
     }
@@ -400,8 +420,26 @@ class HomeController: UIViewController {
             if popup.viewController is AlertDialog {
                 let alertDialog: AlertDialog = popup.viewController as! AlertDialog
                 let rating = alertDialog.getRating()
-                let description = alertDialog.getDescription()
-                self.logPainRating(rating, description, area);
+                let notesDescription = alertDialog.getNotesDescription()
+                let medsDescription = alertDialog.getMedsDescription()
+                
+                //if both a note and med description has been set
+                if notesDescription.1 && medsDescription.1 {
+                    self.logPainRating(rating, notesDescription.0, medsDescription.0, area);
+                    
+                //if only a note has been set
+                } else if notesDescription.1 && !medsDescription.1 {
+                    self.logPainRating(rating, notesDescription.0, "", area)
+                   
+                //if only a med desription has been set
+                } else if !notesDescription.1 && medsDescription.1 {
+                    self.logPainRating(rating, "", medsDescription.0, area)
+                    
+                //if nethier a note or med description has been set
+                } else {
+                    self.logPainRating(rating, "", "", area)
+                }
+                
                 //Flips UVS horizontally
                 if image != nil {
                     guard let nodeg = node else { return }
@@ -419,7 +457,7 @@ class HomeController: UIViewController {
                 let fatigueAlertDialog : FatigueAlertDialog = popup.viewController as! FatigueAlertDialog
                 let rating = fatigueAlertDialog.getRating()
                 let description = fatigueAlertDialog.getDescription()
-                self.logPainRating(rating, description, area);
+                self.logPainRating(rating, description, "", area);
             }
         }
         buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
