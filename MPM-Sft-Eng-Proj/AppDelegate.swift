@@ -79,7 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
                                                        accessToken: authentication.accessToken)
         
-        Auth.auth().signIn(with: credential) { (user, error) in
+        Auth.auth().signInAndRetrieveData(with: credential) { (user, error) in
             if let error = error {
                 SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
                     SwiftSpinner.hide()
@@ -87,9 +87,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                 print(error)
                 return
             }
-            
-            guard let name = user?.displayName, let email = user?.email,
-                let profilePicUrl = user?.photoURL?.absoluteString,
+            guard let name = user?.user.displayName, let email = user?.user.email,
+                let profilePicUrl = user?.user.photoURL?.absoluteString,
                 let uid = Auth.auth().currentUser?.uid else {
                     SwiftSpinner.show("Error Retrieving User Information...").addTapHandler({
                         SwiftSpinner.hide()

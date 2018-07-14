@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "681BE6E3D02A43F9BA63777AC435C8FD"
+               BlueprintIdentifier = "8298F8AC8708248462661403583C3997"
                BuildableName = "GTMSessionFetcher.framework"
                BlueprintName = "GTMSessionFetcher"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -56,7 +56,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "107A9565F9DF88517DFD3E28C05B2B96"
+               BlueprintIdentifier = "E0162255842B3EB0659F04369BD3DD60"
                BuildableName = "GoogleToolboxForMac.framework"
                BlueprintName = "GoogleToolboxForMac"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -70,7 +70,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9F2C48CA562773165FC94C4BDA600CB8"
+               BlueprintIdentifier = "9C663D206F83BB9C98221B9905C62008"
                BuildableName = "JGProgressHUD.framework"
                BlueprintName = "JGProgressHUD"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -98,7 +98,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7E2D1205BC789A59D58FB9D27CF20853"
+               BlueprintIdentifier = "BF8D789123BED79F482C7600D723BC1B"
                BuildableName = "Pods_MPM_Sft_Eng_Proj.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-Proj"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -140,7 +140,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CDE230449BFB8DAC439BC43FE860B9A0"
+               BlueprintIdentifier = "43DE59B25A50A62DF4FD86E0147E41EF"
                BuildableName = "SwiftSpinner.framework"
                BlueprintName = "SwiftSpinner"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -154,7 +154,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7999E2EBA7A79B657637FBD450B30B9D"
+               BlueprintIdentifier = "6FE1DEE89FFBFC7432D59B8FA630A3C2"
                BuildableName = "SwiftValidator.framework"
                BlueprintName = "SwiftValidator"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -168,7 +168,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "17329E68A7BD137AB751AD77123B773C"
+               BlueprintIdentifier = "EB6395AFE67D8EBE9CC235B804F39AF1"
                BuildableName = "SwiftyJSON.framework"
                BlueprintName = "SwiftyJSON"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -182,7 +182,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3B08C49A396BAA0D9DCAD4460CC52F95"
+               BlueprintIdentifier = "4F5E7C621A9D556005E5298CB2CB14F2"
                BuildableName = "leveldb.framework"
                BlueprintName = "leveldb-library"
                ReferencedContainer = "container:Pods.xcodeproj">

@@ -45,6 +45,7 @@ class HomeController: UIViewController {
     }()
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Home"
@@ -67,6 +68,7 @@ class HomeController: UIViewController {
         self.activityIndicator = activityIndicator
         self.createSlider()
     }
+    
     
     
     func loadScene() {
