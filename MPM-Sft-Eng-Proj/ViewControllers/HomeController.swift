@@ -358,7 +358,7 @@ class HomeController: UIViewController {
         if rating > 0 {
             //Get date and use it as a key under the particular pain type
             let dateF : DateFormatter = DateFormatter()
-            dateF.dateFormat = "yyyy-MMM-dd HH:mm:ss"
+            dateF.dateFormat = "yyyy-MMM-dd"
             let date = Date()
             let dateS = dateF.string(from: date)
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -385,7 +385,7 @@ class HomeController: UIViewController {
             }
             
             //Write to DB
-            Database.database().reference().child("pain").child(uid).child(area).child(dateS).updateChildValues(painDictionary) { (err, dbRef) in
+            Database.database().reference().child("pain").child(uid).child(dateS).child(area).updateChildValues(painDictionary) { (err, dbRef) in
             if let error = err {
                 SwiftSpinner.show("Error logging pain...").addTapHandler({
                     SwiftSpinner.hide()
