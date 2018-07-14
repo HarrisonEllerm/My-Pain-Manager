@@ -14,6 +14,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'Firebase/Auth'
     pod 'Firebase/Database'
     pod 'Firebase/Storage'
+    pod 'Firebase/Core'
     pod 'LBTAComponents'
     pod 'JGProgressHUD'
     pod 'SwiftyJSON'
