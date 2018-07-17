@@ -350,7 +350,7 @@ class HomeController: UIViewController {
     }
     
     /*
-        A function that recieves the information entered into the pain log, and writes it to the
+        A function that recieves the information entered into the pain or fatigue log, and writes it to the
         database.
      */
     func logPainRating(_ rating: Double, _ notesDescription: String, _ medsDescription: String, _ area: String) {
@@ -358,7 +358,7 @@ class HomeController: UIViewController {
         if rating > 0 {
             //Get date and use it as a key under the particular pain type
             let dateF : DateFormatter = DateFormatter()
-            dateF.dateFormat = "yyyy-MMM-dd"
+            dateF.dateFormat = "yyyy-MMM-dd HH:mm"
             let date = Date()
             let dateS = dateF.string(from: date)
             guard let uid = Auth.auth().currentUser?.uid else {
@@ -418,50 +418,15 @@ class HomeController: UIViewController {
         
         let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
             
-            //Popup Dialog VC is of type Alert Dialog
             if popup.viewController is AlertDialog {
-                let alertDialog: AlertDialog = popup.viewController as! AlertDialog
-                let rating = alertDialog.getRating()
-                let notesDescription = alertDialog.getNotesDescription()
-                let medsDescription = alertDialog.getMedsDescription()
-                
-                //if both a note and med description has been set
-                if notesDescription.1 && medsDescription.1 {
-                    self.logPainRating(rating, notesDescription.0, medsDescription.0, area);
-                    
-                //if only a note has been set
-                } else if notesDescription.1 && !medsDescription.1 {
-                    self.logPainRating(rating, notesDescription.0, "", area)
-                   
-                //if only a med desription has been set
-                } else if !notesDescription.1 && medsDescription.1 {
-                    self.logPainRating(rating, "", medsDescription.0, area)
-                    
-                //if nethier a note or med description has been set
-                } else {
-                    self.logPainRating(rating, "", "", area)
-                }
-                
-                //Flips UVS horizontally
-                if image != nil {
-                    guard let nodeg = node else { return }
-                    nodeg.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
-                    nodeg.geometry?.firstMaterial?.emission.contents = image
-                    nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
-                } else {
-                    guard let nodeg = node else { return }
-                    nodeg.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
-                    nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
-                }
+                self.handleAlertDialogOnCompletion(popup: popup, area: area, image: image, node: node)
             
-            //Popup Dialog VC is of type Fatigue Alert Dialog
             } else {
-                let fatigueAlertDialog : FatigueAlertDialog = popup.viewController as! FatigueAlertDialog
-                let rating = fatigueAlertDialog.getRating()
-                let description = fatigueAlertDialog.getDescription()
-                self.logPainRating(rating, description, "", area);
+                self.handleFatigueAlertDialogOnCompletion(popup: popup, area: area)
             }
         }
+        
+        
         buttonOne.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         buttonOne.titleColor = UIColor.white
         buttonOne.separatorColor = UIColor(white: 0.4, alpha: 1)
@@ -474,6 +439,77 @@ class HomeController: UIViewController {
         buttonTwo.separatorColor = UIColor(white:0.4, alpha: 1)
         popup.addButtons([buttonOne, buttonTwo])
         return popup
+    }
+    
+    /*
+        A method that handles the completion of a user logging a fatigue level. It decides
+        after investigating what fields are set, how to log the information to the database
+        to avoid storing unecessary data.
+    */
+    fileprivate func handleFatigueAlertDialogOnCompletion(popup: PopupDialog, area: String) {
+        
+        let fatigueAlertDialog : FatigueAlertDialog = popup.viewController as! FatigueAlertDialog
+        let rating = fatigueAlertDialog.getRating()
+        let notesDescription = fatigueAlertDialog.getNotesDescription()
+        let medsDescription = fatigueAlertDialog.getMedsDescription()
+        
+        //if both a note and med description has been set
+        if notesDescription.1 && medsDescription.1 {
+            self.logPainRating(rating, notesDescription.0, medsDescription.0, area)
+        
+        //if only a note has been set
+        } else if notesDescription.1 && !medsDescription.1 {
+            self.logPainRating(rating, notesDescription.0, "", area)
+            
+        //if only a med desription has been set
+        } else if !notesDescription.1 && medsDescription.1 {
+            self.logPainRating(rating, "", medsDescription.0, area)
+        
+        //if nethier a note or med description has been set
+        } else {
+            self.logPainRating(rating, "", "", area)
+        }
+    }
+    
+    /*
+        A method that handles the completion of a user logging a pain level. It decides
+        after investigating what fields are set, how to log the information to the database
+        to avoid storing unecessary data.
+     */
+    fileprivate func handleAlertDialogOnCompletion(popup: PopupDialog, area: String, image: UIImage?, node: SCNNode?) {
+        let alertDialog: AlertDialog = popup.viewController as! AlertDialog
+        let rating = alertDialog.getRating()
+        let notesDescription = alertDialog.getNotesDescription()
+        let medsDescription = alertDialog.getMedsDescription()
+        
+        //if both a note and med description has been set
+        if notesDescription.1 && medsDescription.1 {
+            self.logPainRating(rating, notesDescription.0, medsDescription.0, area)
+            
+        //if only a note has been set
+        } else if notesDescription.1 && !medsDescription.1 {
+            self.logPainRating(rating, notesDescription.0, "", area)
+            
+        //if only a med desription has been set
+        } else if !notesDescription.1 && medsDescription.1 {
+            self.logPainRating(rating, "", medsDescription.0, area)
+            
+        //if nethier a note or med description has been set
+        } else {
+            self.logPainRating(rating, "", "", area)
+        }
+
+        //Flips UVS horizontally
+        if image != nil {
+            guard let nodeg = node else { return }
+            nodeg.geometry?.firstMaterial?.emission.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(1, -1, 1), 0, 1, 0);
+            nodeg.geometry?.firstMaterial?.emission.contents = image
+            nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+        } else {
+            guard let nodeg = node else { return }
+            nodeg.geometry?.firstMaterial?.emission.contents = UIColor(red: 150/255, green: 0.0/255, blue: 0/255, alpha: 0.5)
+            nodeg.geometry?.firstMaterial?.emission.intensity = CGFloat(alertDialog.getRating()*0.2)
+        }
     }
 
     //Adapted from stack overflow
@@ -533,9 +569,7 @@ class HomeController: UIViewController {
         self.manMesh = manMesh
         
     }
-    
-    
-    
+
     private func addMaleSkeleton(){
         let man_skele = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "man_skele", ofType: "obj"),
@@ -566,9 +600,6 @@ class HomeController: UIViewController {
         self.scene.rootNode.addChildNode(man_skele.node)
     }
     
-    
-    
-    
     //Function that imports all the muscles. The reason this is not in a for loop is so we have
     //individual control over each object as we import it.
     private func addMuscles(){
@@ -589,8 +620,6 @@ class HomeController: UIViewController {
         absL.node.scale = SCNVector3(2.5,2.5,2.5)
         absL.node.name = "Rectus abdominus right"
         self.scene.rootNode.addChildNode(absL.node)
-        
-        
         
         let absR = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "AbsR", ofType: "obj"),
