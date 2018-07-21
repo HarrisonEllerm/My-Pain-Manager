@@ -358,9 +358,12 @@ class HomeController: UIViewController {
         if rating > 0 {
             //Get date and use it as a key under the particular pain type
             let dateF : DateFormatter = DateFormatter()
-            dateF.dateFormat = "yyyy-MMM-dd HH:mm"
+            let hoursMins : DateFormatter = DateFormatter()
+            dateF.dateFormat = "yyyy-MMM-dd"
+            hoursMins.dateFormat = "HH:mm:ss"
             let date = Date()
-            let dateS = dateF.string(from: date)
+            let dateFull = dateF.string(from: date)
+            let dateHoursMins = hoursMins.string(from: date)
             guard let uid = Auth.auth().currentUser?.uid else {
                 SwiftSpinner.show("Error retrieving UID...").addTapHandler({
                     SwiftSpinner.hide()
@@ -372,20 +375,25 @@ class HomeController: UIViewController {
             var painDictionary: Dictionary<String, Any>
            
             if !notesDescription.isEmpty && !medsDescription.isEmpty {
-                painDictionary = ["ranking": rating, "notesDescription": notesDescription, "medsDescription": medsDescription]
+                painDictionary = ["type": area, "ranking": rating, "notesDescription": notesDescription, "medsDescription": medsDescription]
             
             } else if !notesDescription.isEmpty && medsDescription.isEmpty {
-                painDictionary = ["ranking": rating, "notesDescription": notesDescription]
+                painDictionary = ["type": area, "ranking": rating, "notesDescription": notesDescription]
             
             } else if notesDescription.isEmpty && !medsDescription.isEmpty {
-                painDictionary = ["ranking": rating, "medsDescription": medsDescription]
+                painDictionary = ["type": area, "ranking": rating, "medsDescription": medsDescription]
             
             } else {
-                painDictionary = ["ranking": rating]
+                painDictionary = ["type": area, "ranking": rating]
             }
             
-            //Write to DB
-            Database.database().reference().child("pain").child(uid).child(dateS).child(area).updateChildValues(painDictionary) { (err, dbRef) in
+            //Write to DB in correct structure to allow quick searching
+            Database.database().reference()
+                .child("pain")
+                .child(uid)
+                .child(dateFull)
+                .child(dateHoursMins)
+                .updateChildValues(painDictionary) { (err, dbRef) in
             if let error = err {
                 SwiftSpinner.show("Error logging pain...").addTapHandler({
                     SwiftSpinner.hide()

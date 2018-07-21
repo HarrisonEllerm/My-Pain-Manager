@@ -47,6 +47,13 @@ class Service {
             completion()
         }
     }
+    
+    static func setupNavBar(controller: UIViewController) {
+        controller.navigationController?.navigationBar.titleTextAttributes =
+            [NSAttributedStringKey.foregroundColor:UIColor.white]
+        controller.navigationController?.navigationBar.barTintColor = UIColor.black
+        controller.view.backgroundColor = UIColor.black
+    }
 
 }
 

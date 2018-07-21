@@ -18,282 +18,355 @@ import FirebaseAuth
 
 class SummaryController: UIViewController {
     
-
-    //TODO create page
-    fileprivate var chart: Chart? // arc
-    let sideSelectorHeight: CGFloat = 50
-    let alpha: CGFloat = 0.9//0.6
+    private var chart: Chart? // arc
+    private var didLayout: Bool = false
+    private var lineModelData = [LineDataWrapper]()
+    private var typeKeyMap = Dictionary<String, UIColor>()
     
-    fileprivate func chart(horizontal: Bool) -> Chart? {
-        
-         if Auth.auth().currentUser != nil {
-        
-        let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont)
-        
-        let color0 = UIColor.gray.withAlphaComponent(alpha)
-        let color1 = UIColor.blue.withAlphaComponent(alpha)
-        let color2 = UIColor.red.withAlphaComponent(alpha)
-        let color3 = UIColor.green.withAlphaComponent(alpha)
-        
-        let zero = ChartAxisValueDouble(0)
-        
-        let dateF : DateFormatter = DateFormatter()
-        dateF.dateFormat = "yyyy-MMM-dd"
-        let date = Date()
-        let dateS = dateF.string(from: date)
-            
-        if let uid = Auth.auth().currentUser?.uid {
-            let painRef = Database.database().reference(withPath: "pain").child(uid)
-            
-            painRef.child(dateS).observeSingleEvent(of: .value) { (snapshot) in
-                var barModel = [ChartStackedBarModel]()
-                
-                if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                    for snap in snapshots {
-                    
-                        if let values = snap.value as? Dictionary<String, Any> {
-                            let key = snap.key
-                            guard let rating = values["ranking"] else { return }
-                            //print(key)
-                            //print(rating)
-                            //barModel.append(<#T##newElement: ChartStackedBarModel##ChartStackedBarModel#>)
-                            
-                        }
-                    }
-                }
-                
-            }
-        }
-    
-        
-        let barModels = [
-            ChartStackedBarModel(constant: ChartAxisValueString("01", order: 1, labelSettings: labelSettings), start: zero, items: [
-                ChartStackedBarItemModel(quantity: 2, bgColor: color0),
-                ChartStackedBarItemModel(quantity: 6, bgColor: color1),
-                ChartStackedBarItemModel(quantity: 3, bgColor: color2),
-                ChartStackedBarItemModel(quantity: 2, bgColor: color3)
-                ]),
-            ChartStackedBarModel(constant: ChartAxisValueString("02", order: 2, labelSettings: labelSettings), start: zero, items: [
-                ChartStackedBarItemModel(quantity: 4, bgColor: color0),
-                ChartStackedBarItemModel(quantity: 3, bgColor: color1),
-                ChartStackedBarItemModel(quantity: 1, bgColor: color2),
-                ChartStackedBarItemModel(quantity: 3, bgColor: color3)
-                ]),
-            ChartStackedBarModel(constant: ChartAxisValueString("03", order: 3, labelSettings: labelSettings), start: zero, items: [
-                ChartStackedBarItemModel(quantity: 3, bgColor: color0),
-                ChartStackedBarItemModel(quantity: 5, bgColor: color1),
-                ChartStackedBarItemModel(quantity: 2, bgColor: color2),
-                ChartStackedBarItemModel(quantity: 1, bgColor: color3)
-                ]),
-            ChartStackedBarModel(constant: ChartAxisValueString("04", order: 4, labelSettings: labelSettings), start: zero, items: [
-                ChartStackedBarItemModel(quantity: 1, bgColor: color0),
-                ChartStackedBarItemModel(quantity: 3, bgColor: color1),
-                ChartStackedBarItemModel(quantity: 5, bgColor: color2),
-                ChartStackedBarItemModel(quantity: 5, bgColor: color3)
-                ])
-        ]
-        
-        let (axisValues1, axisValues2) = (
-            stride(from: 0, through: 40, by: 10).map {ChartAxisValueDouble(Double($0), labelSettings: labelSettings)},
-            [ChartAxisValueString("", order: 0, labelSettings: labelSettings)] + barModels.map{$0.constant} + [ChartAxisValueString("", order: 5, labelSettings: labelSettings)]
-        )
-        let (xValues, yValues) = horizontal ? (axisValues1, axisValues2) : (axisValues2, axisValues1)
-        
-        var xModel = ChartAxisModel(axisValues: xValues, axisTitleLabel: ChartAxisLabel(text: "Time/Date", settings: labelSettings))
-        var yModel = ChartAxisModel(axisValues: yValues, axisTitleLabel: ChartAxisLabel(text: "Pain/Lethargy level", settings: labelSettings.defaultVertical()))
-        
-        if horizontal{
-            xModel = ChartAxisModel(axisValues: xValues, axisTitleLabel: ChartAxisLabel(text: "Pain Level", settings: labelSettings))
-            yModel = ChartAxisModel(axisValues: yValues, axisTitleLabel: ChartAxisLabel(text: "Time/Date", settings: labelSettings.defaultVertical()))
-            
-        }
-        else{
-            xModel = ChartAxisModel(axisValues: xValues, axisTitleLabel: ChartAxisLabel(text: "Time/Date", settings: labelSettings))
-            yModel = ChartAxisModel(axisValues: yValues, axisTitleLabel: ChartAxisLabel(text: "Pain Level", settings: labelSettings.defaultVertical()))
-        }
-        
-        
-        let frame = ExamplesDefaults.chartFrame(view.bounds)
-        let chartFrame = chart?.frame ?? CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.size.width, height: frame.size.height - sideSelectorHeight)
-        
-        let chartSettings = ExamplesDefaults.chartSettingsWithPanZoom
-        
-        let coordsSpace = ChartCoordsSpaceLeftBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModel, yModel: yModel)
-        let (xAxisLayer, yAxisLayer, innerFrame) = (coordsSpace.xAxisLayer, coordsSpace.yAxisLayer, coordsSpace.chartInnerFrame)
-        
-        let barViewSettings = ChartBarViewSettings(animDuration: 0.5)
-        let chartStackedBarsLayer = ChartStackedBarsLayer(xAxis: xAxisLayer.axis, yAxis: yAxisLayer.axis, innerFrame: innerFrame, barModels: barModels, horizontal: horizontal, barWidth: 40, settings: barViewSettings, stackFrameSelectionViewUpdater: ChartViewSelectorAlpha(selectedAlpha: 1, deselectedAlpha: alpha)) {tappedBar in
-            
-            guard let stackFrameData = tappedBar.stackFrameData else {return}
-            
-            let chartViewPoint = tappedBar.layer.contentToGlobalCoordinates(CGPoint(x: tappedBar.barView.frame.midX, y: stackFrameData.stackedItemViewFrameRelativeToBarParent.minY))!
-            let viewPoint = CGPoint(x: chartViewPoint.x, y: chartViewPoint.y + 70)
-            let infoBubble = InfoBubble(point: viewPoint, preferredSize: CGSize(width: 50, height: 40), superview: self.view, text: "\(stackFrameData.stackedItemModel.quantity)", font: ExamplesDefaults.labelFont, textColor: UIColor.white, bgColor: UIColor.black)
-            infoBubble.tapHandler = {
-                infoBubble.removeFromSuperview()
-            }
-            self.view.addSubview(infoBubble)
-        }
-        
-        let settings = ChartGuideLinesDottedLayerSettings(linesColor: UIColor.black, linesWidth: ExamplesDefaults.guidelinesWidth)
-        let guidelinesLayer = ChartGuideLinesDottedLayer(xAxisLayer: xAxisLayer, yAxisLayer: yAxisLayer, settings: settings)
-        
-        
-            return Chart(
-                frame: chartFrame,
-                innerFrame: innerFrame,
-                settings: chartSettings,
-                layers: [
-                    xAxisLayer,
-                    yAxisLayer,
-                    guidelinesLayer,
-                    chartStackedBarsLayer
-                ]
-            )
-        
-         } else {
-            return nil
-        }
-    }
-    
-    
-    fileprivate func showChart(horizontal: Bool) {
-        self.chart?.clearView()
-        
-        guard let chart = self.chart(horizontal: horizontal) else { return }
-        view.addSubview(chart.view)
-        self.chart = chart
-    
-    }
+    let chartContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.titleTextAttributes =
-            [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.black
-        
-        view.backgroundColor = .white
-        
-        
+        Service.setupNavBar(controller: self)
         let now = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "LLLL"
         let nameOfMonth = dateFormatter.string(from: now)
+        self.navigationItem.title = "My Pain Chart for \(nameOfMonth)"
         
-        navigationItem.title = "My Pain Chart for \(nameOfMonth)"
-        
-        showChart(horizontal: false)
-        if let chart = chart {
-            let sideSelector = DirSelector(frame: CGRect(x: 0, y: chart.frame.origin.y + chart.frame.size.height, width: view.frame.size.width, height: sideSelectorHeight), controller: self)
-            view.addSubview(sideSelector)
-        }
-        
-        
-        //For each pain thats been logged
-        let button1 = UIButton()
-        button1.frame = CGRect(x: self.view.frame.size.width - 60, y: 100, width: 60, height: 30)
-        button1.backgroundColor = UIColor.gray.withAlphaComponent(alpha)
-        button1.setTitle("Paintype1", for: .normal)
-        button1.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.view.addSubview(button1)
-        
-        let button2 = UIButton()
-        button2.frame = CGRect(x: self.view.frame.size.width - 120, y: 100, width: 60, height: 30)
-        button2.backgroundColor = UIColor.blue.withAlphaComponent(alpha)
-        button2.setTitle("Paintype2", for: .normal)
-        button2.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.view.addSubview(button2)
-        
-        let button3 = UIButton()
-        button3.frame = CGRect(x: self.view.frame.size.width - 180, y: 100, width: 60, height: 30)
-        button3.backgroundColor = UIColor.red.withAlphaComponent(alpha)
-        button3.setTitle("Paintype3", for: .normal)
-        button3.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.view.addSubview(button3)
-        
-        let button4 = UIButton()
-        button4.frame = CGRect(x: self.view.frame.size.width - 240, y: 100, width: 60, height: 30)
-        button4.backgroundColor = UIColor.green.withAlphaComponent(alpha)
-        button4.setTitle("Paintype4", for: .normal)
-        button4.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.view.addSubview(button4)
-        
-        
-        
-        
+        view.addSubview(chartContainer)
+        setupChartContainer()
+        getDataForTimePeriod()
         
     }
     
-    class DirSelector: UIView {
+    private func getDataForTimePeriod() {
         
-        let horizontal: UIButton
-        let vertical: UIButton
+        let dateF : DateFormatter = DateFormatter()
+        dateF.dateFormat = "yyyy-MMM-dd"
+        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        let date = Date()
+        let dateS = dateF.string(from: date)
+        print("Date s: \(dateS)")
         
-        weak var controller: SummaryController?
-        
-        fileprivate let buttonDirs: [UIButton : Bool]
-        
-        init(frame: CGRect, controller: SummaryController) {
-            
-            self.controller = controller
-            
-            self.horizontal = UIButton()
-            self.horizontal.setTitle("Horizontal", for: UIControlState())
-            self.vertical = UIButton()
-            self.vertical.setTitle("Vertical", for: UIControlState())
-            
-            self.buttonDirs = [horizontal: false, vertical: true]
-            
-            super.init(frame: frame)
-            
-            addSubview(vertical)
-            addSubview(horizontal)
-            
-            
-            for button in [horizontal, vertical] {
-                button.titleLabel?.font = ExamplesDefaults.fontWithSize(14)
-                button.setTitleColor(UIColor.blue, for: UIControlState())
-                button.addTarget(self, action: #selector(DirSelector.buttonTapped(_:)), for: .touchUpInside)
+        if Auth.auth().currentUser != nil {
+            if let uid = Auth.auth().currentUser?.uid {
+                
+                var wrappers: [Wrapper] = []
+                let painRef = Database.database().reference(withPath: "pain").child(uid)
+                
+                painRef.child(dateS).observeSingleEvent(of: .value) { (snapshot) in
+                   
+                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                        for snap in snapshots {
+                            
+                            if let values = snap.value as? Dictionary<String, Any> {
+                                let time = dateS + " " + snap.key
+                                guard let rating : Int = values["ranking"] as? Int else { return }
+                                guard let type : String = values["type"] as? String else { return }
+                                
+                                let w = Wrapper(time, rating, type)
+                                wrappers.append(w)
+                            }
+                        }
+                    }
+                   self.buildDailyChart(wrappers)
+                }
             }
         }
+    }
+    
+    fileprivate func buildDailyChart(_ wrappers: [Wrapper]) {
+        print("Building daily chart")
+        var mappedWrappers : Dictionary<String, [Wrapper]> = Dictionary()
         
-        @objc func buttonTapped(_ sender: UIButton) {
-            let horizontal = sender == self.horizontal ? true : false
-            controller?.showChart(horizontal: horizontal)
+        for item in wrappers {
+            if mappedWrappers[item.getType()] != nil {
+                mappedWrappers[item.getType()]?.append(item)
+                
+            } else {
+                mappedWrappers.updateValue([item], forKey: item.getType())
+            }
+        }
+        //Get into correct format for graphing
+        for area in mappedWrappers {
+            
+            //Create a linedatawrapper to hold info
+            let lineData = LineDataWrapper()
+            
+            //So that it has somewhere to draw from on the axis
+            var dataHolder = [(Double,Double)]()
+            dataHolder.append((0.0,0.0))
+            
+            for item in area.value {
+                lineData.setType(item.getType())
+                let doubleTime: Double = getDoubleFromTimeString(input: item.getTime())
+                let doubleRating = Double(item.getRating())
+                dataHolder.append((doubleTime, doubleRating))
+            }
+            
+            lineData.setLineModelData(dataHolder)
+            lineModelData.append(lineData)
         }
         
-        override func didMoveToSuperview() {
-            let views = [horizontal, vertical]
-            for v in views {
-                v.translatesAutoresizingMaskIntoConstraints = false
-            }
-            
-            let namedViews = views.enumerated().map{index, view in
-                ("v\(index)", view)
-            }
-            
-            var viewsDict = Dictionary<String, UIView>()
-            for namedView in namedViews {
-                viewsDict[namedView.0] = namedView.1
-            }
-            
-            let buttonsSpace: CGFloat = 10
-            
-            let hConstraintStr = namedViews.reduce("H:|") {str, tuple in
-                "\(str)-(\(buttonsSpace))-[\(tuple.0)]"
-            }
-            
-            let vConstraits = namedViews.flatMap {NSLayoutConstraint.constraints(withVisualFormat: "V:|[\($0.0)]", options: NSLayoutFormatOptions(), metrics: nil, views: viewsDict)}
-            
-            addConstraints(NSLayoutConstraint.constraints(withVisualFormat: hConstraintStr, options: NSLayoutFormatOptions(), metrics: nil, views: viewsDict)
-                + vConstraits)
+        view.backgroundColor = UIColor.black
+        guard let chart = chart else {return}
+        for view in chart.view.subviews {
+            view.removeFromSuperview()
+        }
+        self.initChart()
+        chart.view.setNeedsDisplay()
+        
+    }
+    
+    /**
+        A utility method used to format the input date into a double value
+        that represents the time in 24 hour format.
+    */
+    private func getDoubleFromTimeString(input: String) -> Double {
+        let timeSplit = input.split(separator: " ")
+        let timeIWant = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
+        let timeDouble = Double(timeIWant)
+        guard let unwrappedTime = timeDouble else { return 0.0 }
+        return unwrappedTime
+    }
+    
+    private func initChart() {
+        
+        let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
+        
+        let firstHour: Double = 0
+        let lastHour: Double = 24
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
+        
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(1)
+        
+        var labCopy = labelSettings
+        labCopy.fontColor = UIColor.red
+        let xEmptyLabelsGenerator = ChartAxisLabelsGeneratorFunc {value in return
+            ChartAxisLabel(text: "", settings: labCopy)
         }
         
-        required init(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+        let xModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+            xEmptyLabelsGenerator)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // 2nd x-axis model: Has an axis value (tick) for each <rangeSize>/2 years. We use this to show the x-axis labels
+        
+        let rangeSize: Double = view.frame.width < view.frame.height ? 12 : 6 // adjust intervals for orientation
+        let rangedMult: Double = rangeSize / 2
+
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 0
+
+        let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
+            if value < lastHour && value.truncatingRemainder(dividingBy: rangedMult) == 0 && value.truncatingRemainder(dividingBy: rangeSize) != 0 {
+                let val1 = value - rangedMult
+                let val2 = value + rangedMult
+                return ChartAxisLabel(text: "\(String(format: "%.0f", val1)) - \(String(format: "%.0f", val2))", settings: labelSettings)
+            } else {
+                return ChartAxisLabel(text: "", settings: labelSettings)
+            }
         }
+
+        let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
+
+        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // 3rd x-axis model: Has an axis value (tick) for each <rangeSize> years. We use this to show the x-axis guidelines and long dividers
+        
+        let xValuesGuidelineGenerator = ChartAxisGeneratorMultiplier(rangeSize)
+        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////////
+        // y-axis model: Has an axis value (tick) for each 2 units. We use this to show the y-axis dividers, labels and guidelines.
+        
+        let generator = ChartAxisGeneratorMultiplier(1)
+        let labelsGenerator = ChartAxisLabelsGeneratorFunc {scalar in
+            return ChartAxisLabel(text: "\(scalar)", settings: labelSettings)
+        }
+        
+        let yModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: 0, lastModelValue: 5, axisTitleLabels: [], axisValuesGenerator: generator, labelsGenerator: labelsGenerator)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Chart frame, settings
+        
+        let chartFrame = ExamplesDefaults.chartFrame(chartContainer.bounds)
+        
+        var chartSettings = ExamplesDefaults.chartSettingsWithPanZoom
+        
+        chartSettings.axisStrokeWidth = 0.5
+        chartSettings.labelsToAxisSpacingX = 10
+        chartSettings.leading = -1
+        chartSettings.trailing = 40
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // In order to transform the axis models into axis layers, and get the chart inner frame size, we need to use ChartCoordsSpace.
+        // Note that in the case of the x-axes we need to use ChartCoordsSpace multiple times - each of these axes represent essentially the same x-axis, so we can't use multi-axes functionality (i.e. pass an array of x-axes to ChartCoordsSpace).
+        
+        let coordsSpace = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModel, yModel: yModel)
+        let coordsSpaceForRanges = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForRanges, yModel: yModel)
+        let coordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForGuidelines, yModel: yModel)
+        
+        var (xAxisLayer, yAxisLayer, innerFrame) = (coordsSpace.xAxisLayer, coordsSpace.yAxisLayer, coordsSpace.chartInnerFrame)
+        var (xRangedAxisLayer, _, _) = (coordsSpaceForRanges.xAxisLayer, coordsSpaceForRanges.yAxisLayer, coordsSpaceForRanges.chartInnerFrame)
+        let (xGuidelinesAxisLayer, _, _) = (coordsSpaceForGuidelines.xAxisLayer, coordsSpaceForGuidelines.yAxisLayer, coordsSpaceForGuidelines.chartInnerFrame)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Lines layer
+        var lineModels = [ChartLineModel]()
+        
+        for item in lineModelData {
+            
+            print("Graphing: \(item.getType())")
+            
+            let randColor = UIColor.random()
+            //Store color for key later
+            typeKeyMap.updateValue(randColor, forKey: item.getType())
+
+            let lineChartPoints = item.getLineModelData().map{ChartPoint(x: ChartAxisValueDouble($0.0), y: ChartAxisValueDouble($0.1))}
+            let lineModel = ChartLineModel(chartPoints: lineChartPoints, lineColor: randColor, lineWidth: 2, animDuration: 1, animDelay: 0)
+            lineModels.append(lineModel)
+            
+        }
+        
+        let chartPointsLineLayer = ChartPointsLineLayer<ChartPoint>(xAxis: xAxisLayer.axis, yAxis: yAxisLayer.axis, lineModels: lineModels, pathGenerator: CubicLinePathGenerator(tension1: 0.2, tension2: 0.2))
+
+        // Finally we set a custom clip rect for the view where we display the markers, in order to not show them outside of the chart's boundaries, during zooming and panning. For now the size is hardcoded. This should be improved. Until then you can calculate the exact frame using the spacing settings and label (string) sizes.
+        chartSettings.customClipRect = CGRect(x: 0, y: chartSettings.top, width: view.frame.width, height: view.frame.height - 120)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Guidelines layer. Note how we pass the x-axis layer we created specifically for the guidelines.
+        
+        let guidelinesLayerSettings = ChartGuideLinesLayerSettings(linesColor: UIColor.white, linesWidth: 0.3)
+        let guidelinesLayer = ChartGuideLinesLayer(xAxisLayer: xGuidelinesAxisLayer, yAxisLayer: yAxisLayer, settings: guidelinesLayerSettings)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Dividers layer with small lines. This is used both in x and y axes
+        
+        let dividersSettings =  ChartDividersLayerSettings(linesColor: UIColor.white, linesWidth: 1, start: 2, end: 0)
+        let dividersLayer = ChartDividersLayer(xAxisLayer: xAxisLayer, yAxisLayer: yAxisLayer, axis: .xAndY, settings: dividersSettings)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Dividers layer with long lines. This is used only in the x axis. Note how we pass the same axis layer we passed to the guidelines - we want to use the same intervals.
+        
+        let dividersSettings2 =  ChartDividersLayerSettings(linesColor: UIColor.white, linesWidth: 0.5, start: 30, end: 0)
+        let dividersLayer2 = ChartDividersLayer(xAxisLayer: xGuidelinesAxisLayer, yAxisLayer: yAxisLayer, axis: .x, settings: dividersSettings2)
+        
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Disable frame updates for 2 of the 3 x-axis layers. This way the space will not be reserved multiple times. We need this only because the 3 layers represent the same x-axis (for a multi-axis chart this would not be necessary). Note that it's important to pass all 3 layers to the chart, although only one is actually visible, because otherwise the layers will not receive inner frame updates, which results in any layers that reference these layers not being positioned correctly.
+        xRangedAxisLayer.canChangeFrameSize = false
+        xAxisLayer.canChangeFrameSize = false
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // create chart instance with frame and layers
+        let chart = Chart(
+            frame: chartFrame,
+            innerFrame: innerFrame,
+            settings: chartSettings,
+            layers: [
+                xAxisLayer,
+                xRangedAxisLayer,
+                xGuidelinesAxisLayer,
+                yAxisLayer,
+                guidelinesLayer,
+                chartPointsLineLayer,
+                dividersLayer,
+                dividersLayer2
+            ]
+        )
+        
+        view.addSubview(chart.view)
+        self.chart = chart
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if !self.didLayout {
+            self.didLayout = true
+            self.initChart()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
+    private func setupChartContainer() {
+        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: -20).isActive = true
+        chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
+        chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
+    }
     
 }
+
+
+private class Wrapper {
+    
+    let time: String
+    let rating: Int
+    let type: String
+    
+    init(_ time: String, _ rating: Int, _ type: String) {
+        self.time = time
+        self.rating = rating
+        self.type = type
+    }
+    
+    func getTime() -> String {
+        return self.time
+    }
+    
+    func getRating() -> Int {
+        return self.rating
+    }
+    
+    func getType() -> String {
+        return self.type
+    }
+}
+
+private class LineDataWrapper {
+    
+    var lineModelData = [(Double, Double)]()
+    var type: String = ""
+    
+    func setType(_ type: String) {
+        self.type = type
+    }
+    
+    func getType() -> String {
+        return self.type
+    }
+    
+    func getLineModelData() -> [(Double, Double)] {
+        return self.lineModelData
+    }
+    
+    func setLineModelData(_ model: [(Double, Double)]) {
+        self.lineModelData = model
+    }
+}
+
 
