@@ -77,7 +77,6 @@ class WelcomeController: UIViewController {
         videoPlayer?.play()
         var isPlayingInNegative = false
         // add observer to watch for video end in order to loop video
-        
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
                 object: self.videoPlayer?.currentItem, queue: nil) {
                     (_) in

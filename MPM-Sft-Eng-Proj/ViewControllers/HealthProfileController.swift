@@ -40,23 +40,18 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Service.setupNavBar(controller: self)
         view.backgroundColor = .white
         navigationItem.title = "Health Profile"
-        navigationController?.navigationBar.titleTextAttributes =
-            [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.black
         let vc = navigationController?.viewControllers.first
         let button = UIBarButtonItem(title: "Profile", style: .plain, target: self, action: nil)
         vc?.navigationItem.backBarButtonItem = button
-        setUpViews()
-        healthTableView.delegate = self
-        healthTableView.dataSource = self
-        healthTableView.rowHeight = 44
-        healthTableView.isScrollEnabled = false
-        healthTableView.allowsSelection = true
-        //TODO: go to firebase to get the values
+        setUpTable()
+        setupTableData()
+    }
+    
+    private func setupTableData() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-        
         DispatchQueue.main.async {
             Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value) { (snapshot) in
                 if let values = snapshot.value as? [String : AnyObject] {
@@ -64,7 +59,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
                     let gender = values["gender"] as! String
                     let height = values["height"] as! String
                     let weight = values["weight"] as! String
-                  
+                    
                     self.data = [HealthCellData.init(message: "Birth Date", value: birthdate),
                                  HealthCellData.init(message: "Gender", value: gender),
                                  HealthCellData.init(message: "Height", value: height),
@@ -75,22 +70,28 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         }
     }
     
-    fileprivate func setUpViews() {
-        
+    
+    fileprivate func setUpTable() {
         view.addSubview(healthTableView)
         view.addSubview(label)
         healthTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
         healthTableView.register(GenderEntryCell.self, forCellReuseIdentifier: "genderEntry")
         healthTableView.register(HeightEntryCell.self, forCellReuseIdentifier: "heightEntry")
         healthTableView.register(WeightEntryCell.self, forCellReuseIdentifier: "weightEntry")
+        anchorTable()
+        healthTableView.delegate = self
+        healthTableView.dataSource = self
+        healthTableView.rowHeight = 44
+        healthTableView.isScrollEnabled = false
+        healthTableView.allowsSelection = true
+    }
+    
+    func anchorTable() {
         healthTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         healthTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         healthTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         healthTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-    
     }
-    
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count

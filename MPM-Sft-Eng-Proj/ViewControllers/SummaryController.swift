@@ -15,15 +15,35 @@ import Foundation
 import SwiftCharts
 import FirebaseDatabase
 import FirebaseAuth
+import DateToolsSwift
 
-class SummaryController: UIViewController {
-    
-    private var chart: Chart? // arc
+class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+   
+    private var chart: Chart?
     private var didLayout: Bool = false
     private var lineModelData = [LineDataWrapper]()
     private var typeKeyMap = Dictionary<String, UIColor>()
+    private var isLoadingViewController = false
     
-    let chartContainer: UIView = {
+    private let summaryTableView : UITableView = {
+        let t = UITableView()
+        t.translatesAutoresizingMaskIntoConstraints = false
+        t.isScrollEnabled = true
+        t.tableFooterView = UIView(frame: .zero)
+        t.allowsSelection = true
+        t.allowsMultipleSelection = false
+        //t.separatorColor = UIColor.white
+        return t
+    }()
+    
+    private var chartContainer : UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.black
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private var keyContainer : UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -32,19 +52,75 @@ class SummaryController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        Service.setupNavBar(controller: self)
-        let now = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "LLLL"
-        let nameOfMonth = dateFormatter.string(from: now)
-        self.navigationItem.title = "My Pain Chart for \(nameOfMonth)"
-        
-        view.addSubview(chartContainer)
-        setupChartContainer()
-        getDataForTimePeriod()
-        
+        isLoadingViewController = true
+        setupView()
     }
     
+    private func setupView() {
+        Service.setupNavBar(controller: self)
+        self.navigationItem.title = "Summary"
+        view.addSubview(chartContainer)
+        setupChartContainer()
+        chartContainer.addSubview(keyContainer)
+        setupKeyContainer()
+        getDataForTimePeriod()
+        summaryTableView.delegate = self
+        summaryTableView.dataSource = self
+        summaryTableView.rowHeight = 44
+        summaryTableView.isScrollEnabled = false
+        summaryTableView.allowsSelection = true
+        summaryTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
+        view.addSubview(summaryTableView)
+        setupSummaryTableView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if isLoadingViewController {
+            isLoadingViewController = false
+        } else {
+            setupView()
+        }
+    }
+  
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let dateF : DateFormatter = DateFormatter()
+        dateF.dateFormat = "yyyy-MMM-dd"
+        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        let date = Date()
+        
+        if (indexPath.row == 0) {
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "dateEntry") as! DateEntryCell
+            cell.textFieldName = "From"
+            let dateS = dateF.string(from: date)
+            cell.textFieldValue = dateS
+            //cell.textLabel?.textColor = UIColor.white
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        } else {
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "dateEntry") as! DateEntryCell
+            let toDate = date.add(1.days)
+            let dateS = dateF.string(from: toDate)
+            cell.textFieldName = "To"
+            cell.textFieldValue = dateS
+            //cell.textLabel?.textColor = UIColor.white
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        }
+    }
+    
+    /**
+        Queries Firebase for the logs of data associated with a users
+        account, wraps those logs up into an object for simplicity, and
+        passes them to a function which cleans the data and builds the
+        graph.
+    */
     private func getDataForTimePeriod() {
         
         let dateF : DateFormatter = DateFormatter()
@@ -57,8 +133,10 @@ class SummaryController: UIViewController {
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
                 
-                var wrappers: [Wrapper] = []
+                var wrappers: [LogWrapper] = []
+                
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
+                painRef.keepSynced(true)
                 
                 painRef.child(dateS).observeSingleEvent(of: .value) { (snapshot) in
                    
@@ -67,10 +145,10 @@ class SummaryController: UIViewController {
                             
                             if let values = snap.value as? Dictionary<String, Any> {
                                 let time = dateS + " " + snap.key
+                                //print(snap.key)
                                 guard let rating : Int = values["ranking"] as? Int else { return }
                                 guard let type : String = values["type"] as? String else { return }
-                                
-                                let w = Wrapper(time, rating, type)
+                                let w = LogWrapper(time, rating, type)
                                 wrappers.append(w)
                             }
                         }
@@ -81,10 +159,9 @@ class SummaryController: UIViewController {
         }
     }
     
-    fileprivate func buildDailyChart(_ wrappers: [Wrapper]) {
-        print("Building daily chart")
-        var mappedWrappers : Dictionary<String, [Wrapper]> = Dictionary()
+    fileprivate func buildDailyChart(_ wrappers: [LogWrapper]) {
         
+        var mappedWrappers : Dictionary<String, [LogWrapper]> = Dictionary()
         for item in wrappers {
             if mappedWrappers[item.getType()] != nil {
                 mappedWrappers[item.getType()]?.append(item)
@@ -113,20 +190,57 @@ class SummaryController: UIViewController {
             lineData.setLineModelData(dataHolder)
             lineModelData.append(lineData)
         }
-        
-        view.backgroundColor = UIColor.black
+        //INIT CHART
+        //view.backgroundColor = UIColor.black
         guard let chart = chart else {return}
         for view in chart.view.subviews {
             view.removeFromSuperview()
         }
         self.initChart()
         chart.view.setNeedsDisplay()
-        
+        self.setupChartKey()
+    }
+    
+    
+    /**
+        Implemented as it allows us to investigate the keyContainers
+        subviews (a variable amount of UITextViews) representing chart
+        keys for types of pain logged. Once identified we remove them
+        so that they can be dynamically redrawn when the user opens the
+        tab again.
+     
+        - parameter : animated, a default boolean.
+     */
+    override func viewDidDisappear(_ animated: Bool) {
+        for item in keyContainer.subviews {
+            item.removeFromSuperview()
+        }
+    }
+    
+    /**
+        Sets up the chart keys via investigating the map which holds the
+        color associated with a pain type (which is random at generation)
+        and the pain types name.
+     */
+    private func setupChartKey() {
+        var yCounter : CGFloat = 0.0
+        for item in typeKeyMap {
+            let someFrame = CGRect(x: 30.0, y: yCounter, width: 750, height: 30.0)
+            let newTextField = UITextField(frame: someFrame)
+            newTextField.text = item.key
+            newTextField.textColor = item.value
+            newTextField.allowsEditingTextAttributes = false
+            keyContainer.addSubview(newTextField)
+            yCounter = yCounter + 20
+        }
     }
     
     /**
         A utility method used to format the input date into a double value
         that represents the time in 24 hour format.
+     
+        - parameter : input, an input String
+        - returns: Double, the double value of the String
     */
     private func getDoubleFromTimeString(input: String) -> Double {
         let timeSplit = input.split(separator: " ")
@@ -136,6 +250,11 @@ class SummaryController: UIViewController {
         return unwrappedTime
     }
     
+    /**
+        Initialises and builds the chart, based on the template code
+        suggested for doing so, with some tweaks that allow us to dynamically
+        graph the associated pain and levels of pain over a period of time.
+    */
     private func initChart() {
         
         let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
@@ -227,13 +346,10 @@ class SummaryController: UIViewController {
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Lines layer
+        // Lines layer -- THIS IS WHERE WE MODIFY THE LINE DATA
         var lineModels = [ChartLineModel]()
         
         for item in lineModelData {
-            
-            print("Graphing: \(item.getType())")
-            
             let randColor = UIColor.random()
             //Store color for key later
             typeKeyMap.updateValue(randColor, forKey: item.getType())
@@ -293,15 +409,12 @@ class SummaryController: UIViewController {
                 dividersLayer2
             ]
         )
-        
         view.addSubview(chart.view)
         self.chart = chart
-        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         if !self.didLayout {
             self.didLayout = true
             self.initChart()
@@ -313,16 +426,30 @@ class SummaryController: UIViewController {
     }
 
     private func setupChartContainer() {
-        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -50).isActive = true
         chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: -20).isActive = true
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
-        chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20).isActive = true
+        chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150).isActive = true
+    }
+    
+    private func setupKeyContainer() {
+        keyContainer.topAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        keyContainer.leftAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.leftAnchor).isActive = true
+        keyContainer.rightAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.rightAnchor).isActive = true
+        keyContainer.bottomAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.bottomAnchor).isActive = true
+    }
+    
+    private func setupSummaryTableView() {
+        summaryTableView.topAnchor.constraint(equalTo: chartContainer.bottomAnchor).isActive = true
+        summaryTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+        summaryTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+        summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
     
 }
 
 
-private class Wrapper {
+private class LogWrapper {
     
     let time: String
     let rating: Int
