@@ -62,7 +62,11 @@ class HomeController: UIViewController {
         activityIndicator.startAnimating()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
-        view.backgroundColor = UIColor.black
+        
+        //view.backgroundColor = UIColor.black
+        
+        //self.scene.background.contents = UIImage(named: "spotlight")
+        
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.activityIndicator = activityIndicator
@@ -82,7 +86,7 @@ class HomeController: UIViewController {
             self.scnView = SCNView(frame: self.view.frame)
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
-            self.scene.background.contents = UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
+            self.scene.background.contents = UIImage(named: "spot")//UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
             self.scnView.scene = self.scene;
             self.addMaleSkin()
             self.addMaleSkeleton()
@@ -120,46 +124,50 @@ class HomeController: UIViewController {
     }
     
     func createLights(){
-        //Create light 1
+        
+        //Create light 1 to the right of the model.
         let light = SCNLight()
         light.type = SCNLight.LightType.omni
         let lightNode = SCNNode()
         lightNode.light = light
         lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
-        light.intensity = CGFloat(300)
+        light.intensity = CGFloat(600)
         self.scene.rootNode.addChildNode(lightNode)
-        //Create light 2
+
+        //Create light 2 Directly above the model.
         let light2 = SCNLight()
         let light2Node = SCNNode()
         light2.type = SCNLight.LightType.omni
         light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
-        light2.intensity = CGFloat(1700) //700
+        light2.intensity = CGFloat(4700) //700
         light2Node.light = light2
         self.scene.rootNode.addChildNode(light2Node)
-        //Create light 3
+        
+        //Create light 3 to the left of the model.
         let light3 = SCNLight()
         let light3Node = SCNNode()
         light3.type = SCNLight.LightType.omni
         light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
-        light3.intensity = CGFloat(400)
+        light3.intensity = CGFloat(600)
         light3Node.light = light3
         self.scene.rootNode.addChildNode(light3Node)
-        //Create light 4
+        
+        //Create light 4 behind the models back.
         let light4 = SCNLight()
         let light4Node = SCNNode()
         light4.type = SCNLight.LightType.omni
         light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
-        light4.intensity = CGFloat(400)
+        light4.intensity = CGFloat(600)
         light4Node.light = light4
         self.scene.rootNode.addChildNode(light4Node)
-        
-        let light5 = SCNLight()
-        let light5Node = SCNNode()
-        light5.type = SCNLight.LightType.ambient
-        light5Node.position = SCNVector3(x: 1.5, y: -50, z: 1.5)
-        light5.intensity = CGFloat(200)
-        light5Node.light = light5
-        self.scene.rootNode.addChildNode(light5Node)
+
+//        let light5 = SCNLight()
+//        let light5Node = SCNNode()
+//        light5.type = SCNLight.LightType.ambient
+//        light5Node.position = SCNVector3(x: 1.5, y: -50, z: 1.5)
+//        light5.intensity = CGFloat(1)
+//        light5Node.light = light5
+//        self.scene.rootNode.addChildNode(light5Node)
        
     }
     
@@ -573,7 +581,7 @@ class HomeController: UIViewController {
             metalness: "tex.jpg",
             normal: "tex.jpg"
             ).material
-        manMesh.node.geometry?.firstMaterial?.transparency = 0.5
+        manMesh.node.geometry?.firstMaterial?.transparency = 0.3
         self.manMesh = manMesh
         
     }
