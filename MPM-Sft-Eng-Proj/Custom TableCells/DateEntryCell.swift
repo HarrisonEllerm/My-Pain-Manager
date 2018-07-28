@@ -93,7 +93,6 @@ class DateEntryCell: UITableViewCell {
         textField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        
  
     }
     

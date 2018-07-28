@@ -131,7 +131,7 @@ class HomeController: UIViewController {
         let lightNode = SCNNode()
         lightNode.light = light
         lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
-        light.intensity = CGFloat(600)
+        light.intensity = CGFloat(450)
         self.scene.rootNode.addChildNode(lightNode)
 
         //Create light 2 Directly above the model.
@@ -139,7 +139,7 @@ class HomeController: UIViewController {
         let light2Node = SCNNode()
         light2.type = SCNLight.LightType.omni
         light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
-        light2.intensity = CGFloat(4700) //700
+        light2.intensity = CGFloat(3500) //700
         light2Node.light = light2
         self.scene.rootNode.addChildNode(light2Node)
         
@@ -148,7 +148,7 @@ class HomeController: UIViewController {
         let light3Node = SCNNode()
         light3.type = SCNLight.LightType.omni
         light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
-        light3.intensity = CGFloat(600)
+        light3.intensity = CGFloat(450)
         light3Node.light = light3
         self.scene.rootNode.addChildNode(light3Node)
         
@@ -157,7 +157,7 @@ class HomeController: UIViewController {
         let light4Node = SCNNode()
         light4.type = SCNLight.LightType.omni
         light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
-        light4.intensity = CGFloat(600)
+        light4.intensity = CGFloat(450)
         light4Node.light = light4
         self.scene.rootNode.addChildNode(light4Node)
 

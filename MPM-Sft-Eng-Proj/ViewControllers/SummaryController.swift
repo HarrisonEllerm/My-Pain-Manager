@@ -24,6 +24,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var lineModelData = [LineDataWrapper]()
     private var typeKeyMap = Dictionary<String, UIColor>()
     private var isLoadingViewController = false
+    private let numberOfDateOptions = 2
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -32,7 +33,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         t.tableFooterView = UIView(frame: .zero)
         t.allowsSelection = true
         t.allowsMultipleSelection = false
-        //t.separatorColor = UIColor.white
+        t.separatorInset = .zero
+        t.layoutMargins = .zero
         return t
     }()
     
@@ -59,6 +61,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func setupView() {
         Service.setupNavBar(controller: self)
         self.navigationItem.title = "Summary"
+        view.addSubview(summaryTableView)
+        setupSummaryTableView()
         view.addSubview(chartContainer)
         setupChartContainer()
         chartContainer.addSubview(keyContainer)
@@ -69,9 +73,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.rowHeight = 44
         summaryTableView.isScrollEnabled = false
         summaryTableView.allowsSelection = true
-        summaryTableView.register(DateEntryCell.self, forCellReuseIdentifier: "dateEntry")
-        view.addSubview(summaryTableView)
-        setupSummaryTableView()
+        summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,7 +87,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
   
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return numberOfDateOptions
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,7 +97,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let date = Date()
         
         if (indexPath.row == 0) {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "dateEntry") as! DateEntryCell
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             cell.textFieldName = "From"
             let dateS = dateF.string(from: date)
             cell.textFieldValue = dateS
@@ -103,16 +106,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             cell.layoutSubviews()
             return cell
         } else {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "dateEntry") as! DateEntryCell
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             let toDate = date.add(1.days)
             let dateS = dateF.string(from: toDate)
             cell.textFieldName = "To"
             cell.textFieldValue = dateS
-            //cell.textLabel?.textColor = UIColor.white
             cell.accessoryType = .disclosureIndicator
             cell.layoutSubviews()
             return cell
         }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.backgroundColor = UIColor.black
     }
     
     /**
@@ -426,10 +432,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
 
     private func setupChartContainer() {
-        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -50).isActive = true
+        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -120).isActive = true
         chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: -20).isActive = true
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
-        chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150).isActive = true
+        chartContainer.bottomAnchor.constraint(equalTo: summaryTableView.safeAreaLayoutGuide.topAnchor).isActive = true
     }
     
     private func setupKeyContainer() {
@@ -440,14 +446,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     private func setupSummaryTableView() {
-        summaryTableView.topAnchor.constraint(equalTo: chartContainer.bottomAnchor).isActive = true
         summaryTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         summaryTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-        summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        summaryTableView.heightAnchor.constraint(equalToConstant: 88).isActive = true
     }
     
 }
-
 
 private class LogWrapper {
     
