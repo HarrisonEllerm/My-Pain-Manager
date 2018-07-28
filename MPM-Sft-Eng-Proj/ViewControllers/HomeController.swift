@@ -1187,8 +1187,10 @@ class HomeController: UIViewController {
         
         
         
+        
+        //forearm6L
         let  forearm6L = ObjectWrapper(
-            mesh: MeshLoader.loadMeshWith(name: "forearm6L", ofType: "obj"),
+            mesh: MeshLoader.loadMeshWith(name: "Flexorcarpiulnarisright", ofType: "obj"),
             material: MaterialWrapper(
                 diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
                 roughness: NSNumber(value: 0.3),
@@ -1298,8 +1300,10 @@ class HomeController: UIViewController {
         forearmR5.node.name = "Flexor superficialis left"
         self.scene.rootNode.addChildNode(forearmR5.node)
         
+        
+        //forearmR6
         let  forearmR6 = ObjectWrapper(
-            mesh: MeshLoader.loadMeshWith(name: "forearmR6", ofType: "obj"),
+            mesh: MeshLoader.loadMeshWith(name: "Flexorcarpiulnarisleft", ofType: "obj"),
             material: MaterialWrapper(
                 diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
                 roughness: NSNumber(value: 0.3),

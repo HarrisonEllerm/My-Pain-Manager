@@ -13,6 +13,8 @@
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
 		384D7CBE2092BC0E00DBE5E3 /* tex.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBD2092BC0D00DBE5E3 /* tex.jpg */; };
 		384D7CC02092BE3E00DBE5E3 /* skin.png in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CBF2092BE3D00DBE5E3 /* skin.png */; };
+		38741048210BECF300500689 /* Flexorcarpiulnarisright.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38741046210BECF300500689 /* Flexorcarpiulnarisright.obj */; };
+		38741049210BECF300500689 /* Flexorcarpiulnarisleft.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38741047210BECF300500689 /* Flexorcarpiulnarisleft.obj */; };
 		3876397F20B90A5A009AA4F9 /* hitmaps3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3876397E20B90A59009AA4F9 /* hitmaps3.bundle */; };
 		38B9E53B209EF5CC00773B0F /* upperLegFrontL2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */; };
 		38B9E53C209EF5CC00773B0F /* forearmR7.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E4E4209EF5BE00773B0F /* forearmR7.obj */; };
@@ -174,6 +176,8 @@
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
 		384D7CBD2092BC0D00DBE5E3 /* tex.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = tex.jpg; sourceTree = "<group>"; };
 		384D7CBF2092BE3D00DBE5E3 /* skin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = skin.png; sourceTree = "<group>"; };
+		38741046210BECF300500689 /* Flexorcarpiulnarisright.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Flexorcarpiulnarisright.obj; path = ../../../../../../Downloads/Flexorcarpiulnarisright.obj; sourceTree = "<group>"; };
+		38741047210BECF300500689 /* Flexorcarpiulnarisleft.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Flexorcarpiulnarisleft.obj; path = ../../../../../../Downloads/Flexorcarpiulnarisleft.obj; sourceTree = "<group>"; };
 		3876397E20B90A59009AA4F9 /* hitmaps3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = hitmaps3.bundle; sourceTree = "<group>"; };
 		38B9E4E3209EF5BE00773B0F /* upperLegFrontL2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperLegFrontL2.obj; sourceTree = "<group>"; };
 		38B9E4E4209EF5BE00773B0F /* forearmR7.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = forearmR7.obj; sourceTree = "<group>"; };
@@ -366,6 +370,8 @@
 		38B9E4E2209EF4EF00773B0F /* Muscles */ = {
 			isa = PBXGroup;
 			children = (
+				38741047210BECF300500689 /* Flexorcarpiulnarisleft.obj */,
+				38741046210BECF300500689 /* Flexorcarpiulnarisright.obj */,
 				6F7C1B5420A988EA005E884D /* Man_Skin.obj */,
 				38B9E530209EF5CB00773B0F /* AbsL.obj */,
 				38B9E4E9209EF5BE00773B0F /* AbsR.obj */,
@@ -763,6 +769,7 @@
 				38B9E56D209EF5CC00773B0F /* triceptsL.obj in Resources */,
 				38B9E55A209EF5CC00773B0F /* Innershoulder_R.obj in Resources */,
 				38B9E54A209EF5CC00773B0F /* calfR5.obj in Resources */,
+				38741049210BECF300500689 /* Flexorcarpiulnarisleft.obj in Resources */,
 				6F1705C82085E23500F6265C /* GoogleService-Info.plist in Resources */,
 				38B9E564209EF5CC00773B0F /* biceptR2.obj in Resources */,
 				38B9E567209EF5CC00773B0F /* shoulderR.obj in Resources */,
@@ -780,6 +787,7 @@
 				38B9E589209EF5CC00773B0F /* innerShoulder_L.obj in Resources */,
 				38B9E57F209EF5CC00773B0F /* biceptR.obj in Resources */,
 				38B9E549209EF5CC00773B0F /* calfR.obj in Resources */,
+				38741048210BECF300500689 /* Flexorcarpiulnarisright.obj in Resources */,
 				38B9E55D209EF5CC00773B0F /* deltoidbackL.obj in Resources */,
 				38B9E56F209EF5CC00773B0F /* deltoid_topL.obj in Resources */,
 				38B9E581209EF5CC00773B0F /* upperback_L.obj in Resources */,
