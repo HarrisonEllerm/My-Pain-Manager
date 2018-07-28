@@ -67,14 +67,23 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         setupChartContainer()
         chartContainer.addSubview(keyContainer)
         setupKeyContainer()
-        getDataForTimePeriod()
+        setupSummaryTableViewSpecifics()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone.current
+        guard let dateFrom = dateFormatter.date(from: "2018-07-25") else { return }
+        guard let dateTo = dateFormatter.date(from: "2018-07-26") else { return }
+        getDataForTimePeriod(date1: dateFrom, date2: dateTo)
+    }
+    
+    private func setupSummaryTableViewSpecifics() {
         summaryTableView.delegate = self
         summaryTableView.dataSource = self
         summaryTableView.rowHeight = 44
         summaryTableView.isScrollEnabled = false
         summaryTableView.allowsSelection = true
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -92,23 +101,20 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let dateF : DateFormatter = DateFormatter()
-        dateF.dateFormat = "yyyy-MMM-dd"
+        dateF.dateFormat = "dd/MM/yyyy"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
         let date = Date()
+        let dateS = dateF.string(from: date)
         
         if (indexPath.row == 0) {
             let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             cell.textFieldName = "From"
-            let dateS = dateF.string(from: date)
             cell.textFieldValue = dateS
-            //cell.textLabel?.textColor = UIColor.white
             cell.accessoryType = .disclosureIndicator
             cell.layoutSubviews()
             return cell
         } else {
             let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
-            let toDate = date.add(1.days)
-            let dateS = dateF.string(from: toDate)
             cell.textFieldName = "To"
             cell.textFieldValue = dateS
             cell.accessoryType = .disclosureIndicator
@@ -127,11 +133,21 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         passes them to a function which cleans the data and builds the
         graph.
     */
-    private func getDataForTimePeriod() {
+    private func getDataForTimePeriod(date1: Date, date2: Date) {
         
+        print("Date 1 \(date1)")
+        print("Date 2 \(date2)")
+        
+        
+        //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
         dateF.dateFormat = "yyyy-MMM-dd"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        let dateFromS = dateF.string(from: date1)
+        let dateToS = dateF.string(from: date2)
+        print("dateFromS: \(dateFromS)")
+        print("dateToS: \(dateToS)")
+        
         let date = Date()
         let dateS = dateF.string(from: date)
         print("Date s: \(dateS)")
@@ -142,25 +158,32 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 var wrappers: [LogWrapper] = []
                 
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
+                //Refresh data and ignore cache
                 painRef.keepSynced(true)
-                
-                painRef.child(dateS).observeSingleEvent(of: .value) { (snapshot) in
-                   
-                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                        for snap in snapshots {
-                            
-                            if let values = snap.value as? Dictionary<String, Any> {
-                                let time = dateS + " " + snap.key
-                                //print(snap.key)
-                                guard let rating : Int = values["ranking"] as? Int else { return }
-                                guard let type : String = values["type"] as? String else { return }
-                                let w = LogWrapper(time, rating, type)
-                                wrappers.append(w)
+                /*
+                 Note to self: need to use orderby if using querystarting and queryending...
+                */
+                painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
+                    
+                   if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                    for snap in snapshots {
+                            let date = snap.key
+                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                 for snap in subchildren {
+                                    if let values = snap.value as? Dictionary<String, Any> {
+                                        let time = date + " " + snap.key
+                                        guard let rating : Int = values["ranking"] as? Int else { return }
+                                        guard let type : String = values["type"] as? String else { return }
+                                        let w = LogWrapper(time, rating, type)
+                                        wrappers.append(w)
+                                    }
+                                }
                             }
                         }
                     }
-                   self.buildDailyChart(wrappers)
                 }
+                // Have all the data needed to build out graph
+                self.buildDailyChart(wrappers)
             }
         }
     }
@@ -260,6 +283,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         Initialises and builds the chart, based on the template code
         suggested for doing so, with some tweaks that allow us to dynamically
         graph the associated pain and levels of pain over a period of time.
+     
+        link to template code: https://github.com/i-schuetz/SwiftCharts/blob/master/Examples/Examples/RangedAxisExample.swift
     */
     private func initChart() {
         
@@ -271,7 +296,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(1)
+        
+        //We need to set this dynamically? Potentially
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(2)
         
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red
@@ -287,19 +314,17 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         // 2nd x-axis model: Has an axis value (tick) for each <rangeSize>/2 years. We use this to show the x-axis labels
         
         let rangeSize: Double = view.frame.width < view.frame.height ? 12 : 6 // adjust intervals for orientation
-        let rangedMult: Double = rangeSize / 2
+        let rangedMult: Double = rangeSize/2
 
         let formatter = NumberFormatter()
         formatter.maximumFractionDigits = 0
-
+        /*
+         Baz/Harry
+         28th July 2018 - Made executive decision not to label ranges,
+         as it is obvious given the giant date picker below the graph.
+         */
         let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
-            if value < lastHour && value.truncatingRemainder(dividingBy: rangedMult) == 0 && value.truncatingRemainder(dividingBy: rangeSize) != 0 {
-                let val1 = value - rangedMult
-                let val2 = value + rangedMult
-                return ChartAxisLabel(text: "\(String(format: "%.0f", val1)) - \(String(format: "%.0f", val2))", settings: labelSettings)
-            } else {
-                return ChartAxisLabel(text: "", settings: labelSettings)
-            }
+            return ChartAxisLabel(text: "", settings: labelSettings)
         }
 
         let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
