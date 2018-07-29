@@ -16,6 +16,7 @@ import SwiftCharts
 import FirebaseDatabase
 import FirebaseAuth
 import DateToolsSwift
+import SwiftDate
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
    
@@ -25,6 +26,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var typeKeyMap = Dictionary<String, UIColor>()
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
+    //xAxis scale Will be dynamic eventually
+    private var xAxisScale = Double(48)
+    private var startDate : Date?
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -138,6 +142,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         print("Date 1 \(date1)")
         print("Date 2 \(date2)")
         
+        startDate = date2
         
         //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
@@ -181,9 +186,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                             }
                         }
                     }
+                    // Have all the data needed to build out graph
+                    self.buildDailyChart(wrappers)
                 }
-                // Have all the data needed to build out graph
-                self.buildDailyChart(wrappers)
             }
         }
     }
@@ -211,7 +216,21 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             
             for item in area.value {
                 lineData.setType(item.getType())
-                let doubleTime: Double = getDoubleFromTimeString(input: item.getTime())
+                //need a way of plotting it on a scale of 0-24
+                
+                //print("Items time \(item.getTime())")
+                guard let dateFrom = startDate else { return }
+                guard let dateTo = item.getTime().toDate() else { return }
+                
+                //print("Start date \(dateFrom)")
+                //print("End date \(dateTo.date)")
+                
+                
+                let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
+    
+                //print("Difference \(difference)")
+                
+                let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
                 let doubleRating = Double(item.getRating())
                 dataHolder.append((doubleTime, doubleRating))
             }
@@ -228,6 +247,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         self.initChart()
         chart.view.setNeedsDisplay()
         self.setupChartKey()
+    }
+    
+    private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
+        return secondDate.compare(toDate: firstDate, granularity: .day).rawValue
     }
     
     
@@ -271,12 +294,16 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : input, an input String
         - returns: Double, the double value of the String
     */
-    private func getDoubleFromTimeString(input: String) -> Double {
+    private func getDoubleFromTimeString(input: String, difference: Double) -> Double {
         let timeSplit = input.split(separator: " ")
         let timeIWant = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeIWant)
         guard let unwrappedTime = timeDouble else { return 0.0 }
-        return unwrappedTime
+        //IF WE HAVE 10.35 , how do we then scale this
+        //let scale = Int(xAxisScale*60)
+        let adjustment = (24*difference) + unwrappedTime
+        
+        return adjustment
     }
     
     /**
@@ -290,15 +317,15 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         
         let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
         
-        let firstHour: Double = 0
-        let lastHour: Double = 24
+        let firstMin: Double = 0
+        let lastMin: Double = xAxisScale
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
-        
         //We need to set this dynamically? Potentially
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(2)
+        print((xAxisScale/24)-1)
+        let xValuesGenerator = ChartAxisGeneratorMultiplier((xAxisScale/24))
         
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red
@@ -306,7 +333,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             ChartAxisLabel(text: "", settings: labCopy)
         }
         
-        let xModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+            xEmptyLabelsGenerator)
+        //This is essentially do get rid of vertial lines as we cannot set it to nil
+        let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: 0, lastModelValue: 0, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
             xEmptyLabelsGenerator)
         
         
@@ -329,14 +359,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 
         let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
 
-        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
+        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 3rd x-axis model: Has an axis value (tick) for each <rangeSize> years. We use this to show the x-axis guidelines and long dividers
         
         let xValuesGuidelineGenerator = ChartAxisGeneratorMultiplier(rangeSize)
-        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstHour, lastModelValue: lastHour, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
+        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
         
         
         ////////////////////////////////////////////////////////////////////////////////////
@@ -370,10 +400,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let coordsSpace = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModel, yModel: yModel)
         let coordsSpaceForRanges = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForRanges, yModel: yModel)
         let coordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForGuidelines, yModel: yModel)
+        let customCoordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: customXModel, yModel: yModel)
         
         var (xAxisLayer, yAxisLayer, innerFrame) = (coordsSpace.xAxisLayer, coordsSpace.yAxisLayer, coordsSpace.chartInnerFrame)
         var (xRangedAxisLayer, _, _) = (coordsSpaceForRanges.xAxisLayer, coordsSpaceForRanges.yAxisLayer, coordsSpaceForRanges.chartInnerFrame)
         let (xGuidelinesAxisLayer, _, _) = (coordsSpaceForGuidelines.xAxisLayer, coordsSpaceForGuidelines.yAxisLayer, coordsSpaceForGuidelines.chartInnerFrame)
+        let customXaxisLayer = customCoordsSpaceForGuidelines.xAxisLayer
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,21 +433,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         // Guidelines layer. Note how we pass the x-axis layer we created specifically for the guidelines.
         
         let guidelinesLayerSettings = ChartGuideLinesLayerSettings(linesColor: UIColor.white, linesWidth: 0.3)
-        let guidelinesLayer = ChartGuideLinesLayer(xAxisLayer: xGuidelinesAxisLayer, yAxisLayer: yAxisLayer, settings: guidelinesLayerSettings)
+    
+        let guidelinesLayer = ChartGuideLinesLayer(xAxisLayer: customXaxisLayer, yAxisLayer: yAxisLayer, settings: guidelinesLayerSettings)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Dividers layer with small lines. This is used both in x and y axes
-        
         let dividersSettings =  ChartDividersLayerSettings(linesColor: UIColor.white, linesWidth: 1, start: 2, end: 0)
         let dividersLayer = ChartDividersLayer(xAxisLayer: xAxisLayer, yAxisLayer: yAxisLayer, axis: .xAndY, settings: dividersSettings)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Dividers layer with long lines. This is used only in the x axis. Note how we pass the same axis layer we passed to the guidelines - we want to use the same intervals.
-        
-        let dividersSettings2 =  ChartDividersLayerSettings(linesColor: UIColor.white, linesWidth: 0.5, start: 30, end: 0)
-        let dividersLayer2 = ChartDividersLayer(xAxisLayer: xGuidelinesAxisLayer, yAxisLayer: yAxisLayer, axis: .x, settings: dividersSettings2)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,7 +462,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 guidelinesLayer,
                 chartPointsLineLayer,
                 dividersLayer,
-                dividersLayer2
+                //dividersLayer2
             ]
         )
         view.addSubview(chart.view)
@@ -464,7 +489,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     private func setupKeyContainer() {
-        keyContainer.topAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        keyContainer.topAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.topAnchor, constant: 30).isActive = true
         keyContainer.leftAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.leftAnchor).isActive = true
         keyContainer.rightAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.rightAnchor).isActive = true
         keyContainer.bottomAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.bottomAnchor).isActive = true
