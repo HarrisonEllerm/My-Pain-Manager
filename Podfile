@@ -24,7 +24,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'Alamofire'
     pod 'PopupDialog', '~> 0.7'
     pod 'Cosmos'
-    pod 'SwiftCharts'
+    pod 'SwiftCharts', :git => 'https://github.com/i-schuetz/SwiftCharts.git'
     pod 'DateToolsSwift'
     pod 'SwiftDate', '~> 5.0'
     

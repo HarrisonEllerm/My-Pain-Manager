@@ -106,7 +106,7 @@ class ChartAxisXLayerDefault: ChartAxisLayerDefault {
         
         let rowHeights = rowHeightsForRows(labels.map { [$0] })
         
-        return labels.enumerated().map{let (index, label) = $0;
+        return labels.enumerated().map{ index, label in
             
             let rowY = calculateRowY(rowHeights: rowHeights, rowIndex: index, spacing: spacingLabelBetweenAxis)
             
@@ -153,11 +153,11 @@ class ChartAxisXLayerDefault: ChartAxisLayerDefault {
         let scalars = valuesGenerator.generate(axis)
         
         currentAxisValues = scalars
-        return scalars.flatMap {scalar in
+        return scalars.compactMap {scalar in
             
             let labels = labelsGenerator.generate(scalar, axis: axis)
 
-            let labelDrawers: [ChartLabelDrawer] = labels.enumerated().map { let (index, label) = $0;
+            let labelDrawers: [ChartLabelDrawer] = labels.enumerated().map { index, label in
                 let rowY = calculateRowY(rowHeights: rowHeights, rowIndex: index, spacing: spacingLabelBetweenAxis)
                 
                 let x = axis.screenLocForScalar(scalar)
@@ -185,7 +185,7 @@ class ChartAxisXLayerDefault: ChartAxisLayerDefault {
     // Get max text height for each row of axis values
     fileprivate func rowHeightsForRows(_ rows: [[ChartAxisLabel?]]) -> [CGFloat] {
         return rows.map { row in
-            row.flatMap { $0 }.reduce(-1) { maxHeight, label in
+            row.compactMap { $0 }.reduce(-1) { maxHeight, label in
                 return max(maxHeight, label.textSize.height)
             }
         }

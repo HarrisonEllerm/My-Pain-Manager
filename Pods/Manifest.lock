@@ -85,7 +85,7 @@ DEPENDENCIES:
   - JGProgressHUD
   - LBTAComponents
   - PopupDialog (~> 0.7)
-  - SwiftCharts
+  - SwiftCharts (from `https://github.com/i-schuetz/SwiftCharts.git`)
   - SwiftDate (~> 5.0)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
@@ -113,17 +113,21 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - PopupDialog
-    - SwiftCharts
     - SwiftDate
     - SwiftSpinner
     - SwiftyJSON
 
 EXTERNAL SOURCES:
+  SwiftCharts:
+    :git: https://github.com/i-schuetz/SwiftCharts.git
   SwiftValidator:
     :branch: master
     :git: https://github.com/jpotts18/SwiftValidator.git
 
 CHECKOUT OPTIONS:
+  SwiftCharts:
+    :commit: c9d5f8683e139560e310585b4d8ef7d74800b6ec
+    :git: https://github.com/i-schuetz/SwiftCharts.git
   SwiftValidator:
     :commit: ba27b0e501bf542b5c1a97bed8f706d12fb2d4f4
     :git: https://github.com/jpotts18/SwiftValidator.git
@@ -149,12 +153,12 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
-  SwiftCharts: 77378d6cf667e95f9c79a745b6778e66eed5339c
+  SwiftCharts: 344c17e93852fb14358046d0bcb831329c149648
   SwiftDate: 588bd7c496e6372713d45a304f506e9d6a7ca84c
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: a7ef8cd0a5207f869e41509259929da3a1b22247
+PODFILE CHECKSUM: e9a232afb97585dec0b78628166e4f9d1cf8a530
 
 COCOAPODS: 1.5.3

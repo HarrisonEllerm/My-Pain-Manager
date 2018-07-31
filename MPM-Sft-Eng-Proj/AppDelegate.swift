@@ -33,12 +33,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
        //Check if first time opening, if so onboard
         let defaults = UserDefaults.standard
         if let _ = defaults.string(forKey: "isAppAlreadyLaunchedOnce"){
-            print("App already launched")
             handleLogin(withWindow: window)
     
         } else {
             defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
-            print("App launched first time")
             let onBoard = OnBoardController()
             let onBoardConrollerNav = UINavigationController(rootViewController: onBoard)
             window?.rootViewController = onBoardConrollerNav
