@@ -24,7 +24,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'Alamofire'
     pod 'PopupDialog', '~> 0.7'
     pod 'Cosmos'
-    pod 'SwiftCharts', '~> 0.6.1'
+    pod 'SwiftCharts'
     pod 'DateToolsSwift'
     pod 'SwiftDate', '~> 5.0'
     
