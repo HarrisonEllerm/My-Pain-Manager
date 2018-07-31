@@ -15,6 +15,8 @@ before_install:
   - gem install xcpretty -N
   - brew update
   - brew install swiftlint || true #need to clean up project at some stage using swiftlint 
+  - pod repo update
+  - pod install
 script:
   - set -o pipefail
   - xcodebuild -workspace MPM-Sft-Eng-Proj.xcworkspace -scheme MPM-Sft-Eng-Proj -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty -c
