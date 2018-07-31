@@ -49,7 +49,6 @@ class GraphDateEntryCell: UITableViewCell {
         return toolBar
     }()
     
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -59,7 +58,8 @@ class GraphDateEntryCell: UITableViewCell {
         inputAccessoryToolbar.setItems([ spaceButton, doneButton], animated: false)
         textField.inputView = dp
         textField.inputAccessoryView = inputAccessoryToolbar
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(DateEntryCell.didSelectCell))
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(GraphDateEntryCell.didSelectCell))
+        gesture.cancelsTouchesInView = false
         addGestureRecognizer(gesture)
     }
     
@@ -77,7 +77,10 @@ class GraphDateEntryCell: UITableViewCell {
     
     @objc func doneClick() {
         self.endEditing(true)
-        print("Done")
+        guard let date = textField.text else { return }
+        guard let name = textFieldName else { return }
+        let nameDateDict:[String: String] = ["name": name, "date": date]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "dateSet"), object: nil, userInfo: nameDateDict)
     }
     
     func setupViews() {

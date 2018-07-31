@@ -19,7 +19,7 @@ import DateToolsSwift
 import SwiftDate
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-   
+
     private var chart: Chart?
     private var didLayout: Bool = false
     private var lineModelData = [LineDataWrapper]()
@@ -29,6 +29,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     //xAxis scale Will be dynamic eventually
     private var xAxisScale = Double(48)
     private var startDate : Date?
+    private var endDate : Date?
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -60,6 +61,35 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         super.viewDidLoad()
         isLoadingViewController = true
         setupView()
+        NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    /**
+        Triggered when a date is set insid a GraphDateEntryCell. User info is passed
+        into the function that identifies if the date is the From or To date in terms
+        of the period, and it is handled accordingly.
+     
+        - parameter : notif, the notification
+    */
+    @objc func dateSet(notif: NSNotification) {
+        if let name = notif.userInfo?["name"] as? String, let date = notif.userInfo?["date"] as? String {
+            if name == "From" {
+                print(date)
+                startDate = date.toDate("dd/MM/yyyy")?.date
+            } else {
+                print(date)
+                endDate = date.toDate("dd/MM/yyyy")?.date
+            }
+        }
+        if (startDate != nil && endDate != nil) {
+            if startDate!.isEarlier(than: endDate!) {
+                getDataForTimePeriod(date1: startDate!, date2: endDate!)
+            }
+        }
     }
     
     private func setupView() {
@@ -98,10 +128,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             setupView()
         }
     }
-  
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return numberOfDateOptions
     }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let dateF : DateFormatter = DateFormatter()
@@ -139,24 +170,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
         
-        print("Date 1 \(date1)")
-        print("Date 2 \(date2)")
-        
-        startDate = date2
-        
         //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
         dateF.dateFormat = "yyyy-MMM-dd"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
-        print("dateFromS: \(dateFromS)")
-        print("dateToS: \(dateToS)")
-        
-        let date = Date()
-        let dateS = dateF.string(from: date)
-        print("Date s: \(dateS)")
-        
+       
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
                 
@@ -221,6 +241,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 //print("Items time \(item.getTime())")
                 guard let dateFrom = startDate else { return }
                 guard let dateTo = item.getTime().toDate() else { return }
+            
                 
                 //print("Start date \(dateFrom)")
                 //print("End date \(dateTo.date)")
@@ -249,6 +270,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         self.setupChartKey()
     }
     
+    /**
+        A function that takes two dates and does a comparison using
+        a granularity level of days.
+     
+        - parameter : firstDate, the first date.
+        - parameter : secondDate, the second date.
+        - returns: an Int representing the difference in days.
+     */
     private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         return secondDate.compare(toDate: firstDate, granularity: .day).rawValue
     }
@@ -504,6 +533,22 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     
 }
 
+/**
+ A wrapper object used to pull information from Firebase which
+ exists in nodes that look like:
+ 
+ 2018-Jul-25
+ - 20:46:47
+    - ranking: 3
+    - type: "Lower back"
+ - 20:47:03
+   - ranking: 4
+   - type: "Collarbone"
+ ...
+2018-Jul-26
+ ...
+ 
+ */
 private class LogWrapper {
     
     let time: String
@@ -529,6 +574,11 @@ private class LogWrapper {
     }
 }
 
+/**
+ A wrapper object that holds the x and y
+ co-ordinates for a item being plotted, as well
+ as the type of pain associated with that value.
+ */
 private class LineDataWrapper {
     
     var lineModelData = [(Double, Double)]()
