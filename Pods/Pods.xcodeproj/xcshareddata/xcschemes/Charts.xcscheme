@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8298F8AC8708248462661403583C3997"
+               BlueprintIdentifier = "C71013989C387BAAD69BFE01570495EB"
                BuildableName = "GTMSessionFetcher.framework"
                BlueprintName = "GTMSessionFetcher"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -56,7 +56,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E0162255842B3EB0659F04369BD3DD60"
+               BlueprintIdentifier = "488CA9079247B8F25888405871FCF2F4"
                BuildableName = "GoogleToolboxForMac.framework"
                BlueprintName = "GoogleToolboxForMac"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -98,7 +98,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "12AE92C819861EC8DD089D13E5BFC2EA"
+               BlueprintIdentifier = "93F64C4AAB43932CA1093C7B122D675E"
                BuildableName = "Pods_MPM_Sft_Eng_Proj.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-Proj"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -112,7 +112,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3FE7760BD1E8D8A36D4FE522DB08CC44"
+               BlueprintIdentifier = "0B649AA054E86E2123ECD116ED863A15"
                BuildableName = "Pods_MPM_Sft_Eng_ProjTests.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-ProjTests"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -126,7 +126,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C660D87B9F7C5F78DB4E7C9A1F1E9090"
+               BlueprintIdentifier = "B4BEDBC42ECA53B44575C040E4E2AC07"
                BuildableName = "Pods_MPM_Sft_Eng_ProjUITests.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-ProjUITests"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -140,7 +140,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6796FF73B08C103D3BF8AA089CF4DD6F"
+               BlueprintIdentifier = "4C5ABBDF5C079BEAFD37CDC6A5F0B4A5"
                BuildableName = "SwiftSpinner.framework"
                BlueprintName = "SwiftSpinner"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -154,7 +154,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2CD793FBB23BE64BA10E7FEFB2090CF7"
+               BlueprintIdentifier = "E4F1DE9ED082C9A4F629FFC5841598DB"
                BuildableName = "SwiftValidator.framework"
                BlueprintName = "SwiftValidator"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -168,7 +168,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "72E08B12F62BD88FA86DFB07F51093E0"
+               BlueprintIdentifier = "C3BB53A0E7C0E5F11347FC6E60C8FE53"
                BuildableName = "SwiftyJSON.framework"
                BlueprintName = "SwiftyJSON"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -182,7 +182,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F5E7C621A9D556005E5298CB2CB14F2"
+               BlueprintIdentifier = "9938F3058E6013FAB6444C41E86DC9E9"
                BuildableName = "leveldb.framework"
                BlueprintName = "leveldb-library"
                ReferencedContainer = "container:Pods.xcodeproj">

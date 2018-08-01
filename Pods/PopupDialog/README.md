@@ -2,11 +2,11 @@
 
 <p>&nbsp;</p>
 
+![Swift Version](https://img.shields.io/badge/Swift-4.0-orange.svg)
 [![Version](https://img.shields.io/cocoapods/v/PopupDialog.svg?style=flat)](http://cocoapods.org/pods/PopupDialog)
 [![License](https://img.shields.io/cocoapods/l/PopupDialog.svg?style=flat)](http://cocoapods.org/pods/PopupDialog)
 [![Platform](https://img.shields.io/cocoapods/p/PopupDialog.svg?style=flat)](http://cocoapods.org/pods/PopupDialog)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![codebeat badge](https://codebeat.co/badges/006f8d13-072a-42bb-a584-6b97e60201e1)](https://codebeat.co/projects/github-com-orderella-popupdialog)
 [![Build Status Master](https://travis-ci.org/Orderella/PopupDialog.svg?branch=master)](https://travis-ci.org/Orderella/PopupDialog)
 [![Build Status Development](https://travis-ci.org/Orderella/PopupDialog.svg?branch=development)](https://travis-ci.org/Orderella/PopupDialog)
 
@@ -38,7 +38,7 @@ Popup Dialog is a simple, customizable popup dialog written in Swift.
 
 This version is Swift 4 compatible. For the Swift 3 version, please use [V0.5.4](https://github.com/Orderella/PopupDialog/releases/tag/0.5.4).
 
-## Cocoapods
+## CocoaPods
 
 PopupDialog is available through [CocoaPods](http://cocoapods.org). Simply add the following to your Podfile:
 
@@ -46,7 +46,7 @@ PopupDialog is available through [CocoaPods](http://cocoapods.org). Simply add t
 use_frameworks!
 
 target '<Your Target Name>'
-pod 'PopupDialog', '~> 0.7'
+pod 'PopupDialog', '~> 0.8'
 ```
 
 ## Carthage
@@ -56,7 +56,7 @@ pod 'PopupDialog', '~> 0.7'
 To install, simply add the following lines to your Cartfile:
 
 ```ruby
-github "Orderella/PopupDialog" ~> 0.7
+github "Orderella/PopupDialog" ~> 0.8
 ```
 
 ## Manually
@@ -121,7 +121,8 @@ public convenience init(
     buttonAlignment: UILayoutConstraintAxis = .vertical,
     transitionStyle: PopupDialogTransitionStyle = .bounceUp,
     preferredWidth: CGFloat = 340,
-    gestureDismissal: Bool = true,
+    tapGestureDismissal: Bool = true,
+    panGestureDismissal: Bool = true,
     hideStatusBar: Bool = false,
     completion: (() -> Void)? = nil) 
 ```
@@ -140,7 +141,8 @@ public init(
     buttonAlignment: UILayoutConstraintAxis = .vertical,
     transitionStyle: PopupDialogTransitionStyle = .bounceUp,
     preferredWidth: CGFloat = 340,
-    gestureDismissal: Bool = true,
+    tapGestureDismissal: Bool = true,
+    panGestureDismissal: Bool = true,
     hideStatusBar: Bool = false,
     completion: (() -> Void)? = nil) 
 ```
@@ -180,7 +182,7 @@ PopupDialog will always try to have a max width of 340 . On iPhones with smaller
 
 ## Gesture Dismissal
 
-Gesture dismissal allows your dialog being dismissed either by a background tap or by swiping the dialog down. By default, this is set to `true`. You can prevent this behavior by setting `gestureDismissal` to `false` in the initializer.
+Gesture dismissal allows your dialog being dismissed either by a background tap or by swiping the dialog down. By default, this is set to `true`. You can prevent this behavior by setting either `tapGestureDismissal` or `panGestureDismissal`  to `false` in the initializer.
 
 ## Hide Status Bar
 
@@ -389,30 +391,37 @@ PopupDialog can be used in Objective-C projects as well.
 Here is a basic example:
 
 ```objective-c
-#import <PopupDialog/PopupDialog-Swift.h>
+PopupDialog *popup = [[PopupDialog alloc] initWithTitle: @"Title"
+                                                message: @"This is a message"
+                                                  image: nil
+                                        buttonAlignment: UILayoutConstraintAxisVertical
+                                        transitionStyle: PopupDialogTransitionStyleBounceUp
+                                         preferredWidth: 380
+                                    tapGestureDismissal: NO
+                                    panGestureDismissal: NO
+                                          hideStatusBar: NO
+                                             completion: nil];
 
-PopupDialog *popup = [[PopupDialog alloc] initWithTitle:@"TEST"
-                                                message:@"This is a test message!"
-                                                  image:nil
-                                        buttonAlignment:UILayoutConstraintAxisHorizontal
-                                        transitionStyle:PopupDialogTransitionStyleBounceUp
-                                         preferredWidth:340.0,
-                                       gestureDismissal:YES
-                                          hideStatusBar:NO
-                                             completion:nil];
+DestructiveButton *delete = [[DestructiveButton alloc] initWithTitle: @"Delete"
+                                                              height: 45
+                                                        dismissOnTap: YES
+                                                              action: nil];
 
-CancelButton *cancel = [[CancelButton alloc] initWithTitle:@"CANCEL" dismissOnTap:YES action:^{
-    // Default action
-}];
+CancelButton *cancel = [[CancelButton alloc] initWithTitle: @"Cancel"
+                                                    height: 45
+                                              dismissOnTap: YES
+                                                    action: nil];
 
-DefaultButton *ok = [[DefaultButton alloc] initWithTitle:@"OK" dismissOnTap:YES action:^{
-    // Ok action
-}];
+DefaultButton *ok = [[DefaultButton alloc] initWithTitle: @"OK"
+                                                  height: 45
+                                            dismissOnTap: YES
+                                                  action: nil];
 
-[popup addButtons: @[cancel, ok]];
+[dialog addButtons:@[delete, cancel, ok]];
 
 [self presentViewController:popup animated:YES completion:nil];
 ```
+
 
 <p>&nbsp;</p>
 
@@ -432,6 +441,8 @@ Minimum requirement is iOS 9.0. This dialog was written with Swift 4, for suppor
 <p>&nbsp;</p>
 
 # Changelog
+* **0.8.0** Separated tap and pan gesture dismissal
+* **0.7.1** Fixes Objective-C compatability<br>Improved Carthage handling
 * **0.7.0** Removed FXBlurView while switching to DynamicBlurView
 * **0.6.2** Added preferredWidth option for iPads
 * **0.6.1** Added shake animation<br>Introduced hideStatusBar option

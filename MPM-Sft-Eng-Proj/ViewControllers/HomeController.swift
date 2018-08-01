@@ -13,7 +13,6 @@ import SceneKit.ModelIO
 import SwiftSpinner
 import PopupDialog
 
-
 class HomeController: UIViewController {
 
     var manMesh : ObjectWrapper!
@@ -79,14 +78,14 @@ class HomeController: UIViewController {
         /*
          Several of the opperations are required to be executed
          on the main thread mandatorily, this also guarantees
-         that everything is executed sequentially
+         that everything is executed sequentially.
          */
         DispatchQueue.main.async {
             //add scene
             self.scnView = SCNView(frame: self.view.frame)
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
-            self.scene.background.contents = UIImage(named: "spot")//UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 1)
+            self.scene.background.contents = UIImage(named: "spot")
             self.scnView.scene = self.scene;
             self.addMaleSkin()
             self.addMaleSkeleton()
@@ -125,49 +124,46 @@ class HomeController: UIViewController {
     
     func createLights(){
         
-        //Create light 1 to the right of the model.
+        //Create light 1
         let light = SCNLight()
         light.type = SCNLight.LightType.omni
         let lightNode = SCNNode()
         lightNode.light = light
         lightNode.position = SCNVector3(x: 50, y: 1.5, z: 1.5)
-        light.intensity = CGFloat(450)
+        light.intensity = CGFloat(300)
         self.scene.rootNode.addChildNode(lightNode)
-
-        //Create light 2 Directly above the model.
+        //Create light 2
         let light2 = SCNLight()
         let light2Node = SCNNode()
         light2.type = SCNLight.LightType.omni
         light2Node.position = SCNVector3(x: 1.5, y: 50, z: 1.5)
-        light2.intensity = CGFloat(3500) //700
+        light2.intensity = CGFloat(1700) //700
         light2Node.light = light2
         self.scene.rootNode.addChildNode(light2Node)
-        
-        //Create light 3 to the left of the model.
+        //Create light 3
         let light3 = SCNLight()
         let light3Node = SCNNode()
         light3.type = SCNLight.LightType.omni
         light3Node.position = SCNVector3(x: 1.5, y: 1.5, z: 50)
-        light3.intensity = CGFloat(450)
+        light3.intensity = CGFloat(400)
         light3Node.light = light3
         self.scene.rootNode.addChildNode(light3Node)
-        
-        //Create light 4 behind the models back.
+        //Create light 4
         let light4 = SCNLight()
         let light4Node = SCNNode()
         light4.type = SCNLight.LightType.omni
         light4Node.position = SCNVector3(x: 1.5, y: 1.5, z: -50)
-        light4.intensity = CGFloat(450)
+        light4.intensity = CGFloat(400)
         light4Node.light = light4
         self.scene.rootNode.addChildNode(light4Node)
-
-//        let light5 = SCNLight()
-//        let light5Node = SCNNode()
-//        light5.type = SCNLight.LightType.ambient
-//        light5Node.position = SCNVector3(x: 1.5, y: -50, z: 1.5)
-//        light5.intensity = CGFloat(1)
-//        light5Node.light = light5
-//        self.scene.rootNode.addChildNode(light5Node)
+        
+        let light5 = SCNLight()
+        let light5Node = SCNNode()
+        light5.type = SCNLight.LightType.ambient
+        light5Node.position = SCNVector3(x: 1.5, y: -50, z: 1.5)
+        light5.intensity = CGFloat(200)
+        light5Node.light = light5
+        self.scene.rootNode.addChildNode(light5Node)
        
     }
     
@@ -425,18 +421,17 @@ class HomeController: UIViewController {
             if let level = fatigueLevel {
                 fatigueAlert.rating.text = level.rounded().description+" / 100"
             }
-            popup = PopupDialog.init(viewController: fatigueAlert, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+            popup = PopupDialog.init(viewController: fatigueAlert, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, tapGestureDismissal: false, hideStatusBar: false, completion: nil)
         } else {
             let alertDialog = AlertDialog()
             alertDialog.bodyArea.text = area
-            popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, gestureDismissal: false, hideStatusBar: false, completion: nil)
+            popup = PopupDialog.init(viewController: alertDialog, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, tapGestureDismissal: false, hideStatusBar: false, completion: nil)
         }
         
         let buttonOne = CancelButton(title: "DONE", dismissOnTap: true){
             
             if popup.viewController is AlertDialog {
                 self.handleAlertDialogOnCompletion(popup: popup, area: area, image: image, node: node)
-            
             } else {
                 self.handleFatigueAlertDialogOnCompletion(popup: popup, area: area)
             }

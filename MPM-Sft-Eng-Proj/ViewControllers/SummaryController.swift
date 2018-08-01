@@ -17,6 +17,7 @@ import FirebaseDatabase
 import FirebaseAuth
 import DateToolsSwift
 import SwiftDate
+import NotificationBannerSwift
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -27,7 +28,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
     //xAxis scale Will be dynamic eventually
-    private var xAxisScale = Double(48)
+    private var xAxisScale : Double?
     private var startDate : Date?
     private var endDate : Date?
     
@@ -62,6 +63,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         isLoadingViewController = true
         setupView()
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
+        endDate = Date().dateAtStartOf(.day)
+        startDate = endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
+        if let start = startDate, let end = endDate {
+            getDataForTimePeriod(date1: start, date2: end)
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -69,7 +75,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     /**
-        Triggered when a date is set insid a GraphDateEntryCell. User info is passed
+        Triggered when a date is set insid a GraphDateEntryCell. UserInfo is passed
         into the function that identifies if the date is the From or To date in terms
         of the period, and it is handled accordingly.
      
@@ -102,15 +108,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         chartContainer.addSubview(keyContainer)
         setupKeyContainer()
         setupSummaryTableViewSpecifics()
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone.current
-        guard let dateFrom = dateFormatter.date(from: "2018-07-25") else { return }
-        guard let dateTo = dateFormatter.date(from: "2018-07-26") else { return }
-        getDataForTimePeriod(date1: dateFrom, date2: dateTo)
+        if let start = startDate, let end = endDate {
+            getDataForTimePeriod(date1: start, date2: end)
+        }
     }
     
+   
     private func setupSummaryTableViewSpecifics() {
         summaryTableView.delegate = self
         summaryTableView.dataSource = self
@@ -167,8 +170,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         account, wraps those logs up into an object for simplicity, and
         passes them to a function which cleans the data and builds the
         graph.
+     
+        - parameter : date1, the first date.
+        - parameter : date2, the second date.
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
+        lineModelData.removeAll()
+        
+        print("Attempting to find data between \(date1) and \(date2)")
+        //get hours between two dates for x axis scale
+        let diff = date2.timeIntervalSince(date1)
+        let hours = Int(diff) / 3600
+        xAxisScale = Double(hours)
+        print("Setting xAxis scale = \(xAxisScale)")
         
         //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
@@ -176,7 +190,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
-       
+        
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
                 
@@ -191,16 +205,23 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
                     
                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                    for snap in snapshots {
-                            let date = snap.key
-                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                 for snap in subchildren {
-                                    if let values = snap.value as? Dictionary<String, Any> {
-                                        let time = date + " " + snap.key
-                                        guard let rating : Int = values["ranking"] as? Int else { return }
-                                        guard let type : String = values["type"] as? String else { return }
-                                        let w = LogWrapper(time, rating, type)
-                                        wrappers.append(w)
+                    
+                    if snapshots.count == 0 {
+                        let banner = NotificationBanner(title: "No Data for Specified Period", subtitle: "Try entering some data to view a summary...", style: .warning)
+                        print("There was no data in the time period")
+                        banner.show()
+                    } else {
+                        for snap in snapshots {
+                                let date = snap.key
+                                if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                    for snap in subchildren {
+                                        if let values = snap.value as? Dictionary<String, Any> {
+                                            let time = date + " " + snap.key
+                                            guard let rating : Int = values["ranking"] as? Int else { return }
+                                            guard let type : String = values["type"] as? String else { return }
+                                            let w = LogWrapper(time, rating, type)
+                                            wrappers.append(w)
+                                        }
                                     }
                                 }
                             }
@@ -345,16 +366,25 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func initChart() {
         
         let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
-        
+        guard let scale = xAxisScale else { return }
         let firstMin: Double = 0
-        let lastMin: Double = xAxisScale
+        let lastMin: Double = scale
+        
+        //TODO transform data so its always within a scale of 24...
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
         //We need to set this dynamically? Potentially
-        print((xAxisScale/24)-1)
-        let xValuesGenerator = ChartAxisGeneratorMultiplier((xAxisScale/24))
+        let divisor : Int
+        
+        //scale/24
+        
+        
+        print("Multiple \((scale/24)-1)")
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/24)
+        print("Multiplier \(scale/24)")
+        
         
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red

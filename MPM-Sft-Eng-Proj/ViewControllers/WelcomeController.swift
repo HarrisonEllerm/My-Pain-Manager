@@ -12,7 +12,6 @@ import UIKit
 import FirebaseAuth
 import LBTAComponents
 import JGProgressHUD
-import SwiftyJSON
 import FirebaseStorage
 import FirebaseDatabase
 import SwiftValidator

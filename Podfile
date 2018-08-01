@@ -17,16 +17,16 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'Firebase/Core'
     pod 'LBTAComponents'
     pod 'JGProgressHUD'
-    pod 'SwiftyJSON'
     pod 'SwiftValidator', :git => 'https://github.com/jpotts18/SwiftValidator.git', :branch => 'master'
     pod 'GoogleSignIn'
     pod 'SwiftSpinner'
     pod 'Alamofire'
-    pod 'PopupDialog', '~> 0.7'
     pod 'Cosmos'
     pod 'SwiftCharts', :git => 'https://github.com/i-schuetz/SwiftCharts.git'
     pod 'DateToolsSwift'
     pod 'SwiftDate', '~> 5.0'
+    pod 'NotificationBannerSwift'
+    pod 'PopupDialog', '~> 0.7'
     
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths

@@ -60,18 +60,22 @@ PODS:
   - JGProgressHUD (2.0.3)
   - LBTAComponents (1.0.2)
   - leveldb-library (1.20)
+  - MarqueeLabel/Swift (3.1.6)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
-  - PopupDialog (0.7.1):
+  - NotificationBannerSwift (1.6.3):
+    - MarqueeLabel/Swift
+    - SnapKit (~> 4.0)
+  - PopupDialog (0.8.0):
     - DynamicBlurView (~> 2.0)
+  - SnapKit (4.0.0)
   - SwiftCharts (0.6.1)
   - SwiftDate (5.0.2)
   - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
-  - SwiftyJSON (4.1.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -84,12 +88,12 @@ DEPENDENCIES:
   - GoogleSignIn
   - JGProgressHUD
   - LBTAComponents
+  - NotificationBannerSwift
   - PopupDialog (~> 0.7)
   - SwiftCharts (from `https://github.com/i-schuetz/SwiftCharts.git`)
   - SwiftDate (~> 5.0)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
-  - SwiftyJSON
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -111,11 +115,13 @@ SPEC REPOS:
     - JGProgressHUD
     - LBTAComponents
     - leveldb-library
+    - MarqueeLabel
     - nanopb
+    - NotificationBannerSwift
     - PopupDialog
+    - SnapKit
     - SwiftDate
     - SwiftSpinner
-    - SwiftyJSON
 
 EXTERNAL SOURCES:
   SwiftCharts:
@@ -151,14 +157,16 @@ SPEC CHECKSUMS:
   JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
   LBTAComponents: c4c8863e0ef6715e378300db148b96a09df656f7
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  MarqueeLabel: 0c41f08ef5773e29c0f71064a8fa788a2fd8b365
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  PopupDialog: 39598b7d41719f5c025b4b70e62728bae7734fef
+  NotificationBannerSwift: b231e4c3244848ef300e1c53ce027b9756b9b06f
+  PopupDialog: 11347197b6ac3e0548ac445d40ce68d1d407e9a0
+  SnapKit: a42d492c16e80209130a3379f73596c3454b7694
   SwiftCharts: 344c17e93852fb14358046d0bcb831329c149648
   SwiftDate: 588bd7c496e6372713d45a304f506e9d6a7ca84c
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
-  SwiftyJSON: c29297daf073d2aa016295d5809cdd68045c39b3
 
-PODFILE CHECKSUM: e9a232afb97585dec0b78628166e4f9d1cf8a530
+PODFILE CHECKSUM: 4f1ae5d47c7c16d341eaf8b025290b6d9677fd85
 
 COCOAPODS: 1.5.3
