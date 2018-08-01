@@ -290,16 +290,16 @@ class HomeController: UIViewController {
             let name = node.name
             //Model is glowing when clicked and should no longer cast shadows.
             if(node.castsShadow){ //wasClicked
-                if(name != "man_skele" && name != "Man_Skin"){
+                if(name != "man_skele" && name != "Man_Skin2"){
                     node.castsShadow = false
                     displayAlertDialog(image: nil, node: node, url: nil, fatigue: false, fatigueLevel: nil)
                 }
             }else{
-                if(name != "man_skele" && name != "Man_Skin"){
+                if(name != "man_skele" && name != "Man_Skin2"){
                     node.castsShadow = true;
                 }
             }
-            if(name == "Man_Skin"){
+            if(name == "Man_Skin2"){
                 
                 let channel = node.geometry!.firstMaterial!.diffuse.mappingChannel
                 let texcoord = result.textureCoordinates(withMappingChannel: channel)
@@ -555,7 +555,7 @@ class HomeController: UIViewController {
     private func addMaleSkin(){
         //add male
         let manMesh = ObjectWrapper(
-            mesh: MeshLoader.loadMeshWith(name: "Man_Skin", ofType: "obj"),
+            mesh: MeshLoader.loadMeshWith(name: "Man_Skin2", ofType: "obj"),
             material: MaterialWrapper(
                 diffuse: UIColor.white,//"skin.png",
                 roughness: NSNumber(value: 0.3),
@@ -567,7 +567,7 @@ class HomeController: UIViewController {
                                      GLKMathDegreesToRadians(20))
         )
         manMesh.node.scale = SCNVector3(2.5,2.5,2.5)
-        manMesh.node.name = "Man_Skin"
+        manMesh.node.name = "Man_Skin2"
         self.scene.rootNode.addChildNode(manMesh.node)
         
         manMesh.node.geometry?.firstMaterial = MaterialWrapper(
