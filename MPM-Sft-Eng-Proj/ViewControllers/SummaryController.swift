@@ -27,8 +27,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var typeKeyMap = Dictionary<String, UIColor>()
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
-    //xAxis scale Will be dynamic eventually
     private var xAxisScale : Double?
+    private var scaleMultiplier : Double?
     private var startDate : Date?
     private var endDate : Date?
     
@@ -92,7 +92,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
         if (startDate != nil && endDate != nil) {
-            if startDate!.isEarlier(than: endDate!) {
+            if startDate!.isEarlier(than: endDate!) || startDate!.equals(endDate!) {
                 getDataForTimePeriod(date1: startDate!, date2: endDate!)
             }
         }
@@ -175,14 +175,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
+        //Clear line model data
         lineModelData.removeAll()
-        
         print("Attempting to find data between \(date1) and \(date2)")
-        //get hours between two dates for x axis scale
-        let diff = date2.timeIntervalSince(date1)
-        let hours = Int(diff) / 3600
-        xAxisScale = Double(hours)
-        print("Setting xAxis scale = \(xAxisScale)")
+        
+        //Handle scaling of data
+        self.setupMultipliers(date1, date2)
         
         //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
@@ -199,9 +197,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
-                /*
-                 Note to self: need to use orderby if using querystarting and queryending...
-                */
+              
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
                     
                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
@@ -227,15 +223,46 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                             }
                         }
                     }
-                    // Have all the data needed to build out graph
-                    self.buildDailyChart(wrappers)
+            
+                    //Have all the data needed to build out graph
+                    self.buildChart(wrappers)
                 }
             }
         }
     }
     
-    fileprivate func buildDailyChart(_ wrappers: [LogWrapper]) {
+    /**
+     Sets up the multipliers needed to scale data correctly.
+     
+     - parameter : date1, the first date.
+     - parameter : date2, the second date.
+     */
+    private func setupMultipliers(_ date1: Date, _ date2: Date) {
+        //get hours between two dates for x axis scale
+        let diff = date2.timeIntervalSince(date1)
+        var hours = Int(diff) / 3600
         
+        //Edge case, where difference in days is 0, we need to set
+        //hours equal to 24 to avoid multiplication by 0.
+        if hours == 0 {
+            hours += 24
+        }
+        xAxisScale = Double(hours)
+        scaleMultiplier = Double(hours/24)
+        print("Setting xAxis scale = \(String(describing: xAxisScale))")
+        print("Setting multiplier = \(String(describing: scaleMultiplier))")
+    }
+    
+    
+    /**
+     Builds
+     
+     - parameter : date1, the first date.
+     - parameter : date2, the second date.
+     */
+    private func buildChart(_ wrappers: [LogWrapper]) {
+        //Pull data that is from the same areas and place them into
+        //mapped wrappers, so that we can eventually graph them
         var mappedWrappers : Dictionary<String, [LogWrapper]> = Dictionary()
         for item in wrappers {
             if mappedWrappers[item.getType()] != nil {
@@ -245,43 +272,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 mappedWrappers.updateValue([item], forKey: item.getType())
             }
         }
-        //Get into correct format for graphing
+        //Get data into correct format for graphing
         for area in mappedWrappers {
-            
-            //Create a linedatawrapper to hold info
-            let lineData = LineDataWrapper()
-            
-            //So that it has somewhere to draw from on the axis
-            var dataHolder = [(Double,Double)]()
-            dataHolder.append((0.0,0.0))
-            
-            for item in area.value {
-                lineData.setType(item.getType())
-                //need a way of plotting it on a scale of 0-24
-                
-                //print("Items time \(item.getTime())")
-                guard let dateFrom = startDate else { return }
-                guard let dateTo = item.getTime().toDate() else { return }
-            
-                
-                //print("Start date \(dateFrom)")
-                //print("End date \(dateTo.date)")
-                
-                
-                let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
-    
-                //print("Difference \(difference)")
-                
-                let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
-                let doubleRating = Double(item.getRating())
-                dataHolder.append((doubleTime, doubleRating))
-            }
-            
-            lineData.setLineModelData(dataHolder)
-            lineModelData.append(lineData)
+            setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
         //INIT CHART
-        //view.backgroundColor = UIColor.black
         guard let chart = chart else {return}
         for view in chart.view.subviews {
             view.removeFromSuperview()
@@ -289,6 +284,43 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         self.initChart()
         chart.view.setNeedsDisplay()
         self.setupChartKey()
+    }
+    
+    private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]){
+        print("--------> Area: \(area)")
+        //Create a linedatawrapper to hold info
+        let lineData = LineDataWrapper()
+        
+        var dataHolder = [(Double,Double)]()
+        //So that it has somewhere to draw from on the axis
+        dataHolder.append((0.0,0.0))
+        
+        for item in wrapper {
+           
+            lineData.setType(item.getType())
+            
+            guard let dateFrom = startDate else { return }
+            guard let dateTo = item.getTime().toDate() else { return }
+            guard let multiplier = scaleMultiplier else { return }
+            guard let scale = xAxisScale else { return }
+            
+            let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
+            
+            let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
+            
+            let doubleRating = Double(item.getRating())
+            
+            //Multiply by the scale/24 so that data is always
+            //appropriately represented
+            print("Scale: \(scale)")
+//            print("--------------> Appending: x \((doubleTime * multiplier)/((scale+24.0)/24)) y \(doubleRating)")
+//            dataHolder.append(((doubleTime * multiplier)/((scale+24.0)/24), doubleRating))
+            print("--------------> Appending: x \(doubleTime) y \(doubleRating)")
+            dataHolder.append((doubleTime,doubleRating))
+        }
+        
+        lineData.setLineModelData(dataHolder)
+        lineModelData.append(lineData)
     }
     
     /**
@@ -345,13 +377,15 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - returns: Double, the double value of the String
     */
     private func getDoubleFromTimeString(input: String, difference: Double) -> Double {
+        print("Difference \(difference)")
+       
+     
         let timeSplit = input.split(separator: " ")
         let timeIWant = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeIWant)
         guard let unwrappedTime = timeDouble else { return 0.0 }
-        //IF WE HAVE 10.35 , how do we then scale this
-        //let scale = Int(xAxisScale*60)
-        let adjustment = (24*difference) + unwrappedTime
+        
+        let adjustment = ((24*difference) + unwrappedTime)/(2)
         
         return adjustment
     }
@@ -376,8 +410,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
         //We need to set this dynamically? Potentially
-        let divisor : Int
-        
+      
         //scale/24
         
         
@@ -473,6 +506,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         
         for item in lineModelData {
             let randColor = UIColor.random()
+            
+            
+            
             //Store color for key later
             typeKeyMap.updateValue(randColor, forKey: item.getType())
 
@@ -521,7 +557,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 guidelinesLayer,
                 chartPointsLineLayer,
                 dividersLayer,
-                //dividersLayer2
             ]
         )
         view.addSubview(chart.view)
