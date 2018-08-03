@@ -31,6 +31,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var scaleMultiplier : Double?
     private var startDate : Date?
     private var endDate : Date?
+    private var maxDifference: Int?
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -177,11 +178,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func getDataForTimePeriod(date1: Date, date2: Date) {
         //Clear line model data
         lineModelData.removeAll()
-        print("Attempting to find data between \(date1) and \(date2)")
         
-        //Handle scaling of data
-        self.setupMultipliers(date1, date2)
-        
+        //Setup differences needed for scaling
+        setupDifferences(date1, date2)
+       
         //reformat dates so we can pull data
         let dateF : DateFormatter = DateFormatter()
         dateF.dateFormat = "yyyy-MMM-dd"
@@ -231,26 +231,16 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
-    /**
-     Sets up the multipliers needed to scale data correctly.
-     
-     - parameter : date1, the first date.
-     - parameter : date2, the second date.
-     */
-    private func setupMultipliers(_ date1: Date, _ date2: Date) {
-        //get hours between two dates for x axis scale
-        let diff = date2.timeIntervalSince(date1)
-        var hours = Int(diff) / 3600
+    private func setupDifferences(_ date1: Date, _ date2: Date) {
+        print("Date 1 \(date1)")
+        print("Date 2 \(date2)")
         
-        //Edge case, where difference in days is 0, we need to set
-        //hours equal to 24 to avoid multiplication by 0.
-        if hours == 0 {
-            hours += 24
-        }
-        xAxisScale = Double(hours)
-        scaleMultiplier = Double(hours/24)
-        print("Setting xAxis scale = \(String(describing: xAxisScale))")
-        print("Setting multiplier = \(String(describing: scaleMultiplier))")
+        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2)
+        print("Days \(days)")
+        xAxisScale = Double(days+1)*24.0
+        maxDifference = days+1
+        //print("xAxisScale \(xAxisScale)")
+        //print("maxDifference \(maxDifference)")
     }
     
     
@@ -296,25 +286,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         dataHolder.append((0.0,0.0))
         
         for item in wrapper {
-           
             lineData.setType(item.getType())
-            
-            guard let dateFrom = startDate else { return }
-            guard let dateTo = item.getTime().toDate() else { return }
-            guard let multiplier = scaleMultiplier else { return }
-            guard let scale = xAxisScale else { return }
-            
+            guard let dateFrom = startDate, let dateTo = item.getTime().toDate() else { return }
             let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
-            
             let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
-            
             let doubleRating = Double(item.getRating())
-            
-            //Multiply by the scale/24 so that data is always
-            //appropriately represented
-            print("Scale: \(scale)")
-//            print("--------------> Appending: x \((doubleTime * multiplier)/((scale+24.0)/24)) y \(doubleRating)")
-//            dataHolder.append(((doubleTime * multiplier)/((scale+24.0)/24), doubleRating))
             print("--------------> Appending: x \(doubleTime) y \(doubleRating)")
             dataHolder.append((doubleTime,doubleRating))
         }
@@ -332,7 +308,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - returns: an Int representing the difference in days.
      */
     private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
-        return secondDate.compare(toDate: firstDate, granularity: .day).rawValue
+        let diff = secondDate.timeIntervalSince(firstDate)
+        let hours = Int(diff) / 3600
+        
+        return hours/24
     }
     
     
@@ -377,16 +356,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - returns: Double, the double value of the String
     */
     private func getDoubleFromTimeString(input: String, difference: Double) -> Double {
-        print("Difference \(difference)")
-       
-     
         let timeSplit = input.split(separator: " ")
         let timeIWant = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeIWant)
-        guard let unwrappedTime = timeDouble else { return 0.0 }
-        
-        let adjustment = ((24*difference) + unwrappedTime)/(2)
-        
+        guard let unwrappedTime = timeDouble, let maxDiff = maxDifference else { return 0.0 }
+        let adjustment = ((24*difference) + unwrappedTime)//Double(maxDiff)
         return adjustment
     }
     
@@ -413,10 +387,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
       
         //scale/24
         
-        
-        print("Multiple \((scale/24)-1)")
         let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/24)
-        print("Multiplier \(scale/24)")
+     
         
         
         var labCopy = labelSettings
