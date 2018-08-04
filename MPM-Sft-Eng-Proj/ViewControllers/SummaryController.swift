@@ -32,6 +32,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var startDate : Date?
     private var endDate : Date?
     private var maxDifference: Int?
+    private let units : Double = 24.0
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -71,31 +72,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    /**
-        Triggered when a date is set insid a GraphDateEntryCell. UserInfo is passed
-        into the function that identifies if the date is the From or To date in terms
-        of the period, and it is handled accordingly.
-     
-        - parameter : notif, the notification
-    */
-    @objc func dateSet(notif: NSNotification) {
-        if let name = notif.userInfo?["name"] as? String, let date = notif.userInfo?["date"] as? String {
-            if name == "From" {
-                print(date)
-                startDate = date.toDate("dd/MM/yyyy")?.date
-            } else {
-                print(date)
-                endDate = date.toDate("dd/MM/yyyy")?.date
-            }
-        }
-        if (startDate != nil && endDate != nil) {
-            if startDate!.isEarlier(than: endDate!) || startDate!.equals(endDate!) {
-                getDataForTimePeriod(date1: startDate!, date2: endDate!)
-            }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if isLoadingViewController {
+            isLoadingViewController = false
+        } else {
+            setupView()
         }
     }
     
@@ -114,7 +96,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
-   
     private func setupSummaryTableViewSpecifics() {
         summaryTableView.delegate = self
         summaryTableView.dataSource = self
@@ -124,46 +105,27 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if isLoadingViewController {
-            isLoadingViewController = false
-        } else {
-            setupView()
+    
+    /**
+        Triggered when a date is set insid a GraphDateEntryCell. UserInfo is passed
+        into the function that identifies if the date is the From or To date in terms
+        of the period, and it is handled accordingly.
+     
+        - parameter : notif, the notification
+    */
+    @objc func dateSet(notif: NSNotification) {
+        if let name = notif.userInfo?["name"] as? String, let date = notif.userInfo?["date"] as? String {
+            if name == "From" {
+                startDate = date.toDate("dd/MM/yyyy")?.date
+            } else {
+                endDate = date.toDate("dd/MM/yyyy")?.date
+            }
         }
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return numberOfDateOptions
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dateF : DateFormatter = DateFormatter()
-        dateF.dateFormat = "dd/MM/yyyy"
-        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-        let date = Date()
-        let dateS = dateF.string(from: date)
-        
-        if (indexPath.row == 0) {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
-            cell.textFieldName = "From"
-            cell.textFieldValue = dateS
-            cell.accessoryType = .disclosureIndicator
-            cell.layoutSubviews()
-            return cell
-        } else {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
-            cell.textFieldName = "To"
-            cell.textFieldValue = dateS
-            cell.accessoryType = .disclosureIndicator
-            cell.layoutSubviews()
-            return cell
+        if (startDate != nil && endDate != nil) {
+            if startDate!.isEarlier(than: endDate!) || startDate!.equals(endDate!) {
+                getDataForTimePeriod(date1: startDate!, date2: endDate!)
+            }
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.backgroundColor = UIColor.black
     }
     
     /**
@@ -189,6 +151,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
         
+        let noDataBanner = NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning)
+        
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
                 
@@ -199,13 +163,34 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 painRef.keepSynced(true)
               
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
+                    print("Searching from \(dateFromS)")
+                    print("Searching to \(dateToS)")
                     
                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                     
-                    if snapshots.count == 0 {
-                        let banner = NotificationBanner(title: "No Data for Specified Period", subtitle: "Try entering some data to view a summary...", style: .warning)
-                        print("There was no data in the time period")
-                        banner.show()
+                    if snapshots.isEmpty {
+                        //Need to check what the last date was that they entered data,
+                        //and graph if possible
+                        Database.database().reference(withPath: "users_metadata").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                                if snapshots.isEmpty {
+                                    noDataBanner.show()
+                                } else {
+                                    for snap in snapshots {
+                                        if let lastActive : String = snap.value as? String {
+                                            guard let last = lastActive.toDate()?.date else { return }
+                                            if last.isAfterDate(date1, granularity: .day) {
+                                                self.getDataForTimePeriod(date1: date1, date2: last)
+                                                let banner = NotificationBanner(title: "Some data was missing!", subtitle: "Displaying data from \(dateFromS) till \(lastActive)", style: .success)
+                                                banner.show()
+                                            } else {
+                                                noDataBanner.show()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        })
                     } else {
                         for snap in snapshots {
                                 let date = snap.key
@@ -223,7 +208,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                             }
                         }
                     }
-            
                     //Have all the data needed to build out graph
                     self.buildChart(wrappers)
                 }
@@ -231,24 +215,27 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
+    /**
+        A utility method used to find the difference in days, so that we
+        can scale the data appropriately.
+     
+        - parameter : date1, the first date.
+        - parameter : date2, the second date.
+    */
     private func setupDifferences(_ date1: Date, _ date2: Date) {
-        print("Date 1 \(date1)")
-        print("Date 2 \(date2)")
-        
-        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2)
-        print("Days \(days)")
-        xAxisScale = Double(days+1)*24.0
-        maxDifference = days+1
-        //print("xAxisScale \(xAxisScale)")
-        //print("maxDifference \(maxDifference)")
+        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2)+1
+        xAxisScale = Double(days)*units
+        maxDifference = days
     }
     
     
     /**
-     Builds
+        Builds the chart out, by collecting data relevant to certain
+        types of pain and setting up the line data for those types of pain.
+        Finally, after this is complete, the chart is initiated.
      
-     - parameter : date1, the first date.
-     - parameter : date2, the second date.
+        - parameter : date1, the first date.
+        - parameter : date2, the second date.
      */
     private func buildChart(_ wrappers: [LogWrapper]) {
         //Pull data that is from the same areas and place them into
@@ -266,7 +253,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         for area in mappedWrappers {
             setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
-        //INIT CHART
+       //Initiate Chart
         guard let chart = chart else {return}
         for view in chart.view.subviews {
             view.removeFromSuperview()
@@ -276,22 +263,22 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         self.setupChartKey()
     }
     
+    /**
+        A function that sets up the linedata for a particular area.
+     
+        - parameter : area, a String representing the area.
+        - parameter : wrapper, a log wrapper array containing the logs for that area.
+     */
     private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]){
-        print("--------> Area: \(area)")
-        //Create a linedatawrapper to hold info
         let lineData = LineDataWrapper()
-        
         var dataHolder = [(Double,Double)]()
-        //So that it has somewhere to draw from on the axis
         dataHolder.append((0.0,0.0))
-        
         for item in wrapper {
             lineData.setType(item.getType())
             guard let dateFrom = startDate, let dateTo = item.getTime().toDate() else { return }
             let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
             let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
             let doubleRating = Double(item.getRating())
-            print("--------------> Appending: x \(doubleTime) y \(doubleRating)")
             dataHolder.append((doubleTime,doubleRating))
         }
         
@@ -310,8 +297,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         let diff = secondDate.timeIntervalSince(firstDate)
         let hours = Int(diff) / 3600
-        
-        return hours/24
+        return hours/Int(units)
     }
     
     
@@ -350,17 +336,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     
     /**
         A utility method used to format the input date into a double value
-        that represents the time in 24 hour format.
+        that represents the time in 24 hour format. Takes into consideration
+        the day that the time fell within the time period being graphed,
+        in order to determine the corresponding x value.
      
         - parameter : input, an input String
         - returns: Double, the double value of the String
     */
     private func getDoubleFromTimeString(input: String, difference: Double) -> Double {
         let timeSplit = input.split(separator: " ")
-        let timeIWant = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
-        let timeDouble = Double(timeIWant)
-        guard let unwrappedTime = timeDouble, let maxDiff = maxDifference else { return 0.0 }
-        let adjustment = ((24*difference) + unwrappedTime)//Double(maxDiff)
+        let timeTidied = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
+        let timeDouble = Double(timeTidied)
+        guard let unwrappedTime = timeDouble else { return 0.0 }
+        let adjustment = ((units*difference) + unwrappedTime)
         return adjustment
     }
     
@@ -375,29 +363,21 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         
         let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
         guard let scale = xAxisScale else { return }
-        let firstMin: Double = 0
-        let lastMin: Double = scale
-        
-        //TODO transform data so its always within a scale of 24...
+        let firstXValue: Double = 0
+        let lastXValue: Double = scale
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
-        //We need to set this dynamically? Potentially
-      
-        //scale/24
-        
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/24)
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/units)
      
-        
-        
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red
         let xEmptyLabelsGenerator = ChartAxisLabelsGeneratorFunc {value in return
             ChartAxisLabel(text: "", settings: labCopy)
         }
         
-        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
             xEmptyLabelsGenerator)
         //This is essentially do get rid of vertial lines as we cannot set it to nil
         let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: 0, lastModelValue: 0, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
@@ -412,25 +392,21 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 
         let formatter = NumberFormatter()
         formatter.maximumFractionDigits = 0
-        /*
-         Baz/Harry
-         28th July 2018 - Made executive decision not to label ranges,
-         as it is obvious given the giant date picker below the graph.
-         */
+       
         let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
             return ChartAxisLabel(text: "", settings: labelSettings)
         }
 
         let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
 
-        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
+        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 3rd x-axis model: Has an axis value (tick) for each <rangeSize> years. We use this to show the x-axis guidelines and long dividers
         
         let xValuesGuidelineGenerator = ChartAxisGeneratorMultiplier(rangeSize)
-        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstMin, lastModelValue: lastMin, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
+        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
         
         
         ////////////////////////////////////////////////////////////////////////////////////
@@ -448,9 +424,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         // Chart frame, settings
         
         let chartFrame = ExamplesDefaults.chartFrame(chartContainer.bounds)
-        
         var chartSettings = ExamplesDefaults.chartSettingsWithPanZoom
-        
         chartSettings.axisStrokeWidth = 0.5
         chartSettings.labelsToAxisSpacingX = 10
         chartSettings.leading = -1
@@ -478,9 +452,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         
         for item in lineModelData {
             let randColor = UIColor.random()
-            
-            
-            
             //Store color for key later
             typeKeyMap.updateValue(randColor, forKey: item.getType())
 
@@ -545,6 +516,46 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let dateF : DateFormatter = DateFormatter()
+        dateF.dateFormat = "dd/MM/yyyy"
+        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        
+        if (indexPath.row == 0) {
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
+            cell.textFieldName = "From"
+            if let start = startDate {
+                let startString = dateF.string(from: start)
+                cell.textFieldValue = startString
+            }
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        } else {
+            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
+            cell.textFieldName = "To"
+            if let end = endDate {
+                let endString = dateF.string(from: end)
+                cell.textFieldValue = endString
+            }
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cell.backgroundColor = UIColor.black
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return numberOfDateOptions
     }
 
     private func setupChartContainer() {

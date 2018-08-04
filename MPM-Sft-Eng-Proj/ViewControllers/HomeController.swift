@@ -386,6 +386,8 @@ class HomeController: UIViewController {
                 painDictionary = ["type": area, "ranking": rating]
             }
             
+            
+            
             //Write to DB in correct structure to allow quick searching
             Database.database().reference()
                 .child("pain")
@@ -393,12 +395,18 @@ class HomeController: UIViewController {
                 .child(dateFull)
                 .child(dateHoursMins)
                 .updateChildValues(painDictionary) { (err, dbRef) in
-            if let error = err {
-                SwiftSpinner.show("Error logging pain...").addTapHandler({
-                    SwiftSpinner.hide()
-                    print(error)
-                    return
-                    })
+                    //Update metadata
+                    Database.database().reference()
+                        .child("users_metadata")
+                        .child(uid)
+                        .updateChildValues(["last_active_log": dateFull])
+                    
+                    if let error = err {
+                        SwiftSpinner.show("Error logging pain...").addTapHandler({
+                            SwiftSpinner.hide()
+                            print(error)
+                            return
+                        })
                 }
             }
         }
