@@ -12,30 +12,43 @@ import GoogleSignIn
 import FirebaseStorage
 import FirebaseDatabase
 import SwiftSpinner
+import SwiftyBeaver
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker  {
     
     var window: UIWindow?
     var mainTabBarController: MainTabBarController?
-    
-    
+    let log = SwiftyBeaver.self
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+       
+        //Configure Logging Framework
+        let console = ConsoleDestination()
+        let file = FileDestination()
+        let cloud = SBPlatformDestination(appID: SwiftyBeaverCredentials.appID, appSecret: SwiftyBeaverCredentials.appSecret, encryptionKey: SwiftyBeaverCredentials.encryptionKey)
+        log.addDestination(console)
+        log.addDestination(file)
+        log.addDestination(cloud)
+        
         //Configure Firebase
         FirebaseApp.configure()
         //Enable Disk Persistence
         Database.database().isPersistenceEnabled = true
-        //Client ID for Google Sign In
+        
+        //Configure Google
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
-        //Override point for customization after application launch.
+       
+        //Continue setup
         window = UIWindow()
-       //Check if first time opening, if so onboard
+        //Check if first time opening, if so onboard
         let defaults = UserDefaults.standard
         if let _ = defaults.string(forKey: "isAppAlreadyLaunchedOnce"){
+            log.info("App Previously Launched, Ignoring OnBoarding...")
             handleLogin(withWindow: window)
-    
         } else {
+            log.info("OnBoarding Triggered")
             defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
             let onBoard = OnBoardController()
             let onBoardConrollerNav = UINavigationController(rootViewController: onBoard)
@@ -57,6 +70,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                                                  annotation: annotation)
     }
     
+    /**
+        Relevant code used to sign in a user via Google. Really not
+        a fan of the fact it exists inside AppDelegate, but hey, this is
+        the suggested solution by Google.
+    */
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
         SwiftSpinner.show("Signing In via Google")
 
@@ -64,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
                 SwiftSpinner.hide()
             })
-            print(error)
+            self.log.error("Error signing in via Google: \(error.localizedDescription)")
             return
         }
         
@@ -72,21 +90,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             SwiftSpinner.show("Error Authenticating User...").addTapHandler({
                 SwiftSpinner.hide()
             })
+            self.log.error("There was a problem authenticating the user via Google...")
             return
         }
-        
-        
+    
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
                                                        accessToken: authentication.accessToken)
-        
-        
         
         Auth.auth().signInAndRetrieveData(with: credential) { (user, error) in
             if let error = error {
                 SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
                     SwiftSpinner.hide()
                 })
-                print(error)
+                self.log.error("Error signing in via Google: \(error.localizedDescription)")
                 return
             }
             guard let name = user?.user.displayName, let email = user?.user.email,
@@ -95,6 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                     SwiftSpinner.show("Error Retrieving User Information...").addTapHandler({
                         SwiftSpinner.hide()
                     })
+                    self.log.error("Error retrieving users unique identifier...")
                     return
             }
             /*
@@ -103,7 +120,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             */
             Database.database().reference().child("users").observeSingleEvent(of: .value, with: { (snapshot) in
                 if !snapshot.hasChild(uid) {
-                    print("User does not exist, creating new user...")
+                    self.log.info("Creating new user")
                     let altProfilePicURL = Service.defaultProfilePicUrl
                     let dictionaryValues = ["name": name, "email": email,
                                             "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL,
@@ -113,14 +130,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                     Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
                         if let error = error {
                             SwiftSpinner.show("Error Signing Up...").addTapHandler({
-                                print(error)
+                                self.log.error("Error signing up with Google: \(error.localizedDescription)")
                             })
                             return
                         }
                         self.completeSignIn(uid)
                     })
                 } else {
-                    print("user exists...")
+                    self.log.info("Google Sign in succesful")
                     self.completeSignIn(uid)
                 }
             })
@@ -136,8 +153,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     
     
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-        // Perform any operations when the user disconnects from app here.
-        // ...
+        self.log.error("\(user.userID) disconnected from the app with error: \(error.localizedDescription)")
     }
     
     func applicationWillResignActive(_ application: UIApplication) {

@@ -18,6 +18,7 @@ import FirebaseAuth
 import DateToolsSwift
 import SwiftDate
 import NotificationBannerSwift
+import SwiftyBeaver
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -32,7 +33,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var startDate : Date?
     private var endDate : Date?
     private var maxDifference: Int?
-    private let units : Double = 24.0
+    private let _units : Double = 24.0
+    private let log = SwiftyBeaver.self
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -60,10 +62,17 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         return view
     }()
     
+    /**
+     This will be run once, therefore here we do everything that
+     doesn't need to be repeated when the view controller is refreshed.
+    */
     override func viewDidLoad() {
         super.viewDidLoad()
         isLoadingViewController = true
+        Service.setupNavBar(controller: self)
+        self.navigationItem.title = "Summary"
         setupView()
+        //Controller listens for changes in state of date cells
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
         endDate = Date().dateAtStartOf(.day)
         startDate = endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
@@ -72,6 +81,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
+    /**
+        Employed to allow the dynamic refreshing of data
+        when a user opens the tab again, after it has
+        initially been loaded via viewDidLoad().
+    */
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if isLoadingViewController {
@@ -81,9 +95,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
+    /**
+        Sets up the parts of the view that need to be
+        dynamically reloaded if a user opens the tab
+        after it has initially loaded.
+    */
     private func setupView() {
-        Service.setupNavBar(controller: self)
-        self.navigationItem.title = "Summary"
         view.addSubview(summaryTableView)
         setupSummaryTableView()
         view.addSubview(chartContainer)
@@ -96,6 +113,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
     
+    /**
+        Sets up summary table view properties.
+    */
     private func setupSummaryTableViewSpecifics() {
         summaryTableView.delegate = self
         summaryTableView.dataSource = self
@@ -121,9 +141,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 endDate = date.toDate("dd/MM/yyyy")?.date
             }
         }
-        if (startDate != nil && endDate != nil) {
-            if startDate!.isEarlier(than: endDate!) || startDate!.equals(endDate!) {
-                getDataForTimePeriod(date1: startDate!, date2: endDate!)
+        if let start = startDate, let end = endDate {
+            if start.equals(end) || start.isEarlier(than: end) {
+                getDataForTimePeriod(date1: start, date2: end)
             }
         }
     }
@@ -163,34 +183,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 painRef.keepSynced(true)
               
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
-                    print("Searching from \(dateFromS)")
-                    print("Searching to \(dateToS)")
+                    self.log.info("User \(uid) searching for data in range: \(dateFromS) to \(dateToS)")
                     
                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                    
+
                     if snapshots.isEmpty {
-                        //Need to check what the last date was that they entered data,
-                        //and graph if possible
-                        Database.database().reference(withPath: "users_metadata").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                                if snapshots.isEmpty {
-                                    noDataBanner.show()
-                                } else {
-                                    for snap in snapshots {
-                                        if let lastActive : String = snap.value as? String {
-                                            guard let last = lastActive.toDate()?.date else { return }
-                                            if last.isAfterDate(date1, granularity: .day) {
-                                                self.getDataForTimePeriod(date1: date1, date2: last)
-                                                let banner = NotificationBanner(title: "Some data was missing!", subtitle: "Displaying data from \(dateFromS) till \(lastActive)", style: .success)
-                                                banner.show()
-                                            } else {
-                                                noDataBanner.show()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        })
+                        self.log.info("User \(uid) had incomplete/missing data in range, checking for partial data")
+                        self.checkForIncompleteDataInPeriod(uid, dateFromS, date1, date2, noDataBanner)
                     } else {
                         for snap in snapshots {
                                 let date = snap.key
@@ -216,6 +215,48 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     /**
+        A function that is called if the snapshot is empty between the
+        ranges the user initially input. The reason this exists is to basically
+        check to see if there is ANY data in the time period asked for, i.e.
+        incomplete data. If there is, this function attempts to find it and then
+        continues on to display that data. To avoid searching for their last logged
+        entry, we store a "last_logged" timestamp in a "users_metadata" node within
+        the database, so we can quickly figure out if the user has viable data within
+        the range they requested.
+     
+        - parameter : uid, the users unique identifier.
+        - parameter : dateFromS, the original "from" date in String format.
+        - parameter : date1, the intiial "from" date.
+        - parameter : date2, the initial "to" date.
+        - parameter : noDataBanner, a banner used to display a message to the user
+    */
+    private func checkForIncompleteDataInPeriod(_ uid: String,_ dateFromS: String, _ date1: Date, _ date2: Date, _ noDataBanner: NotificationBanner) {
+        Database.database().reference(withPath: "users_metadata").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
+            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                if snapshots.isEmpty {
+                self.log.info("User \(uid) had no data in the date range.")
+                noDataBanner.show()
+                } else {
+                    for snap in snapshots {
+                        if let lastActive : String = snap.value as? String {
+                            guard let last = lastActive.toDate()?.date else { return }
+                            if last.isAfterDate(date1, granularity: .day) {
+                                self.getDataForTimePeriod(date1: date1, date2: last)
+                                let banner = NotificationBanner(title: "Some data was missing!", subtitle: "Displaying data from \(dateFromS) till \(lastActive)", style: .success)
+                                self.log.info("User \(uid) had partial data in the date range.")
+                                banner.show()
+                            } else {
+                                noDataBanner.show()
+                                self.log.info("User \(uid) had no data in the date range.")
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    /**
         A utility method used to find the difference in days, so that we
         can scale the data appropriately.
      
@@ -224,7 +265,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     */
     private func setupDifferences(_ date1: Date, _ date2: Date) {
         let days = getDaysBetweenDates(firstDate: date1, secondDate: date2)+1
-        xAxisScale = Double(days)*units
+        xAxisScale = Double(days)*_units
         maxDifference = days
     }
     
@@ -238,8 +279,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
      */
     private func buildChart(_ wrappers: [LogWrapper]) {
-        //Pull data that is from the same areas and place them into
-        //mapped wrappers, so that we can eventually graph them
+        //Pull data that is from the same area and place them into
+        //mapped wrappers, so that we can eventually graph them.
         var mappedWrappers : Dictionary<String, [LogWrapper]> = Dictionary()
         for item in wrappers {
             if mappedWrappers[item.getType()] != nil {
@@ -272,6 +313,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]){
         let lineData = LineDataWrapper()
         var dataHolder = [(Double,Double)]()
+        //So that it has somewhere to draw from
         dataHolder.append((0.0,0.0))
         for item in wrapper {
             lineData.setType(item.getType())
@@ -297,7 +339,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         let diff = secondDate.timeIntervalSince(firstDate)
         let hours = Int(diff) / 3600
-        return hours/Int(units)
+        return hours/Int(_units)
     }
     
     
@@ -318,7 +360,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     
     /**
         Sets up the chart keys via investigating the map which holds the
-        color associated with a pain type (which is random at generation)
+        color associated with a pain type (which is randomly generated)
         and the pain types name.
      */
     private func setupChartKey() {
@@ -348,7 +390,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let timeTidied = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeTidied)
         guard let unwrappedTime = timeDouble else { return 0.0 }
-        let adjustment = ((units*difference) + unwrappedTime)
+        let adjustment = ((_units*difference) + unwrappedTime)
         return adjustment
     }
     
@@ -369,7 +411,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
         
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/units)
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/_units)
      
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red
@@ -452,7 +494,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         
         for item in lineModelData {
             let randColor = UIColor.random()
-            //Store color for key later
+            //Store color for keymap later
             typeKeyMap.updateValue(randColor, forKey: item.getType())
 
             let lineChartPoints = item.getLineModelData().map{ChartPoint(x: ChartAxisValueDouble($0.0), y: ChartAxisValueDouble($0.1))}

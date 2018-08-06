@@ -32,7 +32,6 @@ class Service {
     static let bottomUITabBarEdgeInset: CGFloat = -4
     static let rightUITabBarEdgeInset: CGFloat = 0
     
-    
     //Centralised method used to show alerts to user
     static func showAlert(on: UIViewController, style: UIAlertControllerStyle, title: String?, message: String?, actions: [UIAlertAction] = [UIAlertAction(title: "Ok", style: .default, handler: nil)], completion: (() -> Swift.Void)? = nil)  {
         let alert = UIAlertController(title: title, message: message, preferredStyle: style)

@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import SwiftyBeaver
 
 class OnBoardController: UIViewController, UICollectionViewDataSource,
                             UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    lazy var collectionView: UICollectionView = {
+    private let log = SwiftyBeaver.self
+    
+    private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
@@ -26,9 +29,9 @@ class OnBoardController: UIViewController, UICollectionViewDataSource,
         return cv
     }()
     
-    let cellID = "cellID"
+    private let cellID = "cellID"
  
-    let pages: [Page] = {
+    private let pages: [Page] = {
         let firstPage = Page(title: "Manage your pain",
                              message: "Visually log your levels of pain or fatigue using a three dimensional model.",
                              image: #imageLiteral(resourceName: "pain"), showButton: false)
@@ -43,7 +46,7 @@ class OnBoardController: UIViewController, UICollectionViewDataSource,
        return [firstPage, secondPage, thirdPage]
     }()
     
-    lazy var pageControl: UIPageControl = {
+    private lazy var pageControl: UIPageControl = {
         let pc = UIPageControl()
         pc.pageIndicatorTintColor = .lightGray
         pc.numberOfPages = self.pages.count
@@ -76,7 +79,6 @@ class OnBoardController: UIViewController, UICollectionViewDataSource,
         pageControl.currentPage = pageNumber
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.isNavigationBarHidden = true
@@ -118,6 +120,7 @@ extension OnBoardController: PageCellDelegate {
     
     func letsGoPressed(cell: UICollectionViewCell) {
         let welcome = WelcomeController()
+        self.log.info("User launched application")
         self.navigationController?.pushViewController(welcome, animated: true)
     }
 }

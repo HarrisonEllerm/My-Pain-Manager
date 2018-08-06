@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E4F1DE9ED082C9A4F629FFC5841598DB"
+               BlueprintIdentifier = "770060A65353C024B9B4DF2F28D9FB17"
                BuildableName = "SwiftValidator.framework"
                BlueprintName = "SwiftValidator"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E4F1DE9ED082C9A4F629FFC5841598DB"
+            BlueprintIdentifier = "770060A65353C024B9B4DF2F28D9FB17"
             BuildableName = "SwiftValidator.framework"
             BlueprintName = "SwiftValidator"
             ReferencedContainer = "container:Pods.xcodeproj">

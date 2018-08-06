@@ -21,19 +21,18 @@ import AVKit
 
 class WelcomeController: UIViewController {
     
-    var name: String?
-    var email: String?
-    var profilePicture: UIImage?
-    var videoPlayer: AVPlayer?
+    private var name: String?
+    private var email: String?
+    private var profilePicture: UIImage?
+    private var videoPlayer: AVPlayer?
     
-    let loginImg: UIImageView = {
+    private let loginImg: UIImageView = {
         let img = UIImageView(image: UIImage(named: "MPM_logo_revised"))
         img.contentMode = .scaleAspectFit
         return img
     }()
     
-    
-    lazy var dontHaveAccountButton: UIButton = {
+    private lazy var dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         let attributeTitle = NSMutableAttributedString(string: "Don't have an account? ",
             attributes: [NSAttributedStringKey.foregroundColor: UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0),
@@ -45,7 +44,7 @@ class WelcomeController: UIViewController {
         return button
     }()
     
-    lazy var loginButton: UIButton = {
+    private lazy var loginButton: UIButton = {
         var button = UIButton(type: .system)
         button.setTitleColor(UIColor.white, for: .normal)
         button.setTitle("Login", for: .normal)
@@ -104,7 +103,7 @@ class WelcomeController: UIViewController {
     }
     
     //Solution adapted from https://stackoverflow.com/questions/31671029/prevent-avplayer-from-canceling-background-audio
-    fileprivate func setAVPlayerDontCancelBackgroundAudio() {
+    private func setAVPlayerDontCancelBackgroundAudio() {
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)
         } catch let err as NSError {
@@ -128,34 +127,33 @@ class WelcomeController: UIViewController {
     }
     
     
-    @objc func loginAction() {
+    @objc private func loginAction() {
         let loginVC = LoginViewConroller()
         self.navigationController?.pushViewController(loginVC, animated: true)
     }
     
     
-    @objc func signUpAction() {
+    @objc private func signUpAction() {
         let signUserUpController = SignUserUpController()
         self.navigationController?.pushViewController(signUserUpController, animated: true)
     }
     
     
-   
-    fileprivate func anchorDontHaveAccountButton(_ button: UIButton) {
+    private func anchorDontHaveAccountButton(_ button: UIButton) {
         button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor,
                       right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8,
                       rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
     
-    fileprivate func anchorLoginImg(_ image: UIImageView) {
+    private func anchorLoginImg(_ image: UIImageView) {
         image.anchor(view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right:
             view.safeAreaLayoutGuide.rightAnchor, topConstant: 80, leftConstant: 16, bottomConstant: 0, rightConstant: 16,
                                                   widthConstant: 0, heightConstant: 300)
     }
     
   
-    fileprivate func anchorLoginButton(_ button: UIButton) {
+    private func anchorLoginButton(_ button: UIButton) {
         button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: dontHaveAccountButton.topAnchor,
                       right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 16,
                       rightConstant: 16, widthConstant: 0, heightConstant: 50)

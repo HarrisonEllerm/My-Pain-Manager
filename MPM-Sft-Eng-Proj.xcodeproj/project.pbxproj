@@ -139,6 +139,7 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
+		6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */; };
 		6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */; };
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
@@ -313,6 +314,7 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyBeaverCredentials.swift; sourceTree = "<group>"; };
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
@@ -550,7 +552,6 @@
 				38324DF0208B14FC005605B9 /* SummaryController.swift */,
 				6F26AAB82097C796009A3446 /* HealthProfileController.swift */,
 				6FD4A77820A6D97D00F10250 /* LoginViewController.swift */,
-				6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -562,6 +563,7 @@
 				6F0EFF7220B57142004AAD2E /* PageModel.swift */,
 				6F1705D52085E8EF00F6265C /* Service.swift */,
 				6FE4D8B0208AFAD2000F8B62 /* LoginFlowWorker.swift */,
+				6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -609,6 +611,7 @@
 		6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */ = {
 			isa = PBXGroup;
 			children = (
+				6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */,
 				6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */,
 				6F7D59412102DF1B0063D2D2 /* UIColor.swift */,
 			);
@@ -952,6 +955,7 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSpinner/SwiftSpinner.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftValidator/SwiftValidator.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyBeaver/SwiftyBeaver.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -974,6 +978,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSpinner.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftValidator.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyBeaver.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -1014,6 +1019,7 @@
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
 				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
+				6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */,
 				6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */,
 				6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */,
 				6F26AAB3209744D9009A3446 /* MeshLoader.swift in Sources */,

@@ -16,17 +16,16 @@ import FirebaseStorage
 import FirebaseDatabase
 import GoogleSignIn
 import SwiftSpinner
-
-
+import SwiftyBeaver
 
 class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDelegate, GIDSignInUIDelegate {
     
     
-    let validator = Validator()
+    private let validator = Validator()
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let log = SwiftyBeaver.self
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    let loginLabel: UILabel = {
+    private let loginLabel: UILabel = {
         let label = UILabel()
         label.text = "Get started below"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -36,7 +35,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
     }()
     
    
-    let emailTextField: UITextField = {
+    private let emailTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.backgroundColor: UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)])
         textField.attributedPlaceholder = attributedPlaceholder
@@ -48,7 +47,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         return textField
     }()
     
-    let passwordTextField: UITextField = {
+    private let passwordTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
@@ -61,7 +60,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         return textField
     }()
     
-    lazy var forgotPasswordButton: UIButton = {
+    private lazy var forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 48/255, alpha: 1)
         let attributeTitle = NSMutableAttributedString(string: "Forgot your password? ",
@@ -73,7 +72,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         return button
     }()
     
-    var loginButton: UIButton = {
+    private var loginButton: UIButton = {
         var button = UIButton(type: .system)
         button.setTitleColor(UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1), for: .normal)
         button.setTitle("Sign In", for: .normal)
@@ -84,32 +83,32 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         
     }()
     
-    
-    let googleButton: GIDSignInButton = {
+    private let googleButton: GIDSignInButton = {
         var button = GIDSignInButton()
         return button
     }()
     
-    @objc func forgotPasswordAction() {
+    @objc private func forgotPasswordAction() {
         
         var inputTextField: UITextField?
         
         let alert = UIAlertController(title: "Reset password", message: "Please enter the email address associated with your account.", preferredStyle: UIAlertControllerStyle.alert)
         
         alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
-            print("user cancelled reset");
+            self.log.info("User cancelled reset of password")
         }))
         
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
             let entryStr : String = (inputTextField?.text)!.trimmingCharacters(in: .whitespaces)
-            print("user requested reset with email \(entryStr)")
+            self.log.info("User requested email reset with email: \(entryStr)")
+
             Auth.auth().sendPasswordReset(withEmail: entryStr, completion: { (error) in
                 if let err = error {
-                    print("error ocurred when requesting password reset \(err.localizedDescription)")
+                    self.log.error("An error ocurred when requesting password reset: \(err.localizedDescription)")
                 }
                 let notif = UIAlertController(title: "Reset", message: "Please check your email for instructions on how to reset your password", preferredStyle: UIAlertControllerStyle.alert)
                 notif.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) -> Void in
-                    print("User notified about email successfully");
+                    self.log.info("User notified about password reset")
                 }))
                 self.present(notif, animated: true, completion: nil)
             })
@@ -123,7 +122,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         self.present(alert, animated: true, completion: nil)
     }
     
-    @objc func handleNormalLogin() {
+    @objc private func handleNormalLogin() {
         //First validate text fields.
         validator.validate(self)
     }
@@ -134,7 +133,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         guard let password = passwordTextField.text else { return }
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if let error = error {
-                print("Error signing in: \(error)")
+                self.log.error("There was an error signing in: \(error.localizedDescription)")
                 SwiftSpinner.show("Failed to sign in...")
                 SwiftSpinner.hide()
                 return
@@ -145,7 +144,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         }
     }
     
-    func validationFailed(_ errors:[(Validatable ,ValidationError)]) {
+     func validationFailed(_ errors:[(Validatable ,ValidationError)]) {
         for (_, error) in errors {
             if let present = self.presentedViewController {
                 present.removeFromParentViewController()
@@ -156,9 +155,6 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         }
     }
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
@@ -166,21 +162,18 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         passwordTextField.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         loginButton.backgroundColor = UIColor.white
         forgotPasswordButton.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
-        
         setupNavBar()
         setUpViews()
         setUpTextFields()
-        
         //Setup Google Auth
         GIDSignIn.sharedInstance().uiDelegate = self
         //register text fields that will be validated
         validator.registerField(emailTextField, rules: [RequiredRule(message: "Please provide a email!"), EmailRule(message: "Please provide a valid email!")])
         validator.registerField(passwordTextField, rules: [RequiredRule(message: "Password Required!")])
         
-        
     }
     
-    fileprivate func setupNavBar() {
+    private func setupNavBar() {
         navigationController?.navigationBar.isTranslucent = false
         let navigationBarAppearnce = UINavigationBar.appearance()
         navigationBarAppearnce.barTintColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
@@ -190,7 +183,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         self.navigationController!.navigationBar.topItem!.title = "Back"
     }
     
-    fileprivate func setUpViews() {
+    private func setUpViews() {
         
         view.addSubview(loginLabel)
         anchorLoginLabel(loginLabel)
@@ -212,35 +205,35 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         
     }
     
-    fileprivate func anchorLoginLabel(_ label: UILabel) {
+    private func anchorLoginLabel(_ label: UILabel) {
         label.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
     }
     
-    fileprivate func anchorEmailTextField(_ textField: UITextField) {
+    private func anchorEmailTextField(_ textField: UITextField) {
         textField.anchor(loginLabel.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 50, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
-    fileprivate func anchorPasswordTextField(_ textField: UITextField) {
+    private func anchorPasswordTextField(_ textField: UITextField) {
         textField.anchor(emailTextField.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
-    fileprivate func anchorLoginButton(_ button: UIButton) {
+    private func anchorLoginButton(_ button: UIButton) {
         button.anchor(passwordTextField.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0, heightConstant: 50)
     }
     
-    fileprivate func anchorGoogleButton(_ button: GIDSignInButton) {
+    private func anchorGoogleButton(_ button: GIDSignInButton) {
         button.anchor(loginButton.bottomAnchor, left: view.safeAreaLayoutGuide.leftAnchor,
                           bottom: nil, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 16,
                           leftConstant: 16, bottomConstant: 0, rightConstant: 16, widthConstant: 0,
                           heightConstant: 50)
     }
     
-    fileprivate func anchorForgotPasswordButton(_ button: UIButton) {
+    private func anchorForgotPasswordButton(_ button: UIButton) {
         button.anchor(nil, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, topConstant: 0, leftConstant: 16, bottomConstant: 8, rightConstant: 16, widthConstant: 0, heightConstant: 30)
     }
     
-    fileprivate func setUpTextFields() {
+    private func setUpTextFields() {
         emailTextField.delegate = self
         passwordTextField.delegate = self
     }
@@ -250,6 +243,4 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         textField.resignFirstResponder()
         return true
     }
-    
-   
 }

@@ -76,6 +76,7 @@ PODS:
   - SwiftDate (5.0.2)
   - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
+  - SwiftyBeaver (1.6.0)
 
 DEPENDENCIES:
   - Alamofire
@@ -94,6 +95,7 @@ DEPENDENCIES:
   - SwiftDate (~> 5.0)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
+  - SwiftyBeaver
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -122,6 +124,7 @@ SPEC REPOS:
     - SnapKit
     - SwiftDate
     - SwiftSpinner
+    - SwiftyBeaver
 
 EXTERNAL SOURCES:
   SwiftCharts:
@@ -166,7 +169,8 @@ SPEC CHECKSUMS:
   SwiftDate: 588bd7c496e6372713d45a304f506e9d6a7ca84c
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
+  SwiftyBeaver: e45759613e50b522b0e6f53b1f0f14389b45ca34
 
-PODFILE CHECKSUM: 4f1ae5d47c7c16d341eaf8b025290b6d9677fd85
+PODFILE CHECKSUM: ebb65a0ae3bc9c8e9e867f78470a1b8b127c3def
 
 COCOAPODS: 1.5.3

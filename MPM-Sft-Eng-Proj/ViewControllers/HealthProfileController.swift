@@ -14,17 +14,16 @@ import FirebaseStorage
 import Photos
 import SwiftSpinner
 
-struct HealthCellData {
+fileprivate struct HealthCellData {
     let message : String?
     let value : String?
 }
 
-
 class HealthProfileController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var window: UIWindow?
+    private var window: UIWindow?
     
-    let healthTableView : UITableView = {
+    private let healthTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = true
@@ -36,7 +35,7 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
     
     let label = UILabel()
     
-    var data = [HealthCellData]()
+    private var data = [HealthCellData]()
     
     override func viewDidLoad() {
         super.viewDidLoad()

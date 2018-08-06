@@ -14,8 +14,9 @@ import FirebaseStorage
 import Photos
 import SwiftSpinner
 import Alamofire
+import SwiftyBeaver
 
-struct SettingsCellData {
+fileprivate struct SettingsCellData {
     let image : UIImage?
     let message : String?
 }
@@ -33,10 +34,11 @@ struct Connectivity {
 
 class UserController : UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var window: UIWindow?
-    var selectedImage: UIImage?
+    private var window: UIWindow?
+    private var selectedImage: UIImage?
+    private let log = SwiftyBeaver.self
     
-    let settingsTableView : UITableView = {
+    private let settingsTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = true
@@ -44,9 +46,9 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return t
     }()
     
-    var data = [SettingsCellData]()
+    private var data = [SettingsCellData]()
     
-    let tapThis: UILabel = {
+    private let tapThis: UILabel = {
         let label = UILabel()
         label.text = "Tap to Update"
         label.font = UIFont.systemFont(ofSize: 10)
@@ -55,9 +57,9 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return label
     }()
     
-    let profileImageViewHeight: CGFloat = 112
+    private let profileImageViewHeight: CGFloat = 112
    
-    lazy var profileImageView: CachedImageView = {
+    private lazy var profileImageView: CachedImageView = {
         var cImg = CachedImageView()
         cImg.translatesAutoresizingMaskIntoConstraints = false
         cImg.contentMode = .scaleAspectFill
@@ -68,7 +70,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return cImg
     }()
     
-    let nameLabel: UILabel = {
+    private let nameLabel: UILabel = {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 20)
@@ -77,7 +79,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return label
     }()
     
-    let emailLabel: UILabel = {
+    private let emailLabel: UILabel = {
         let label = UILabel()
         label.text = ""
         label.font = UIFont.systemFont(ofSize: 18)
@@ -86,12 +88,12 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         return label
     }()
     
-    let picker: UIImagePickerController = {
+    private let picker: UIImagePickerController = {
        let p = UIImagePickerController()
        return p
     }()
     
-    let bannerView: UIView = {
+    private let bannerView: UIView = {
         let cont = UIView(frame: CGRect.zero)
         return cont
     }()
@@ -116,7 +118,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
   
-    @objc func handleSelectProfileImageView() {
+    @objc private func handleSelectProfileImageView() {
         let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
         switch photoAuthStatus {
             case .authorized: self.present(self.picker, animated: true, completion: nil)
@@ -125,12 +127,12 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
                     self.present(self.picker, animated: true, completion: nil)
                 }
             }
-            case .restricted: print("User does not have access to photo album")
-            case .denied: print("User denied access")
+            case .restricted: self.log.warning("User does not have access to photo album")
+            case .denied: self.log.warning("User denied access")
         }
     }
         
-    @objc func handleSignOutButtonTapped() {
+    @objc private func handleSignOutButtonTapped() {
         let signOutAction = UIAlertAction(title: "Sign Out", style: .destructive) { (action) in
             do {
                 //Now sign out
@@ -139,7 +141,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
                 let welcomeNavCon = UINavigationController(rootViewController: welcomeControl)
                 self.tabBarController?.present(welcomeNavCon, animated: true, completion: nil)
             } catch let err {
-                print("Failed to sign out with error", err)
+                self.log.error("Failed to sign out with error \(err)")
                 Service.showAlert(on: self, style: .alert, title: "Sign Out Error", message: err.localizedDescription)
             }
         }
@@ -198,9 +200,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     
     @objc func loadCurrentUser() {
         if Auth.auth().currentUser != nil {
-            
             SwiftSpinner.show("Loading User Profile")
-            
             if (Connectivity.connected) {
             
             guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -214,7 +214,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
             
             }, withCancel: { (err) in
                 SwiftSpinner.hide()
-                print(err)
+                self.log.error("An error ocurred when loading the current users information: \(err)")
                 })
             
         } else {
@@ -239,6 +239,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
     
     fileprivate func warnUserIsOffline() {
         SwiftSpinner.show("You are offline, attempting to reconnect")
+        log.warning("User has disconnected from 4G/Wifi")
         //Try to reconnect for 10 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
             
@@ -247,11 +248,13 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
                 
             SwiftSpinner.show(duration: 3.0, title: "Reconnection Failed, Profile will refresh when connected", animated: false).addTapHandler({
                 SwiftSpinner.hide()
+                self.log.warning("User failed to reconnect after timeout period")
             })
                 
         } else if Connectivity.connected {
                 //If connection restablishes after 10 seconds
                 SwiftSpinner.show(duration: 3.0, title: "Reconnected successfully", animated: false)
+                self.log.info("User reconnected succesfully")
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     self.loadCurrentUser()
                 }
@@ -259,10 +262,16 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         }
     }
     
-    fileprivate func pullProfileFromServer(_ user: User) {
-        print("user connected to internet, loading from server")
+    /**
+        A function that figures out for the current user whether
+        or not they have a custom profile picture set. If they do,
+        it loads it from the database. If not, it loads the default
+        profile image.
+     
+        - parameter : user, the user object.
+    */
+    private func pullProfileFromServer(_ user: User) {
         if(user.altProfileImageUrl != Service.defaultProfilePicUrl) {
-            print("loaded user provided image")
             self.profileImageView.loadImage(urlString: user.altProfileImageUrl, completion: {
                 SwiftSpinner.hide()
                 self.nameLabel.text = user.name
@@ -270,8 +279,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
                 self.tapThis.isHidden = false
             })
         } else {
-            print("loaded preset image")
-            //Load either preset profile image provided by google, or default
             self.profileImageView.loadImage(urlString: user.profileImageURL, completion: {
                 SwiftSpinner.hide()
                 self.nameLabel.text = user.name
@@ -355,11 +362,12 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
             storeImage(image)
             profileImageView.image = image
             self.dismiss(animated: true, completion: nil)
+            self.log.info("User attempting to update profile picture")
             SwiftSpinner.show("Updating Profile Picture")
         }
     }
     
-    func storeImage(_ image: UIImage) {
+    private func storeImage(_ image: UIImage) {
         /*
          Appending current timestamp to end of file name in Firebase Storage
          to prevent situations where overwriting an image with the same name
@@ -380,10 +388,9 @@ extension UserController: UIImagePickerControllerDelegate, UINavigationControlle
             if error != nil {
                 return
             }
-            print("put data")
             storageRef.downloadURL(completion: { (url, error) in
-                if error != nil {
-                    print(error?.localizedDescription ?? "")
+                if let err = error {
+                    self.log.error("Error updating the users profile picture: \(err.localizedDescription)")
                     SwiftSpinner.show("Error Updating Profile Picture...").addTapHandler({
                         SwiftSpinner.hide()
                     })

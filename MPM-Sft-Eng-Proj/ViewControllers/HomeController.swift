@@ -12,23 +12,26 @@ import SceneKit
 import SceneKit.ModelIO
 import SwiftSpinner
 import PopupDialog
+import SwiftyBeaver
 
 class HomeController: UIViewController {
 
-    var manMesh : ObjectWrapper!
-    var scene : SCNScene!
-    var mesh : SCNNode!
-    var scnView: SCNView!
-    var camera: SCNCamera!
-    var cameraNode: SCNNode!
-    var wasClicked = false
-    var isLoading = true
-    var hasLoaded = false
-    let updateQueue = DispatchQueue(label: "updateQueue")
-    weak var activityIndicator: UIActivityIndicatorView?
-    var previousLocation = SCNVector3Make(0,0,0)
-    var rating: Double?
-    fileprivate var tapCount = 0
+    private var manMesh : ObjectWrapper!
+    private var scene : SCNScene!
+    private var mesh : SCNNode!
+    private var scnView: SCNView!
+    private var camera: SCNCamera!
+    private var cameraNode: SCNNode!
+    private var wasClicked = false
+    private var isLoading = true
+    private var hasLoaded = false
+    private let updateQueue = DispatchQueue(label: "updateQueue")
+    private weak var activityIndicator: UIActivityIndicatorView?
+    private var previousLocation = SCNVector3Make(0,0,0)
+    private var rating: Double?
+    private var tapCount = 0
+    private let _scale = "100"
+    private let log = SwiftyBeaver.self
     
     internal var intCounter = 0
     
@@ -94,7 +97,6 @@ class HomeController: UIViewController {
     
     
     func createTapRecognizer(){
-        
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.numberOfTapsRequired = 1
         tapRecognizer.numberOfTouchesRequired = 1
@@ -151,7 +153,7 @@ class HomeController: UIViewController {
         light4.intensity = CGFloat(400)
         light4Node.light = light4
         self.scene.rootNode.addChildNode(light4Node)
-        
+        //Create light 5
         let light5 = SCNLight()
         let light5Node = SCNNode()
         light5.type = SCNLight.LightType.ambient
@@ -224,7 +226,7 @@ class HomeController: UIViewController {
     }
     
     // Allows the user to rotate the camera around the object
-    //Adapted from stack overflow.
+    // Adapted from stack overflow.
     @objc private func scenePannedOneFinger(recognizer: UIPanGestureRecognizer) {
         recognizer.maximumNumberOfTouches = 1
        
@@ -261,9 +263,6 @@ class HomeController: UIViewController {
         }
     }
     
-
-
-    //@objc lets a private function be visible in objective c
     @objc private func sceneTapped(recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: scnView)
         let hitResults = scnView.hitTest(location, options: nil)
@@ -348,9 +347,16 @@ class HomeController: UIViewController {
         }
     }
     
-    /*
-        A function that recieves the information entered into the pain or fatigue log, and writes it to the
-        database.
+    /**
+        A function that recieves the information entered into the pain or fatigue log,
+        and writes it to the database.
+     
+        - parameter : rating, a Double representing the level of pain.
+        - parameter : notesDescription, a String that may contain extra notes
+                      related to the pain/fatigue log.
+        - parameter : medsDescritpion, a String that may contain notes about
+                      the types of medication taken to manage the pain/fatigue.
+        - parameter : area, the actual area/fatigue type.
      */
     func logPainRating(_ rating: Double, _ notesDescription: String, _ medsDescription: String, _ area: String) {
         
@@ -385,9 +391,7 @@ class HomeController: UIViewController {
             } else {
                 painDictionary = ["type": area, "ranking": rating]
             }
-            
-            
-            
+    
             //Write to DB in correct structure to allow quick searching
             Database.database().reference()
                 .child("pain")
@@ -400,11 +404,10 @@ class HomeController: UIViewController {
                         .child("users_metadata")
                         .child(uid)
                         .updateChildValues(["last_active_log": dateFull])
-                    
                     if let error = err {
                         SwiftSpinner.show("Error logging pain...").addTapHandler({
                             SwiftSpinner.hide()
-                            print(error)
+                            self.log.error("Error when writing a log to the DB: \(error.localizedDescription)")
                             return
                         })
                 }
@@ -412,9 +415,17 @@ class HomeController: UIViewController {
         }
     }
     
-    /*
-        A convienience method that returns a popup, embedded with the correct type of view controller, depending
-        upon if the user is logging general muscle/body group pain or fatigue.
+    /**
+        A convienience method that returns a popup, embedded with the correct type
+        of view controller, depending upon if the user is logging general muscle/body
+        group pain or fatigue.
+     
+        - parameter : fatigue, a boolean representing if it is a fatigue log or not.
+        - parameter : area, the actual area/fatigue type.
+        - parameter : fatigueLevel, the associated fatigue level.
+        - parameter : image, the image associated with the area, if relevant .
+        - parameter : node: the node associated with the log, if relevant.
+        - returns: A PopupDialog with an embedded view controller.
     */
     func setupPopup(_ fatigue: Bool, _ area: String, _ fatigueLevel: CGFloat?, _ image: UIImage?, _ node: SCNNode?) -> PopupDialog {
         var popup : PopupDialog
@@ -422,7 +433,7 @@ class HomeController: UIViewController {
             let fatigueAlert = FatigueAlertDialog()
             fatigueAlert.alertTitle.text = area
             if let level = fatigueLevel {
-                fatigueAlert.rating.text = level.rounded().description+" / 100"
+                fatigueAlert.rating.text = level.rounded().description+" / "+_scale
             }
             popup = PopupDialog.init(viewController: fatigueAlert, buttonAlignment: .vertical, transitionStyle: .bounceUp, preferredWidth: 0, tapGestureDismissal: false, hideStatusBar: false, completion: nil)
         } else {
@@ -446,7 +457,7 @@ class HomeController: UIViewController {
         buttonOne.separatorColor = UIColor(white: 0.4, alpha: 1)
         
         let buttonTwo = DefaultButton(title: "CANCEL") {
-            print("Cancelled")
+            self.log.info("User cancelled log")
         }
         buttonTwo.backgroundColor = UIColor(red: 48/255, green: 48/255, blue: 43/255, alpha: 1)
         buttonTwo.titleColor = UIColor(white: 0.6, alpha: 1)
@@ -455,10 +466,13 @@ class HomeController: UIViewController {
         return popup
     }
     
-    /*
-        A method that handles the completion of a user logging a fatigue level. It decides
-        after investigating what fields are set, how to log the information to the database
-        to avoid storing unecessary data.
+    /**
+        A method that handles the completion of a user logging a fatigue level.
+        It decides after investigating what fields are set, how to log the information
+        to the database to avoid storing unecessary data.
+     
+        - parameter : popup, the PopupDialog being passed in.
+        - parameter : area, the fatigue type asociated with the log.
     */
     fileprivate func handleFatigueAlertDialogOnCompletion(popup: PopupDialog, area: String) {
         
@@ -485,10 +499,15 @@ class HomeController: UIViewController {
         }
     }
     
-    /*
-        A method that handles the completion of a user logging a pain level. It decides
-        after investigating what fields are set, how to log the information to the database
-        to avoid storing unecessary data.
+    /**
+        A method that handles the completion of a user logging a pain level.
+        It decides after investigating what fields are set, how to log the
+        information to the database to avoid storing unecessary data.
+     
+        - parameter : popup, the PopupDialog being passed in.
+        - parameter : area, the area associated with the log.
+        - parameter : image, the image associated with the log.
+        - parameter : node, the node associated with the log.
      */
     fileprivate func handleAlertDialogOnCompletion(popup: PopupDialog, area: String, image: UIImage?, node: SCNNode?) {
         let alertDialog: AlertDialog = popup.viewController as! AlertDialog
@@ -553,8 +572,6 @@ class HomeController: UIViewController {
         }
     }
     
-
-    
     private func addMaleSkin(){
         //add male
         let manMesh = ObjectWrapper(
@@ -614,8 +631,11 @@ class HomeController: UIViewController {
         self.scene.rootNode.addChildNode(man_skele.node)
     }
     
-    //Function that imports all the muscles. The reason this is not in a for loop is so we have
-    //individual control over each object as we import it.
+    /**
+        Function that imports all the muscles. The reason this is not in
+        a for loop is so we have individual control over each object as
+        we import it.
+    */
     private func addMuscles(){
         
         let absL = ObjectWrapper(
@@ -1336,9 +1356,6 @@ class HomeController: UIViewController {
         forearmR7.node.name = "Flexor digitorum profundus left"
         self.scene.rootNode.addChildNode(forearmR7.node)
         
-        
-        
-        
         let  frontshoulderR = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "frontshoulderR", ofType: "obj"),
             material: MaterialWrapper(
@@ -1375,7 +1392,7 @@ class HomeController: UIViewController {
         self.scene.rootNode.addChildNode(hipL.node)
         
         
-        let  hipR = ObjectWrapper(
+        let hipR = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "hipR", ofType: "obj"),
             material: MaterialWrapper(
                 diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
@@ -1394,7 +1411,7 @@ class HomeController: UIViewController {
         
         
         
-        let  innerShoulder_L = ObjectWrapper(
+        let innerShoulder_L = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "innerShoulder_L", ofType: "obj"),
             material: MaterialWrapper(
                 diffuse: UIColor(red: 119/255, green: 49/255, blue: 41/255, alpha: 1),//"skin.png",
@@ -1550,8 +1567,6 @@ class HomeController: UIViewController {
         neck_R.node.scale = SCNVector3(2.5,2.5,2.5)
         neck_R.node.name = "splenius capitis left"
         self.scene.rootNode.addChildNode(neck_R.node)
-        
-        
         
         let outershoulder_L = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "outershoulder_L", ofType: "obj"),
@@ -1797,8 +1812,6 @@ class HomeController: UIViewController {
         thighR4.node.name = "Sartorius left"
         self.scene.rootNode.addChildNode(thighR4.node)
         
-        
-        
         let thighR5 = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "thighR5", ofType: "obj"),
             material: MaterialWrapper(
@@ -1885,9 +1898,6 @@ class HomeController: UIViewController {
         topback_R.node.name = "Upper trapezius left"//topback_R" // Upper trapezius left
         self.scene.rootNode.addChildNode(topback_R .node)
         
-        
-        
-        
         let tricept2L = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "tricept2L", ofType: "obj"),
             material: MaterialWrapper(
@@ -1904,9 +1914,7 @@ class HomeController: UIViewController {
         tricept2L.node.scale = SCNVector3(2.5,2.5,2.5)
         tricept2L.node.name = "Inner tricept right"//tricept2L" //Inner tricept right
         self.scene.rootNode.addChildNode(tricept2L .node)
-        
-        
-        
+    
         let triceptR = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "triceptR", ofType: "obj"),
             material: MaterialWrapper(
@@ -1924,8 +1932,6 @@ class HomeController: UIViewController {
         triceptR.node.name = "Outer tricep left"//triceptR" //Tricepts Left
         self.scene.rootNode.addChildNode(triceptR .node)
         
-        
-        
         let triceptR2 = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "triceptR2", ofType: "obj"),
             material: MaterialWrapper(
@@ -1942,7 +1948,6 @@ class HomeController: UIViewController {
         triceptR2.node.scale = SCNVector3(2.5,2.5,2.5)
         triceptR2.node.name = "Inner tricept left"//triceptR2" //Inner Tricepts Left
         self.scene.rootNode.addChildNode(triceptR2 .node)
-        
         
         let triceptsL = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "triceptsL", ofType: "obj"),
@@ -1979,9 +1984,6 @@ class HomeController: UIViewController {
         upperarm_outerL.node.name = "Brachialis right"//"upperarm_outerL" // brachio radialis right
         self.scene.rootNode.addChildNode(upperarm_outerL.node)
         
-        
-        
-        
         let upperback_L = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperback_L", ofType: "obj"),
             material: MaterialWrapper(
@@ -1998,8 +2000,6 @@ class HomeController: UIViewController {
         upperback_L.node.scale = SCNVector3(2.5,2.5,2.5)
         upperback_L.node.name = "lower trapezius right"//"upperback_L" // lower trapezius right
         self.scene.rootNode.addChildNode(upperback_L.node)
-        
-        
         
         let upperback_R = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperback_R", ofType: "obj"),
@@ -2018,7 +2018,6 @@ class HomeController: UIViewController {
         upperback_R.node.name = "lower trapezius left"//"upperback_R" //lower trapezius left
         self.scene.rootNode.addChildNode(upperback_R.node)
         
-        
         let upperbum_L = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperbum_L", ofType: "obj"),
             material: MaterialWrapper(
@@ -2035,8 +2034,6 @@ class HomeController: UIViewController {
         upperbum_L.node.scale = SCNVector3(2.5,2.5,2.5)
         upperbum_L.node.name = "Gluteus medius Left"//"upperbum_L" //Gluteus maximus Left
         self.scene.rootNode.addChildNode(upperbum_L.node)
-        
-        
         
         let upperbumR = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperbumR", ofType: "obj"),
@@ -2055,7 +2052,6 @@ class HomeController: UIViewController {
         upperbumR.node.name = "Gluteus medius right"//"upperbumR" //Gluteus maximus right
         self.scene.rootNode.addChildNode(upperbumR.node)
         
-        
         let upperleg2Inner = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperleg2InnerL", ofType: "obj"),
             material: MaterialWrapper(
@@ -2072,7 +2068,6 @@ class HomeController: UIViewController {
         upperleg2Inner.node.scale = SCNVector3(2.5,2.5,2.5)
         upperleg2Inner.node.name = "Adductor magnus right"//"upperleg2InnerL" //adductor magnus right
         self.scene.rootNode.addChildNode(upperleg2Inner.node)
-        
         
         let upperlegBack = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperlegBackL", ofType: "obj"),
@@ -2091,7 +2086,6 @@ class HomeController: UIViewController {
         upperlegBack.node.name = "biceps femoris right"//"upperlegBackL" //biceps femoris, long head Right
         self.scene.rootNode.addChildNode(upperlegBack.node)
         
-        
         let upperLegbackL2 = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperLegbackL2", ofType: "obj"),
             material: MaterialWrapper(
@@ -2108,8 +2102,6 @@ class HomeController: UIViewController {
         upperLegbackL2.node.scale = SCNVector3(2.5,2.5,2.5)
         upperLegbackL2.node.name = "Semitendinosus right"//"upperlegbackL2" //Semitendinosus right
         self.scene.rootNode.addChildNode(upperLegbackL2.node)
-        
-        
         
         let upperLegFrontL = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperLegFrontL", ofType: "obj"),
@@ -2128,8 +2120,6 @@ class HomeController: UIViewController {
         upperLegFrontL.node.name = "Rectus femoris right"
         self.scene.rootNode.addChildNode(upperLegFrontL.node)
         
-        
-        
         let upperLegFrontL2 = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperLegFrontL2", ofType: "obj"),
             material: MaterialWrapper(
@@ -2146,11 +2136,6 @@ class HomeController: UIViewController {
         upperLegFrontL2.node.scale = SCNVector3(2.5,2.5,2.5)
         upperLegFrontL2.node.name = "Sartorius right"    //"upperlegFrontL2"
         self.scene.rootNode.addChildNode(upperLegFrontL2.node)
-        
-        
-        
-        
-        
         
         let upperlegLside = ObjectWrapper(
             mesh: MeshLoader.loadMeshWith(name: "upperlegLside", ofType: "obj"),
@@ -2171,11 +2156,8 @@ class HomeController: UIViewController {
         
     }
     
-    
-    
-    
+    //TODO
     private func addFemale() {
-        
         let myMesh = ObjectWrapper(
             // mesh: asset.object(at: 0),   //childObjects(of: MDLObject)[0],//manGeo.geometry!,   //mesh: MeshLoader.loadMeshWith(name: "basicmangeometry", ofType: "obj"),
             mesh: MeshLoader.loadMeshWith(name: "femalemesh", ofType: "obj"),
@@ -2188,16 +2170,10 @@ class HomeController: UIViewController {
             rotation: SCNVector4Make(0, 1, 0, GLKMathDegreesToRadians(20))
             
         )
-        
-        myMesh.node.scale = SCNVector3(10,10,10)
-        
-        
+        myMesh.node.scale = SCNVector3(10,10,10);
         let nodeMaterial = myMesh.node.geometry?.firstMaterial
         nodeMaterial?.emission.contents = UIColor(red: 0.0, green: 0.0, blue: 1.0, alpha: 0.5)
-        
         nodeMaterial?.transparencyMode = .rgbZero
-        
         scene.rootNode.addChildNode(myMesh.node)
-        
     }
 }

@@ -14,13 +14,16 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftValidator
 import SwiftSpinner
+import SwiftyBeaver
 
 class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDelegate {
     
-    //Validator for text fields
-    let validator = Validator()
+    private let log = SwiftyBeaver.self
     
-    let signUpLabel: UILabel = {
+    //Validator for text fields
+    private let validator = Validator()
+    
+    private let signUpLabel: UILabel = {
         let label = UILabel()
         label.text = "Sign up below"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +32,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return label
     }()
     
-    let alreadyHaveAccountButton: UIButton = {
+    private let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.mainThemeColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
         button.setAttributedTitle(attributeTitle, for: .normal)
@@ -38,7 +41,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return button
     }()
     
-    let nameTextField: UITextField = {
+    private let nameTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "name", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
@@ -48,9 +51,8 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
-    
-    
-    let emailTextField: UITextField = {
+
+    private let emailTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
@@ -61,7 +63,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return textField
     }()
     
-    let passwordTextField: UITextField = {
+    private let passwordTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
         textField.attributedPlaceholder = attributedPlaceholder
@@ -73,7 +75,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return textField
     }()
     
-    lazy var registerButton: UIButton = {
+    private lazy var registerButton: UIButton = {
         var button = UIButton(type: .system)
         button.setTitle("Register", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
@@ -84,27 +86,31 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         return button
     }()
     
-    @objc func handleRegistration() {
+    @objc private func handleRegistration() {
         validator.validate(self)
     }
     
-    func validationSuccessful() {
+    /**
+        Called if the validator confirms that the user
+        entered valid information when signing up.
+    */
+    internal func validationSuccessful() {
         SwiftSpinner.show("Signing up")
         self.view.endEditing(true)
         guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
             SwiftSpinner.show("Sign up error...").addTapHandler({
                 SwiftSpinner.hide()
             })
-            print("Form is not valid")
+            log.error("Form was not valid, but validationSuccessful was called.")
             return
         }
         //Authenticate new user
         Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
-            if let error = error {
+            if let err = error {
                 SwiftSpinner.show("Sign up error...").addTapHandler({
                     SwiftSpinner.hide()
                 })
-                print(error)
+                self.log.error("There was an error creating the new user: \(err.localizedDescription)")
                 return
             }
             //sucessfully authenticated now store in firebase database
@@ -114,6 +120,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                 SwiftSpinner.show("Sign up error...").addTapHandler({
                     SwiftSpinner.hide()
                 })
+                self.log.error("The users UID was not valid, even though the account was created.")
                 return
             }
             let dictionaryValues = ["name": name, "email": email,
@@ -123,14 +130,15 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
             let values = [uid: dictionaryValues]
             
             Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (err, dbRef) in
-                if let error = error {
+                if let err = error {
                     SwiftSpinner.show("Sign up error...").addTapHandler({
                         SwiftSpinner.hide()
                     })
-                    print(error)
+                    self.log.error("There was an updating the DB for a new user: \(err.localizedDescription)")
                     return
                 }
                 //No error, it validated correctly push back to sign in page
+                self.log.info("A new user was created succesfully!")
                 SwiftSpinner.hide()
                 self.registerButton.isUserInteractionEnabled = false
                 let welcomeController = WelcomeController()
