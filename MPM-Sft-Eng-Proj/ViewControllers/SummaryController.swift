@@ -385,7 +385,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : input, an input String
         - returns: Double, the double value of the String
     */
-    private func getDoubleFromTimeString(input: String, difference: Double) -> Double {
+    func getDoubleFromTimeString(input: String, difference: Double) -> Double {
         let timeSplit = input.split(separator: " ")
         let timeTidied = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeTidied)

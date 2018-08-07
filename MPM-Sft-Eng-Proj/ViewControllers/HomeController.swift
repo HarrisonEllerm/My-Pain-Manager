@@ -46,14 +46,11 @@ class HomeController: UIViewController {
         return s
     }()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Home"
-        navigationController?.navigationBar.titleTextAttributes =
-            [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.black
+        Service.setupNavBar(controller: self)
+        view.backgroundColor = UIColor.black
         self.definesPresentationContext = true
         /*
          Activity Indicator Used to show users that the model is being loaded,

@@ -148,7 +148,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     func completeSignIn(_ uid: String) {
         SwiftSpinner.hide()
         //present mainTabBar
-        self.handleLogin(withWindow: self.window)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.handleLogin(withWindow: self.window)
+        }
     }
     
     
