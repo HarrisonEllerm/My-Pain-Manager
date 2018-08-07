@@ -291,7 +291,6 @@
 		6F1705AA2085DFE100F6265C /* MPM-Sft-Eng-ProjTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F1705B02085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705B52085DFE100F6265C /* MPM-Sft-Eng-ProjUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F1705BB2085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705C72085E23500F6265C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F1705C92085E7D300F6265C /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		6F1705CB2085E7F400F6265C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
@@ -484,7 +483,6 @@
 				3876397E20B90A59009AA4F9 /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
-				6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */,
 				6F1705972085DFE100F6265C /* Products */,
 				0DD2246419D84EF18C55733E /* Pods */,
 				9EF82062E76845780E55E19C /* Frameworks */,
@@ -527,14 +525,6 @@
 				6F439B7B211911E60002A960 /* SummaryControllerTests.swift */,
 			);
 			path = "MPM-Sft-Eng-ProjTests";
-			sourceTree = "<group>";
-		};
-		6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */ = {
-			isa = PBXGroup;
-			children = (
-				6F1705BB2085DFE100F6265C /* Info.plist */,
-			);
-			path = "MPM-Sft-Eng-ProjUITests";
 			sourceTree = "<group>";
 		};
 		6F1705DB2085EEF500F6265C /* ViewControllers */ = {
