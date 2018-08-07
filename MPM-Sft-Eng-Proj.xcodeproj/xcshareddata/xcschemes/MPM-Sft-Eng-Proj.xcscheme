@@ -234,16 +234,6 @@
                ReferencedContainer = "container:MPM-Sft-Eng-Proj.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6F1705B42085DFE100F6265C"
-               BuildableName = "MPM-Sft-Eng-ProjUITests.xctest"
-               BlueprintName = "MPM-Sft-Eng-ProjUITests"
-               ReferencedContainer = "container:MPM-Sft-Eng-Proj.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
