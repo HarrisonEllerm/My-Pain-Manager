@@ -57,10 +57,27 @@ class WelcomeController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-  
         loginButton.backgroundColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
         dontHaveAccountButton.backgroundColor = UIColor.clear
+        setupVideoPlayer()
+        view.addSubview(loginImg)
+        anchorLoginImg(loginImg)
+        view.addSubview(dontHaveAccountButton)
+        anchorDontHaveAccountButton(dontHaveAccountButton)
+        view.addSubview(loginButton)
+        anchorLoginButton(loginButton)
         
+    }
+    
+    
+    
+    /**
+        Sets the video player up that is used to  display the rotating
+        model behind the login screen. Adds an observer to analyse if
+        the video ends, and then reverses it if it does. This allows the
+        video to continually loop.
+    */
+    private func setupVideoPlayer() {
         let videoURL: NSURL = Bundle.main.url(forResource: "skele8", withExtension: "mp4")! as NSURL
         videoPlayer = AVPlayer(url: videoURL as URL)
         videoPlayer?.actionAtItemEnd = .none
@@ -74,35 +91,30 @@ class WelcomeController: UIViewController {
         view.layer.addSublayer(playerLayer)
         videoPlayer?.play()
         var isPlayingInNegative = false
-        // add observer to watch for video end in order to loop video
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-                object: self.videoPlayer?.currentItem, queue: nil) {
-                    (_) in
-                    if !isPlayingInNegative {
-                        self.videoPlayer?.seek(to: self.videoPlayer!.currentItem!.asset.duration)
-                        self.videoPlayer?.play()
-                        self.videoPlayer!.rate = -1.0
-                        isPlayingInNegative = true
-                    } else {
-                        self.videoPlayer?.pause()
-                        self.videoPlayer?.seek(to: kCMTimeZero)
-                        self.videoPlayer?.play()
-                        isPlayingInNegative = false
-                }
+       
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: self.videoPlayer?.currentItem, queue: nil) {
+            (_) in
+            if !isPlayingInNegative {
+                self.videoPlayer?.seek(to: self.videoPlayer!.currentItem!.asset.duration)
+                self.videoPlayer?.play()
+                self.videoPlayer!.rate = -1.0
+                isPlayingInNegative = true
+            } else {
+                self.videoPlayer?.pause()
+                self.videoPlayer?.seek(to: kCMTimeZero)
+                self.videoPlayer?.play()
+                isPlayingInNegative = false
+            }
         }
-        
-        view.addSubview(loginImg)
-        anchorLoginImg(loginImg)
-
-        view.addSubview(dontHaveAccountButton)
-        anchorDontHaveAccountButton(dontHaveAccountButton)
-
-        view.addSubview(loginButton)
-        anchorLoginButton(loginButton)
-        
     }
     
-    //Solution adapted from https://stackoverflow.com/questions/31671029/prevent-avplayer-from-canceling-background-audio
+    /**
+        Allows the video player to not cancel the users audio when the
+        login page launches.
+     
+        Solution adapted from https://stackoverflow.com/questions/31671029/prevent-avplayer-from-canceling-background-audio
+    */
+    
     private func setAVPlayerDontCancelBackgroundAudio() {
         do {
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryAmbient)

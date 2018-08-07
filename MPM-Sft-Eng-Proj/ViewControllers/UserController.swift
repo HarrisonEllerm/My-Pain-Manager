@@ -102,9 +102,7 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.title = "User Profile"
-        navigationController?.navigationBar.titleTextAttributes =
-            [NSAttributedStringKey.foregroundColor:UIColor.white]
-        navigationController?.navigationBar.barTintColor = UIColor.black
+        Service.setupNavBar(controller: self)
         setUpViews()
         loadCurrentUser()
         picker.delegate = self
@@ -117,7 +115,6 @@ class UserController : UIViewController, UITableViewDataSource, UITableViewDeleg
         self.settingsTableView.rowHeight = 44.0
     }
     
-  
     @objc private func handleSelectProfileImageView() {
         let photoAuthStatus = PHPhotoLibrary.authorizationStatus()
         switch photoAuthStatus {

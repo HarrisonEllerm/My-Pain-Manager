@@ -118,7 +118,6 @@
 		6F14BAD8210BF3B900F32601 /* Flexorcarpiulnarisright.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F14BAD7210BF3B800F32601 /* Flexorcarpiulnarisright.obj */; };
 		6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705992085DFE100F6265C /* AppDelegate.swift */; };
 		6F1705A12085DFE100F6265C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705A02085DFE100F6265C /* Assets.xcassets */; };
-		6F1705BA2085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705B92085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift */; };
 		6F1705C82085E23500F6265C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705C72085E23500F6265C /* GoogleService-Info.plist */; };
 		6F1705CA2085E7D300F6265C /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705C92085E7D300F6265C /* HomeController.swift */; };
 		6F1705CC2085E7F400F6265C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705CB2085E7F400F6265C /* MainTabBarController.swift */; };
@@ -292,7 +291,6 @@
 		6F1705AA2085DFE100F6265C /* MPM-Sft-Eng-ProjTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F1705B02085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705B52085DFE100F6265C /* MPM-Sft-Eng-ProjUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F1705B92085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPM_Sft_Eng_ProjUITests.swift; sourceTree = "<group>"; };
 		6F1705BB2085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705C72085E23500F6265C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F1705C92085E7D300F6265C /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
@@ -534,7 +532,6 @@
 		6F1705B82085DFE100F6265C /* MPM-Sft-Eng-ProjUITests */ = {
 			isa = PBXGroup;
 			children = (
-				6F1705B92085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift */,
 				6F1705BB2085DFE100F6265C /* Info.plist */,
 			);
 			path = "MPM-Sft-Eng-ProjUITests";
@@ -1066,7 +1063,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F1705BA2085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
