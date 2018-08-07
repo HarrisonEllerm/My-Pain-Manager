@@ -11,6 +11,5 @@ build/
 *.mode1v3
 *.mode2v3
 
-My-Pain-Manager/MPM-Sft-Eng-Proj/Utils/SwiftyBeaverCredentials.swift
-
+SwiftyBeaverCredentials
 xcuserdata

@@ -336,7 +336,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : secondDate, the second date.
         - returns: an Int representing the difference in days.
      */
-    private func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
+    func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         let diff = secondDate.timeIntervalSince(firstDate)
         let hours = Int(diff) / 3600
         return hours/Int(_units)

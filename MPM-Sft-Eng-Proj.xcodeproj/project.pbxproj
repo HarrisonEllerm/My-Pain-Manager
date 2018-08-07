@@ -118,7 +118,6 @@
 		6F14BAD8210BF3B900F32601 /* Flexorcarpiulnarisright.obj in Resources */ = {isa = PBXBuildFile; fileRef = 6F14BAD7210BF3B800F32601 /* Flexorcarpiulnarisright.obj */; };
 		6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705992085DFE100F6265C /* AppDelegate.swift */; };
 		6F1705A12085DFE100F6265C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705A02085DFE100F6265C /* Assets.xcassets */; };
-		6F1705AF2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705AE2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift */; };
 		6F1705BA2085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705B92085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift */; };
 		6F1705C82085E23500F6265C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F1705C72085E23500F6265C /* GoogleService-Info.plist */; };
 		6F1705CA2085E7D300F6265C /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F1705C92085E7D300F6265C /* HomeController.swift */; };
@@ -140,6 +139,7 @@
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
 		6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */; };
+		6F439B7C211911E60002A960 /* SummaryControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7B211911E60002A960 /* SummaryControllerTests.swift */; };
 		6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */; };
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
@@ -290,7 +290,6 @@
 		6F1705A02085DFE100F6265C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6F1705A52085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705AA2085DFE100F6265C /* MPM-Sft-Eng-ProjTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F1705AE2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPM_Sft_Eng_ProjTests.swift; sourceTree = "<group>"; };
 		6F1705B02085DFE100F6265C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F1705B52085DFE100F6265C /* MPM-Sft-Eng-ProjUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F1705B92085DFE100F6265C /* MPM_Sft_Eng_ProjUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPM_Sft_Eng_ProjUITests.swift; sourceTree = "<group>"; };
@@ -315,6 +314,7 @@
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyBeaverCredentials.swift; sourceTree = "<group>"; };
+		6F439B7B211911E60002A960 /* SummaryControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryControllerTests.swift; sourceTree = "<group>"; };
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
@@ -525,8 +525,8 @@
 		6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */ = {
 			isa = PBXGroup;
 			children = (
-				6F1705AE2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift */,
 				6F1705B02085DFE100F6265C /* Info.plist */,
+				6F439B7B211911E60002A960 /* SummaryControllerTests.swift */,
 			);
 			path = "MPM-Sft-Eng-ProjTests";
 			sourceTree = "<group>";
@@ -1058,7 +1058,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F1705AF2085DFE100F6265C /* MPM_Sft_Eng_ProjTests.swift in Sources */,
+				6F439B7C211911E60002A960 /* SummaryControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
