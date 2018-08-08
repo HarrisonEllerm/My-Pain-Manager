@@ -139,7 +139,6 @@
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
 		6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */; };
 		6F439B7C211911E60002A960 /* SummaryControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7B211911E60002A960 /* SummaryControllerTests.swift */; };
-		6F439B8C211ADA720002A960 /* OnBoardingUITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B8B211ADA720002A960 /* OnBoardingUITest.swift */; };
 		6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */; };
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
@@ -312,8 +311,6 @@
 		6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyBeaverCredentials.swift; sourceTree = "<group>"; };
 		6F439B7B211911E60002A960 /* SummaryControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryControllerTests.swift; sourceTree = "<group>"; };
 		6F439B81211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F439B85211AD13A0002A960 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6F439B8B211ADA720002A960 /* OnBoardingUITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingUITest.swift; sourceTree = "<group>"; };
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
@@ -484,7 +481,6 @@
 				3876397E20B90A59009AA4F9 /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705AD2085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
-				6F439B82211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests */,
 				6F1705972085DFE100F6265C /* Products */,
 				0DD2246419D84EF18C55733E /* Pods */,
 				9EF82062E76845780E55E19C /* Frameworks */,
@@ -595,15 +591,6 @@
 				6F26AAB620974524009A3446 /* Object.swift */,
 			);
 			path = MaterialUtils;
-			sourceTree = "<group>";
-		};
-		6F439B82211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests */ = {
-			isa = PBXGroup;
-			children = (
-				6F439B85211AD13A0002A960 /* Info.plist */,
-				6F439B8B211ADA720002A960 /* OnBoardingUITest.swift */,
-			);
-			path = "MPM-Sft-Eng-ProjUITests";
 			sourceTree = "<group>";
 		};
 		6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */ = {
@@ -1045,7 +1032,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6F439B8C211ADA720002A960 /* OnBoardingUITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
