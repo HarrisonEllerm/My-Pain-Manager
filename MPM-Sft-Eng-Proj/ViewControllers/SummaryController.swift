@@ -341,8 +341,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let hours = Int(diff) / 3600
         return hours/Int(_units)
     }
-    
-    
+
     /**
         Implemented as it allows us to investigate the keyContainers
         subviews (a variable amount of UITextViews) representing chart

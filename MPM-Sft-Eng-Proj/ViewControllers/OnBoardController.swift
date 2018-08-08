@@ -99,6 +99,8 @@ class OnBoardController: UIViewController, UICollectionViewDataSource,
         
         registerCells()
         
+        view.accessibilityIdentifier = "onboardingController"
+        
     }
     
     fileprivate func registerCells() {

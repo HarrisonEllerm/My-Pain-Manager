@@ -171,6 +171,8 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         validator.registerField(emailTextField, rules: [RequiredRule(message: "Please provide a email!"), EmailRule(message: "Please provide a valid email!")])
         validator.registerField(passwordTextField, rules: [RequiredRule(message: "Password Required!")])
         
+         view.accessibilityIdentifier = "loginViewController"
+        
     }
     
     private func setupNavBar() {

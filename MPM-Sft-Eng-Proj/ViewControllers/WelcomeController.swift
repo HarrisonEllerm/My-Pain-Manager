@@ -66,6 +66,7 @@ class WelcomeController: UIViewController {
         anchorDontHaveAccountButton(dontHaveAccountButton)
         view.addSubview(loginButton)
         anchorLoginButton(loginButton)
+        view.accessibilityIdentifier = "welcomeController"
         
     }
     

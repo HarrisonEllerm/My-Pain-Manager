@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
     let log = SwiftyBeaver.self
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-       
+        
         //Configure Logging Framework
         let console = ConsoleDestination()
         let file = FileDestination()
@@ -42,18 +42,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
        
         //Continue setup
         window = UIWindow()
-        //Check if first time opening, if so onboard
+    
+        //Check if first time opening or if UITesting, if so onboard
         let defaults = UserDefaults.standard
-        if let _ = defaults.string(forKey: "isAppAlreadyLaunchedOnce"){
-            log.info("App Previously Launched, Ignoring OnBoarding...")
-            handleLogin(withWindow: window)
-        } else {
+        
+        if (defaults.string(forKey: "isAppAlreadyLaunchedOnce") == nil) ||
+            CommandLine.arguments.contains("-ui_tests") {
             log.info("OnBoarding Triggered")
             defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
             let onBoard = OnBoardController()
             let onBoardConrollerNav = UINavigationController(rootViewController: onBoard)
             window?.rootViewController = onBoardConrollerNav
             window?.makeKeyAndVisible()
+        } else {
+            log.info("App Previously Launched, Ignoring OnBoarding...")
+            handleLogin(withWindow: window)
         }
         return true
     }

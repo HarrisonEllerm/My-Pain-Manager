@@ -189,6 +189,8 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                                 rules: [RequiredRule(message: "Password Required!"),
                                         MinLengthRule(length: 6, message: "Password must be at least 6 characters long!")])
         validator.registerField(nameTextField, rules: [FullNameRule(message: "Please enter your full name!")])
+        
+        view.accessibilityIdentifier = "signUserUpController"
     }
     
     fileprivate func setupNavBar() {
