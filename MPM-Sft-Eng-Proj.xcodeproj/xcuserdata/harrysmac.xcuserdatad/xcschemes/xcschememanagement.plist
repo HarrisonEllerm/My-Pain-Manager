@@ -14,11 +14,6 @@
 			<key>orderHint</key>
 			<integer>30</integer>
 		</dict>
-		<key>MPM-Sft-Eng-ProjUITests.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>31</integer>
-		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
