@@ -34,9 +34,4 @@ target 'MPM-Sft-Eng-Proj' do
     # Pods for testing
   end
 
-  target 'MPM-Sft-Eng-ProjUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
 end
