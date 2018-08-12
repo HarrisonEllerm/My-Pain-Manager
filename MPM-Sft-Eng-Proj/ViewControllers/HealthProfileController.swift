@@ -22,7 +22,7 @@ fileprivate struct HealthCellData {
 class HealthProfileController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     private var window: UIWindow?
-    
+    // show the view table
     private let healthTableView : UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
@@ -48,7 +48,9 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         setUpTable()
         setupTableData()
     }
-    
+    /**
+     A function to show a table data in the health profile and set the data to database
+     */
     private func setupTableData() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         DispatchQueue.main.async {

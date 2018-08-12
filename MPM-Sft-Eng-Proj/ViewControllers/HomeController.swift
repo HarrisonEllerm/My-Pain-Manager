@@ -115,6 +115,9 @@ class HomeController: UIViewController {
         self.scene.rootNode.addChildNode(self.cameraNode)
         self.scnView.allowsCameraControl = true
     }
+    /**
+     This creates the lights used within the GUI.
+     */
     
     func createLights(){
         
