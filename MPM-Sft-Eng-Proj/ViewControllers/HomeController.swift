@@ -115,6 +115,9 @@ class HomeController: UIViewController {
         self.scene.rootNode.addChildNode(self.cameraNode)
         self.scnView.allowsCameraControl = true
     }
+    /**
+     This creates the lights used within the GUI.
+     */
     
     func createLights(){
         
@@ -161,6 +164,9 @@ class HomeController: UIViewController {
        
     }
     
+    /**
+     This creates the pain slider used within the GUI.
+    */
     func createSlider() {
         slider.frame = CGRect(x: self.view.center.x - 125, y: UIScreen.main.bounds.height*0.85 , width: 250, height: 20)
         slider.addTarget(self, action: #selector(sliderDidEndSliding), for: [.touchUpInside, .touchUpOutside])

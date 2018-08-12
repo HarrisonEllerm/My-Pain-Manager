@@ -10,7 +10,7 @@ import FirebaseAuth
 import UIKit
 
 class MainTabBarController: UITabBarController {
-    
+    // set up the tab bar at the buttom of the app.
     let homeController: HomeController = HomeController()
     let userController: UserController = UserController()
     let summaryController: SummaryController = SummaryController()
@@ -20,7 +20,9 @@ class MainTabBarController: UITabBarController {
         UITabBar.appearance().barTintColor = UIColor.black
         setUpViewControllers()
     }
-    
+    /**
+     A function to take a user to selected page when is clicked on.
+     */
     fileprivate func setUpViewControllers() {
         
         tabBar.unselectedItemTintColor = Service.unselectedColor
