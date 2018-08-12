@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		380D21B821114DA400BB3921 /* Man_Skin1.obj in Resources */ = {isa = PBXBuildFile; fileRef = 380D21B721114DA400BB3921 /* Man_Skin1.obj */; };
 		380D21BA21114DB700BB3921 /* Man_Skin2.obj in Resources */ = {isa = PBXBuildFile; fileRef = 380D21B921114DB700BB3921 /* Man_Skin2.obj */; };
-		381611282095942300801604 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 381611272095942300801604 /* bg.jpg */; };
 		38324DF1208B14FC005605B9 /* SummaryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38324DF0208B14FC005605B9 /* SummaryController.swift */; };
 		38324DF3208B1601005605B9 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38324DF2208B1601005605B9 /* SceneKit.framework */; };
 		384D7CBB2092B46900DBE5E3 /* femalemesh.obj in Resources */ = {isa = PBXBuildFile; fileRef = 384D7CB92092B46800DBE5E3 /* femalemesh.obj */; };
@@ -160,13 +159,6 @@
 			remoteGlobalIDString = 6F1705952085DFE100F6265C;
 			remoteInfo = "MPM-Sft-Eng-Proj";
 		};
-		6F439B86211AD13A0002A960 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6F17058E2085DFE100F6265C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6F1705952085DFE100F6265C;
-			remoteInfo = "MPM-Sft-Eng-Proj";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -174,7 +166,6 @@
 		1B0B7306F65F9607BA1BE341 /* Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		380D21B721114DA400BB3921 /* Man_Skin1.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Man_Skin1.obj; sourceTree = "<group>"; };
 		380D21B921114DB700BB3921 /* Man_Skin2.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Man_Skin2.obj; path = Muscles/Man_Skin2.obj; sourceTree = "<group>"; };
-		381611272095942300801604 /* bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg.jpg; sourceTree = SOURCE_ROOT; };
 		38324DF0208B14FC005605B9 /* SummaryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryController.swift; sourceTree = "<group>"; };
 		38324DF2208B1601005605B9 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
 		384D7CB92092B46800DBE5E3 /* femalemesh.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = femalemesh.obj; sourceTree = "<group>"; };
@@ -310,7 +301,6 @@
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyBeaverCredentials.swift; sourceTree = "<group>"; };
 		6F439B7B211911E60002A960 /* SummaryControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryControllerTests.swift; sourceTree = "<group>"; };
-		6F439B81211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MPM-Sft-Eng-ProjUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
@@ -343,13 +333,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A71EB271881ECC232284F31F /* Pods_MPM_Sft_Eng_ProjTests.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6F439B7E211AD13A0002A960 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -492,7 +475,6 @@
 			children = (
 				6F1705962085DFE100F6265C /* MPM-Sft-Eng-Proj.app */,
 				6F1705AA2085DFE100F6265C /* MPM-Sft-Eng-ProjTests.xctest */,
-				6F439B81211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -610,7 +592,6 @@
 				380D21B721114DA400BB3921 /* Man_Skin1.obj */,
 				380D21B921114DB700BB3921 /* Man_Skin2.obj */,
 				38B9E4E2209EF4EF00773B0F /* Muscles */,
-				381611272095942300801604 /* bg.jpg */,
 				38B9E5A0209EF80700773B0F /* man_skele.obj */,
 				384D7CBF2092BE3D00DBE5E3 /* skin.png */,
 				384D7CBD2092BC0D00DBE5E3 /* tex.jpg */,
@@ -672,24 +653,6 @@
 			productReference = 6F1705AA2085DFE100F6265C /* MPM-Sft-Eng-ProjTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		6F439B80211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6F439B88211AD13A0002A960 /* Build configuration list for PBXNativeTarget "MPM-Sft-Eng-ProjUITests" */;
-			buildPhases = (
-				6F439B7D211AD13A0002A960 /* Sources */,
-				6F439B7E211AD13A0002A960 /* Frameworks */,
-				6F439B7F211AD13A0002A960 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				6F439B87211AD13A0002A960 /* PBXTargetDependency */,
-			);
-			name = "MPM-Sft-Eng-ProjUITests";
-			productName = "MPM-Sft-Eng-ProjUITests";
-			productReference = 6F439B81211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -706,11 +669,6 @@
 					};
 					6F1705A92085DFE100F6265C = {
 						CreatedOnToolsVersion = 9.1;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 6F1705952085DFE100F6265C;
-					};
-					6F439B80211AD13A0002A960 = {
-						CreatedOnToolsVersion = 9.4.1;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 6F1705952085DFE100F6265C;
 					};
@@ -731,7 +689,6 @@
 			targets = (
 				6F1705952085DFE100F6265C /* MPM-Sft-Eng-Proj */,
 				6F1705A92085DFE100F6265C /* MPM-Sft-Eng-ProjTests */,
-				6F439B80211AD13A0002A960 /* MPM-Sft-Eng-ProjUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -806,7 +763,6 @@
 				38B9E566209EF5CC00773B0F /* bicepttopL.obj in Resources */,
 				38B9E578209EF5CC00773B0F /* calfL4.obj in Resources */,
 				3876397F20B90A5A009AA4F9 /* hitmaps3.bundle in Resources */,
-				381611282095942300801604 /* bg.jpg in Resources */,
 				38B9E577209EF5CC00773B0F /* calfL.obj in Resources */,
 				38B9E563209EF5CC00773B0F /* upperback_R.obj in Resources */,
 				38B9E541209EF5CC00773B0F /* AbsR.obj in Resources */,
@@ -845,13 +801,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		6F1705A82085DFE100F6265C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6F439B7F211AD13A0002A960 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1028,13 +977,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6F439B7D211AD13A0002A960 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1042,11 +984,6 @@
 			isa = PBXTargetDependency;
 			target = 6F1705952085DFE100F6265C /* MPM-Sft-Eng-Proj */;
 			targetProxy = 6F1705AB2085DFE100F6265C /* PBXContainerItemProxy */;
-		};
-		6F439B87211AD13A0002A960 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6F1705952085DFE100F6265C /* MPM-Sft-Eng-Proj */;
-			targetProxy = 6F439B86211AD13A0002A960 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1232,40 +1169,6 @@
 			};
 			name = Release;
 		};
-		6F439B89211AD13A0002A960 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 44Y6L594XB;
-				INFOPLIST_FILE = "MPM-Sft-Eng-ProjUITests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "nz.HarryEllerm.MPM-Sft-Eng-ProjUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "MPM-Sft-Eng-Proj";
-			};
-			name = Debug;
-		};
-		6F439B8A211AD13A0002A960 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 44Y6L594XB;
-				INFOPLIST_FILE = "MPM-Sft-Eng-ProjUITests/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "nz.HarryEllerm.MPM-Sft-Eng-ProjUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "MPM-Sft-Eng-Proj";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1292,15 +1195,6 @@
 			buildConfigurations = (
 				6F1705C22085DFE100F6265C /* Debug */,
 				6F1705C32085DFE100F6265C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		6F439B88211AD13A0002A960 /* Build configuration list for PBXNativeTarget "MPM-Sft-Eng-ProjUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6F439B89211AD13A0002A960 /* Debug */,
-				6F439B8A211AD13A0002A960 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
