@@ -126,6 +126,10 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         //First validate text fields.
         validator.validate(self)
     }
+    /**
+     This method is used to validate an email and password. f validation is unsuccessful,
+     field gets an error.
+    */
     
     func validationSuccessful() {
         SwiftSpinner.show("Signing In...")
@@ -144,6 +148,10 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         }
     }
     
+/**
+ This method is used to validate a single field registered to Validator. If validation is unsuccessful,
+ field gets removed from view controller.
+ */
      func validationFailed(_ errors:[(Validatable ,ValidationError)]) {
         for (_, error) in errors {
             if let present = self.presentedViewController {
