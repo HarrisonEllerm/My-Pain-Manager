@@ -96,9 +96,7 @@ class OnBoardController: UIViewController, UICollectionViewDataSource,
         pageControl.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         pageControl.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         pageControl.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        
         registerCells()
-        
         view.accessibilityIdentifier = "onboardingController"
         
     }

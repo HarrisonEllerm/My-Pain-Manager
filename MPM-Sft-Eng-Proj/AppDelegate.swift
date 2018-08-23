@@ -15,14 +15,14 @@ import SwiftSpinner
 import SwiftyBeaver
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker  {
-    
+class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker {
+
     var window: UIWindow?
     var mainTabBarController: MainTabBarController?
     let log = SwiftyBeaver.self
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+
         //Configure Logging Framework
         let console = ConsoleDestination()
         let file = FileDestination()
@@ -30,22 +30,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         log.addDestination(console)
         log.addDestination(file)
         log.addDestination(cloud)
-        
+
         //Configure Firebase
         FirebaseApp.configure()
         //Enable Disk Persistence
         Database.database().isPersistenceEnabled = true
-        
+
         //Configure Google
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
         GIDSignIn.sharedInstance().delegate = self
-       
+
         //Continue setup
         window = UIWindow()
-    
+
         //Check if first time opening or if UITesting, if so onboard
         let defaults = UserDefaults.standard
-        
+
         if (defaults.string(forKey: "isAppAlreadyLaunchedOnce") == nil) ||
             CommandLine.arguments.contains("-ui_tests") {
             log.info("OnBoarding Triggered")
@@ -60,19 +60,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         }
         return true
     }
-    
+
     @available(iOS 9.0, *)
-    func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any])
+    func application(_ application: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey: Any])
         -> Bool {
             return GIDSignIn.sharedInstance().handle(url,
-                sourceApplication:options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String,annotation: [:])
+                sourceApplication: options[UIApplicationOpenURLOptionsKey.sourceApplication] as? String, annotation: [:])
     }
-    
+
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return GIDSignIn.sharedInstance().handle(url, sourceApplication: sourceApplication,
-                                                 annotation: annotation)
+            annotation: annotation)
     }
-    
+
     /**
         Relevant code used to sign in a user via Google. Really not
         a fan of the fact it exists inside AppDelegate, but hey, this is
@@ -88,7 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             self.log.error("Error signing in via Google: \(error.localizedDescription)")
             return
         }
-        
+
         guard let authentication = user.authentication else {
             SwiftSpinner.show("Error Authenticating User...").addTapHandler({
                 SwiftSpinner.hide()
@@ -96,10 +96,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
             self.log.error("There was a problem authenticating the user via Google...")
             return
         }
-    
+
         let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
-                                                       accessToken: authentication.accessToken)
-        
+            accessToken: authentication.accessToken)
+
         Auth.auth().signInAndRetrieveData(with: credential) { (user, error) in
             if let error = error {
                 SwiftSpinner.show("Error Signing In via Google...").addTapHandler({
@@ -126,9 +126,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                     self.log.info("Creating new user")
                     let altProfilePicURL = Service.defaultProfilePicUrl
                     let dictionaryValues = ["name": name, "email": email,
-                                            "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL,
-                                            "birthdate": "Not set", "gender": "Not set", "height": "Not set",
-                                            "weight": "Not set"]
+                        "profileImageURL": profilePicUrl, "altProfileImageURL": altProfilePicURL,
+                        "birthdate": "Not set", "gender": "Not set", "height": "Not set",
+                        "weight": "Not set"]
                     let values = [uid: dictionaryValues]
                     Database.database().reference().child("users").updateChildValues(values, withCompletionBlock: { (error, ref) in
                         if let error = error {
@@ -147,42 +147,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
 
         }
     }
-    
+    /**
+        Completes a users login on success, by
+        performing the necessary steps needed to
+        present the mainTabBar.
+     
+        - parameter : uid, the users unique id.
+    */
     func completeSignIn(_ uid: String) {
         SwiftSpinner.hide()
         //present mainTabBar
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.handleLogin(withWindow: self.window)
-        }
+        self.handleLogin(withWindow: self.window)
     }
-    
-    
+
+
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         self.log.error("\(user.userID) disconnected from the app with error: \(error.localizedDescription)")
     }
-    
+
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
     }
-    
+
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
-    
+
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
     }
-    
+
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
-    
+
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
+
 }
 
 

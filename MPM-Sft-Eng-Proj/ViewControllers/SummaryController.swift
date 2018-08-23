@@ -71,6 +71,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         isLoadingViewController = true
         Service.setupNavBar(controller: self)
         self.navigationItem.title = "Summary"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
+        self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
         setupView()
         //Controller listens for changes in state of date cells
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
@@ -123,6 +125,11 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.isScrollEnabled = false
         summaryTableView.allowsSelection = true
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
+    }
+    
+    
+    @objc func handleReportButtonOnTap() {
+         self.navigationController?.pushViewController(GenerateReportController(), animated: true)
     }
     
     
