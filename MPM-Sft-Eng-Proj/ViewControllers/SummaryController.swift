@@ -410,14 +410,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func initChart() {
         
         let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
+       //let xlabelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white, rotation: -90.0)
+        
+        
         guard let scale = xAxisScale else { return }
         let firstXValue: Double = 0
         let lastXValue: Double = scale
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // 1st x-axis model: Has an axis value (tick) for each year. We use this for the small x-axis dividers.
+
         
+        //scale/_units
         let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/_units)
+        let xValuesGenerator2 = ChartAxisGeneratorMultiplier(48.0/Double(maxDifference!))
      
         var labCopy = labelSettings
         labCopy.fontColor = UIColor.red
@@ -428,32 +433,64 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
             xEmptyLabelsGenerator)
         //This is essentially do get rid of vertial lines as we cannot set it to nil
-        let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: 0, lastModelValue: 0, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+        let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator2, labelsGenerator:
             xEmptyLabelsGenerator)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // 2nd x-axis model: Has an axis value (tick) for each <rangeSize>/2 years. We use this to show the x-axis labels
+    
         
         let rangeSize: Double = view.frame.width < view.frame.height ? 12 : 6 // adjust intervals for orientation
-        let rangedMult: Double = rangeSize/2
-
+        
+        let rangedMult: Double = 48.0/Double(maxDifference!)       //rangeSize/2
         let formatter = NumberFormatter()
         formatter.maximumFractionDigits = 0
-       
-        let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
-            return ChartAxisLabel(text: "", settings: labelSettings)
+        
+        
+        var mydates : [String] = []
+        let startDateX = startDate!.description.split(separator: " ")
+        let endDateX   = endDate!.description.split(separator: " ")
+        var dateFrom =  Date() // First date
+        var dateTo = Date()   // Last date
+        // Formatter for printing the date, adjust it according to your needs:
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        dateFrom = fmt.date(from: String(startDateX[0]))!
+        dateTo = fmt.date(from: String(endDateX[0]))!
+        while dateFrom <= dateTo {
+            mydates.append(fmt.string(from: dateFrom))
+            dateFrom = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
+            
         }
+        print(mydates) // Your Result
+        
 
+        var xlabels = [ChartAxisLabel]()
+        
+        for date in 0...mydates.count-1{
+            xlabels.append(ChartAxisLabel(text: mydates[date].description, settings: labelSettings))
+            
+        }
+        
+        print(xlabels.count)
+        
+        let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
+            //return xlabels
+           return ChartAxisLabel(text: " ", settings: labelSettings)
+        }
+ 
+        
         let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
+        
 
-        let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
+      let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
         
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 3rd x-axis model: Has an axis value (tick) for each <rangeSize> years. We use this to show the x-axis guidelines and long dividers
         
         let xValuesGuidelineGenerator = ChartAxisGeneratorMultiplier(rangeSize)
+        
         let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
         
         
@@ -489,8 +526,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let customCoordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: customXModel, yModel: yModel)
         
         var (xAxisLayer, yAxisLayer, innerFrame) = (coordsSpace.xAxisLayer, coordsSpace.yAxisLayer, coordsSpace.chartInnerFrame)
+        
+       
+        
         var (xRangedAxisLayer, _, _) = (coordsSpaceForRanges.xAxisLayer, coordsSpaceForRanges.yAxisLayer, coordsSpaceForRanges.chartInnerFrame)
+        
         let (xGuidelinesAxisLayer, _, _) = (coordsSpaceForGuidelines.xAxisLayer, coordsSpaceForGuidelines.yAxisLayer, coordsSpaceForGuidelines.chartInnerFrame)
+        
+        
         let customXaxisLayer = customCoordsSpaceForGuidelines.xAxisLayer
         
         
@@ -541,6 +584,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             innerFrame: innerFrame,
             settings: chartSettings,
             layers: [
+               
                 xAxisLayer,
                 xRangedAxisLayer,
                 xGuidelinesAxisLayer,
@@ -695,6 +739,12 @@ private class LineDataWrapper {
     func setLineModelData(_ model: [(Double, Double)]) {
         self.lineModelData = model
     }
+    
+   
+    
+    
+    
+    
 }
 
 
