@@ -421,16 +421,22 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 
         
         //scale/_units
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/_units)
-        let xValuesGenerator2 = ChartAxisGeneratorMultiplier(48.0/Double(maxDifference!))
-     
+        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/_units) //original
+        let xValuesGenerator2 = ChartAxisGeneratorMultiplier(48.0/Double(maxDifference!))//For splitting vertical lines by days
+        
+        let xValuesGenerator3 = ChartAxisGeneratorMultiplier(scale)
+        
+        
         var labCopy = labelSettings
+        
+        
+        
         labCopy.fontColor = UIColor.red
         let xEmptyLabelsGenerator = ChartAxisLabelsGeneratorFunc {value in return
             ChartAxisLabel(text: "", settings: labCopy)
         }
         
-        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator, labelsGenerator:
+        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator3, labelsGenerator:
             xEmptyLabelsGenerator)
         //This is essentially do get rid of vertial lines as we cannot set it to nil
         let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator2, labelsGenerator:
