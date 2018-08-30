@@ -141,9 +141,7 @@
 		6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */; };
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
-		6F7D59422102DF1B0063D2D2 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7D59412102DF1B0063D2D2 /* UIColor.swift */; };
 		6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */; };
-		6FB1882B20E5B1A500256767 /* ExampleDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */; };
 		6FCB37F6212F6BFF00CC69E4 /* GenerateReportController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCB37F5212F6BFF00CC69E4 /* GenerateReportController.swift */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
@@ -305,9 +303,7 @@
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
-		6F7D59412102DF1B0063D2D2 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FatigueAlertDialog.swift; sourceTree = "<group>"; };
-		6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDefaults.swift; sourceTree = "<group>"; };
 		6FCB37F5212F6BFF00CC69E4 /* GenerateReportController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateReportController.swift; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -581,9 +577,7 @@
 		6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */ = {
 			isa = PBXGroup;
 			children = (
-				6FB1882A20E5B1A500256767 /* ExampleDefaults.swift */,
 				6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */,
-				6F7D59412102DF1B0063D2D2 /* UIColor.swift */,
 			);
 			path = ExternalLibraries;
 			sourceTree = "<group>";
@@ -856,6 +850,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-MPM-Sft-Eng-Proj/Pods-MPM-Sft-Eng-Proj-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AAInfographics/AAInfographics.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework",
 				"${BUILT_PRODUCTS_DIR}/DateToolsSwift/DateToolsSwift.framework",
@@ -869,7 +864,6 @@
 				"${BUILT_PRODUCTS_DIR}/NotificationBannerSwift/NotificationBannerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/PopupDialog/PopupDialog.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftCharts/SwiftCharts.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftSpinner/SwiftSpinner.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftValidator/SwiftValidator.framework",
@@ -879,6 +873,7 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AAInfographics.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cosmos.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DateToolsSwift.framework",
@@ -892,7 +887,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NotificationBannerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PopupDialog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCharts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSpinner.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftValidator.framework",
@@ -954,7 +948,6 @@
 				6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */,
 				6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */,
 				6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */,
-				6F7D59422102DF1B0063D2D2 /* UIColor.swift in Sources */,
 				6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */,
 				6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */,
 				6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */,
@@ -962,7 +955,6 @@
 				6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */,
 				6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */,
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,
-				6FB1882B20E5B1A500256767 /* ExampleDefaults.swift in Sources */,
 				6F1705D62085E8EF00F6265C /* Service.swift in Sources */,
 				6F1705CE2085E81E00F6265C /* SignUserUpController.swift in Sources */,
 				6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */,

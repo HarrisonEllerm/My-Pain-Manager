@@ -1,4 +1,5 @@
 PODS:
+  - AAInfographics (2.0.4)
   - Alamofire (4.7.3)
   - Cosmos (16.0.0)
   - DateToolsSwift (4.0.0)
@@ -72,13 +73,13 @@ PODS:
   - PopupDialog (0.8.0):
     - DynamicBlurView (~> 2.0)
   - SnapKit (4.0.0)
-  - SwiftCharts (0.6.1)
   - SwiftDate (5.0.2)
   - SwiftSpinner (1.5.0)
   - SwiftValidator (4.0.0)
   - SwiftyBeaver (1.6.0)
 
 DEPENDENCIES:
+  - AAInfographics
   - Alamofire
   - Cosmos
   - DateToolsSwift
@@ -91,7 +92,6 @@ DEPENDENCIES:
   - LBTAComponents
   - NotificationBannerSwift
   - PopupDialog (~> 0.7)
-  - SwiftCharts (from `https://github.com/i-schuetz/SwiftCharts.git`)
   - SwiftDate (~> 5.0)
   - SwiftSpinner
   - SwiftValidator (from `https://github.com/jpotts18/SwiftValidator.git`, branch `master`)
@@ -99,6 +99,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - AAInfographics
     - Alamofire
     - Cosmos
     - DateToolsSwift
@@ -127,21 +128,17 @@ SPEC REPOS:
     - SwiftyBeaver
 
 EXTERNAL SOURCES:
-  SwiftCharts:
-    :git: https://github.com/i-schuetz/SwiftCharts.git
   SwiftValidator:
     :branch: master
     :git: https://github.com/jpotts18/SwiftValidator.git
 
 CHECKOUT OPTIONS:
-  SwiftCharts:
-    :commit: c9d5f8683e139560e310585b4d8ef7d74800b6ec
-    :git: https://github.com/i-schuetz/SwiftCharts.git
   SwiftValidator:
     :commit: ba27b0e501bf542b5c1a97bed8f706d12fb2d4f4
     :git: https://github.com/jpotts18/SwiftValidator.git
 
 SPEC CHECKSUMS:
+  AAInfographics: 10f87e06fc007a0adbb05de020e4a2fe3119f8de
   Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
   Cosmos: 7bcee0fa858a9355a214f2a181be5dffcee42c81
   DateToolsSwift: 875d97ff9e3a5d54abdd67a269b3f51c757b71ab
@@ -165,12 +162,11 @@ SPEC CHECKSUMS:
   NotificationBannerSwift: b231e4c3244848ef300e1c53ce027b9756b9b06f
   PopupDialog: 11347197b6ac3e0548ac445d40ce68d1d407e9a0
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
-  SwiftCharts: 344c17e93852fb14358046d0bcb831329c149648
   SwiftDate: 588bd7c496e6372713d45a304f506e9d6a7ca84c
   SwiftSpinner: 4c058c7a1d6b444dd2e1d70988ead40783097133
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyBeaver: e45759613e50b522b0e6f53b1f0f14389b45ca34
 
-PODFILE CHECKSUM: 9e24625fbf37aaadb42452774095df2b1c7028aa
+PODFILE CHECKSUM: 9f294d83c2f62f1401030264d2e3cf7c27489710
 
 COCOAPODS: 1.5.3

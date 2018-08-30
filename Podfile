@@ -22,7 +22,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'SwiftSpinner'
     pod 'Alamofire'
     pod 'Cosmos'
-    pod 'SwiftCharts', :git => 'https://github.com/i-schuetz/SwiftCharts.git'
+    pod 'AAInfographics'
     pod 'DateToolsSwift'
     pod 'SwiftDate', '~> 5.0'
     pod 'NotificationBannerSwift'

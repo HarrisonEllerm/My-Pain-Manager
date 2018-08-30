@@ -12,7 +12,6 @@ import Foundation
 import UIKit
 import Firebase
 import Foundation
-import SwiftCharts
 import FirebaseDatabase
 import FirebaseAuth
 import DateToolsSwift
@@ -22,7 +21,6 @@ import SwiftyBeaver
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    private var chart: Chart?
     private var didLayout: Bool = false
     private var lineModelData = [LineDataWrapper]()
     private var typeKeyMap = Dictionary<String, UIColor>()
@@ -301,14 +299,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         for area in mappedWrappers {
             setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
-       //Initiate Chart
-        guard let chart = chart else {return}
-        for view in chart.view.subviews {
-            view.removeFromSuperview()
-        }
-        self.initChart()
-        chart.view.setNeedsDisplay()
-        self.setupChartKey()
     }
     
     /**
@@ -358,29 +348,29 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
      
         - parameter : animated, a default boolean.
      */
-    override func viewDidDisappear(_ animated: Bool) {
-        for item in keyContainer.subviews {
-            item.removeFromSuperview()
-        }
-    }
+//    override func viewDidDisappear(_ animated: Bool) {
+//        for item in keyContainer.subviews {
+//            item.removeFromSuperview()
+//        }
+//    }
     
     /**
         Sets up the chart keys via investigating the map which holds the
         color associated with a pain type (which is randomly generated)
         and the pain types name.
      */
-    private func setupChartKey() {
-        var yCounter : CGFloat = 0.0
-        for item in typeKeyMap {
-            let someFrame = CGRect(x: 30.0, y: yCounter, width: 750, height: 30.0)
-            let newTextField = UITextField(frame: someFrame)
-            newTextField.text = item.key
-            newTextField.textColor = item.value
-            newTextField.allowsEditingTextAttributes = false
-            keyContainer.addSubview(newTextField)
-            yCounter = yCounter + 20
-        }
-    }
+//    private func setupChartKey() {
+//        var yCounter : CGFloat = 0.0
+//        for item in typeKeyMap {
+//            let someFrame = CGRect(x: 30.0, y: yCounter, width: 750, height: 30.0)
+//            let newTextField = UITextField(frame: someFrame)
+//            newTextField.text = item.key
+//            newTextField.textColor = item.value
+//            newTextField.allowsEditingTextAttributes = false
+//            keyContainer.addSubview(newTextField)
+//            yCounter = yCounter + 20
+//        }
+//    }
     
     /**
         A utility method used to format the input date into a double value
@@ -398,218 +388,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         guard let unwrappedTime = timeDouble else { return 0.0 }
         let adjustment = ((_units*difference) + unwrappedTime)
         return adjustment
-    }
-    
-    /**
-        Initialises and builds the chart, based on the template code
-        suggested for doing so, with some tweaks that allow us to dynamically
-        graph the associated pain and levels of pain over a period of time.
-     
-        link to template code: https://github.com/i-schuetz/SwiftCharts/blob/master/Examples/Examples/RangedAxisExample.swift
-    */
-    private func initChart() {
-        
-        let labelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white)
-       //let xlabelSettings = ChartLabelSettings(font: ExamplesDefaults.labelFont, fontColor: UIColor.white, rotation: -90.0)
-        
-        
-        guard let scale = xAxisScale else { return }
-        let firstXValue: Double = 0
-        let lastXValue: Double = scale
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        
-        //scale/_units
-        let xValuesGenerator = ChartAxisGeneratorMultiplier(scale/_units) //original
-        let xValuesGenerator2 = ChartAxisGeneratorMultiplier(48.0/Double(maxDifference!))//For splitting vertical lines by days
-        
-        let xValuesGenerator3 = ChartAxisGeneratorMultiplier(scale)
-        
-        
-        var labCopy = labelSettings
-        
-        
-        
-        labCopy.fontColor = UIColor.red
-        let xEmptyLabelsGenerator = ChartAxisLabelsGeneratorFunc {value in return
-            ChartAxisLabel(text: "", settings: labCopy)
-        }
-        
-        let xModel = ChartAxisModel(lineColor: UIColor.red, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator3, labelsGenerator:
-            xEmptyLabelsGenerator)
-        //This is essentially do get rid of vertial lines as we cannot set it to nil
-        let customXModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGenerator2, labelsGenerator:
-            xEmptyLabelsGenerator)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-        
-        let rangeSize: Double = view.frame.width < view.frame.height ? 12 : 6 // adjust intervals for orientation
-        
-        let rangedMult: Double = 48.0/Double(maxDifference!)       //rangeSize/2
-        let formatter = NumberFormatter()
-        formatter.maximumFractionDigits = 0
-        
-        
-        var mydates : [String] = []
-        let startDateX = startDate!.description.split(separator: " ")
-        let endDateX   = endDate!.description.split(separator: " ")
-        var dateFrom =  Date() // First date
-        var dateTo = Date()   // Last date
-        // Formatter for printing the date, adjust it according to your needs:
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy-MM-dd"
-        dateFrom = fmt.date(from: String(startDateX[0]))!
-        dateTo = fmt.date(from: String(endDateX[0]))!
-        while dateFrom <= dateTo {
-            mydates.append(fmt.string(from: dateFrom))
-            dateFrom = Calendar.current.date(byAdding: .day, value: 1, to: dateFrom)!
-            
-        }
-        print(mydates) // Your Result
-        
-
-        var xlabels = [ChartAxisLabel]()
-        
-        for date in 0...mydates.count-1{
-            xlabels.append(ChartAxisLabel(text: mydates[date].description, settings: labelSettings))
-            
-        }
-        
-        print(xlabels.count)
-        
-        let xRangedLabelsGenerator = ChartAxisLabelsGeneratorFunc {value -> ChartAxisLabel in
-            //return xlabels
-           return ChartAxisLabel(text: " ", settings: labelSettings)
-        }
- 
-        
-        let xValuesRangedGenerator = ChartAxisGeneratorMultiplier(rangedMult)
-        
-
-      let xModelForRanges = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesRangedGenerator, labelsGenerator: xRangedLabelsGenerator)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // 3rd x-axis model: Has an axis value (tick) for each <rangeSize> years. We use this to show the x-axis guidelines and long dividers
-        
-        let xValuesGuidelineGenerator = ChartAxisGeneratorMultiplier(rangeSize)
-        
-        let xModelForGuidelines = ChartAxisModel(lineColor: UIColor.white, firstModelValue: firstXValue, lastModelValue: lastXValue, axisTitleLabels: [], axisValuesGenerator: xValuesGuidelineGenerator, labelsGenerator: xEmptyLabelsGenerator)
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////////
-        // y-axis model: Has an axis value (tick) for each 2 units. We use this to show the y-axis dividers, labels and guidelines.
-        
-        let generator = ChartAxisGeneratorMultiplier(1)
-        let labelsGenerator = ChartAxisLabelsGeneratorFunc {scalar in
-            return ChartAxisLabel(text: "\(scalar)", settings: labelSettings)
-        }
-        
-        let yModel = ChartAxisModel(lineColor: UIColor.white, firstModelValue: 0, lastModelValue: 5, axisTitleLabels: [], axisValuesGenerator: generator, labelsGenerator: labelsGenerator)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Chart frame, settings
-        
-        let chartFrame = ExamplesDefaults.chartFrame(chartContainer.bounds)
-        var chartSettings = ExamplesDefaults.chartSettingsWithPanZoom
-        chartSettings.axisStrokeWidth = 0.5
-        chartSettings.labelsToAxisSpacingX = 10
-        chartSettings.leading = -1
-        chartSettings.trailing = 40
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // In order to transform the axis models into axis layers, and get the chart inner frame size, we need to use ChartCoordsSpace.
-        // Note that in the case of the x-axes we need to use ChartCoordsSpace multiple times - each of these axes represent essentially the same x-axis, so we can't use multi-axes functionality (i.e. pass an array of x-axes to ChartCoordsSpace).
-        
-        let coordsSpace = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModel, yModel: yModel)
-        let coordsSpaceForRanges = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForRanges, yModel: yModel)
-        let coordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: xModelForGuidelines, yModel: yModel)
-        let customCoordsSpaceForGuidelines = ChartCoordsSpaceRightBottomSingleAxis(chartSettings: chartSettings, chartFrame: chartFrame, xModel: customXModel, yModel: yModel)
-        
-        var (xAxisLayer, yAxisLayer, innerFrame) = (coordsSpace.xAxisLayer, coordsSpace.yAxisLayer, coordsSpace.chartInnerFrame)
-        
-       
-        
-        var (xRangedAxisLayer, _, _) = (coordsSpaceForRanges.xAxisLayer, coordsSpaceForRanges.yAxisLayer, coordsSpaceForRanges.chartInnerFrame)
-        
-        let (xGuidelinesAxisLayer, _, _) = (coordsSpaceForGuidelines.xAxisLayer, coordsSpaceForGuidelines.yAxisLayer, coordsSpaceForGuidelines.chartInnerFrame)
-        
-        
-        let customXaxisLayer = customCoordsSpaceForGuidelines.xAxisLayer
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Lines layer -- THIS IS WHERE WE MODIFY THE LINE DATA
-        var lineModels = [ChartLineModel]()
-        
-        for item in lineModelData {
-            let randColor = UIColor.random()
-            //Store color for keymap later
-            typeKeyMap.updateValue(randColor, forKey: item.getType())
-
-            let lineChartPoints = item.getLineModelData().map{ChartPoint(x: ChartAxisValueDouble($0.0), y: ChartAxisValueDouble($0.1))}
-            let lineModel = ChartLineModel(chartPoints: lineChartPoints, lineColor: randColor, lineWidth: 2, animDuration: 1, animDelay: 0)
-            lineModels.append(lineModel)
-            
-        }
-        
-        let chartPointsLineLayer = ChartPointsLineLayer<ChartPoint>(xAxis: xAxisLayer.axis, yAxis: yAxisLayer.axis, lineModels: lineModels, pathGenerator: CubicLinePathGenerator(tension1: 0.2, tension2: 0.2))
-
-        // Finally we set a custom clip rect for the view where we display the markers, in order to not show them outside of the chart's boundaries, during zooming and panning. For now the size is hardcoded. This should be improved. Until then you can calculate the exact frame using the spacing settings and label (string) sizes.
-        chartSettings.customClipRect = CGRect(x: 0, y: chartSettings.top, width: view.frame.width, height: view.frame.height - 120)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Guidelines layer. Note how we pass the x-axis layer we created specifically for the guidelines.
-        
-        let guidelinesLayerSettings = ChartGuideLinesLayerSettings(linesColor: UIColor.white, linesWidth: 0.3)
-    
-        let guidelinesLayer = ChartGuideLinesLayer(xAxisLayer: customXaxisLayer, yAxisLayer: yAxisLayer, settings: guidelinesLayerSettings)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Dividers layer with small lines. This is used both in x and y axes
-        let dividersSettings =  ChartDividersLayerSettings(linesColor: UIColor.white, linesWidth: 1, start: 2, end: 0)
-        let dividersLayer = ChartDividersLayer(xAxisLayer: xAxisLayer, yAxisLayer: yAxisLayer, axis: .xAndY, settings: dividersSettings)
-        
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Disable frame updates for 2 of the 3 x-axis layers. This way the space will not be reserved multiple times. We need this only because the 3 layers represent the same x-axis (for a multi-axis chart this would not be necessary). Note that it's important to pass all 3 layers to the chart, although only one is actually visible, because otherwise the layers will not receive inner frame updates, which results in any layers that reference these layers not being positioned correctly.
-        xRangedAxisLayer.canChangeFrameSize = false
-        xAxisLayer.canChangeFrameSize = false
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // create chart instance with frame and layers
-        let chart = Chart(
-            frame: chartFrame,
-            innerFrame: innerFrame,
-            settings: chartSettings,
-            layers: [
-               
-                xAxisLayer,
-                xRangedAxisLayer,
-                xGuidelinesAxisLayer,
-                yAxisLayer,
-                guidelinesLayer,
-                chartPointsLineLayer,
-                dividersLayer,
-            ]
-        )
-        view.addSubview(chart.view)
-        self.chart = chart
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if !self.didLayout {
-            self.didLayout = true
-            self.initChart()
-        }
     }
     
     deinit {
@@ -745,12 +523,6 @@ private class LineDataWrapper {
     func setLineModelData(_ model: [(Double, Double)]) {
         self.lineModelData = model
     }
-    
-   
-    
-    
-    
-    
 }
 
 
