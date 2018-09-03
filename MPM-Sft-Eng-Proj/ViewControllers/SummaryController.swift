@@ -18,6 +18,7 @@ import DateToolsSwift
 import SwiftDate
 import NotificationBannerSwift
 import SwiftyBeaver
+import SwiftSpinner
 
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -33,6 +34,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var maxDifference: Int?
     private let _units : Double = 24.0
     private let log = SwiftyBeaver.self
+    private var wrappers: [LogWrapper] = []
     
     private let summaryTableView : UITableView = {
         let t = UITableView()
@@ -125,9 +127,15 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
     }
     
-    
+    //Handles generation of the report
     @objc func handleReportButtonOnTap() {
-         self.navigationController?.pushViewController(GenerateReportController(), animated: true)
+        SwiftSpinner.show("Building Report")
+        for item in wrappers {
+            print(item.getType())
+            print(item.getTime())
+            print(item.getRating())
+        }
+        SwiftSpinner.hide()
     }
     
     
@@ -181,8 +189,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
                 
-                var wrappers: [LogWrapper] = []
-                
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
@@ -205,7 +211,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                                             guard let rating : Int = values["ranking"] as? Int else { return }
                                             guard let type : String = values["type"] as? String else { return }
                                             let w = LogWrapper(time, rating, type)
-                                            wrappers.append(w)
+                                            self.wrappers.append(w)
                                         }
                                     }
                                 }
@@ -213,7 +219,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                         }
                     }
                     //Have all the data needed to build out graph
-                    self.buildChart(wrappers)
+                    self.buildChart(self.wrappers)
                 }
             }
         }
@@ -299,6 +305,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         for area in mappedWrappers {
             setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
+        
     }
     
     /**

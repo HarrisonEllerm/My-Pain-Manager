@@ -61,7 +61,6 @@ public func > (lhs: DateInRegion, rhs: DateInRegion) -> Bool {
 /// - isAfternoon: Return true if date is in the afternoon (>=12 - <17)
 /// - isEvening: Return true if date is in the morning (>=17 - <21)
 /// - isNight: Return true if date is in the morning (>=21 - <5)
-// swiftlint:disable identifier_name
 public enum DateComparisonType {
 
 	// Days
@@ -263,6 +262,18 @@ public extension DateInRegion {
 	public func isAfterDate(_ refDate: DateInRegion, orEqual: Bool = false, granularity: Calendar.Component) -> Bool {
 		let result = self.compare(toDate: refDate, granularity: granularity)
 		return (orEqual ? (result == .orderedSame || result == .orderedDescending) : result == .orderedDescending)
+	}
+	
+	/// Compares equality of two given dates based on their components down to a given unit
+	/// granularity.
+	///
+	/// - parameter date:        date to compare
+	/// - parameter granularity: The smallest unit that must, along with all larger units, be equal for the given
+	///         dates to be considered the same.
+	///
+	/// - returns: `true` if the dates are the same down to the given granularity, otherwise `false`
+	public func isInside(date: DateInRegion, granularity: Calendar.Component) -> Bool {
+		return (self.compare(toDate: date, granularity: granularity) == .orderedSame)
 	}
 
 	/// Return `true` if receiver data is contained in the range specified by two dates.
