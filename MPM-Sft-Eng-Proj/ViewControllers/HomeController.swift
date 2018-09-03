@@ -52,11 +52,16 @@ class HomeController: UIViewController {
         Service.setupNavBar(controller: self)
         view.backgroundColor = UIColor.black
         self.definesPresentationContext = true
-        /*
-         Activity Indicator Used to show users that the model is being loaded,
-         which can take around a second since it is reading in large files to render
-         the body.
-         */
+        setupActivityIndicator()
+        self.createSlider()
+    }
+    
+    /*
+     Activity Indicator Used to show users that the model is being loaded,
+     which can take around a second since it is reading in large files to render
+     the body.
+     */
+    func setupActivityIndicator() {
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
         activityIndicator.startAnimating()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -64,10 +69,7 @@ class HomeController: UIViewController {
         activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.activityIndicator = activityIndicator
-        self.createSlider()
     }
-    
-    
     
     func loadScene() {
         /*

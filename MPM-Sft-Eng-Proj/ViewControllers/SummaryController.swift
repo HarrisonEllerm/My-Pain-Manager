@@ -27,16 +27,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var typeKeyMap = Dictionary<String, UIColor>()
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
-    private var xAxisScale : Double?
-    private var scaleMultiplier : Double?
-    private var startDate : Date?
-    private var endDate : Date?
+    private var xAxisScale: Double?
+    private var scaleMultiplier: Double?
+    private var startDate: Date?
+    private var endDate: Date?
     private var maxDifference: Int?
-    private let _units : Double = 24.0
+    private let _units: Double = 24.0
     private let log = SwiftyBeaver.self
     private var wrappers: [LogWrapper] = []
-    
-    private let summaryTableView : UITableView = {
+    private var chartView: AAChartView?
+    private var chartModel: AAChartModel?
+    private weak var activityIndicator: UIActivityIndicatorView?
+
+    private let summaryTableView: UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
         t.isScrollEnabled = true
@@ -47,21 +50,24 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         t.layoutMargins = .zero
         return t
     }()
-    
-    private var chartContainer : UIView = {
+
+    private var chartContainer: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-    private var keyContainer : UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
+
+    func setupActivityIndicator() {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
+        activityIndicator.startAnimating()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: chartContainer.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: chartContainer.centerYAnchor).isActive = true
+        self.activityIndicator = activityIndicator
+    }
+
     /**
      This will be run once, therefore here we do everything that
      doesn't need to be repeated when the view controller is refreshed.
@@ -73,7 +79,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         self.navigationItem.title = "Summary"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
+        view.backgroundColor = UIColor.black
+        self.chartContainer.backgroundColor = UIColor.black
         setupView()
+        setupActivityIndicator()
         //Controller listens for changes in state of date cells
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
         endDate = Date().dateAtStartOf(.day)
@@ -82,7 +91,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             getDataForTimePeriod(date1: start, date2: end)
         }
     }
-    
+
     /**
         Employed to allow the dynamic refreshing of data
         when a user opens the tab again, after it has
@@ -96,7 +105,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             setupView()
         }
     }
-    
+
     /**
         Sets up the parts of the view that need to be
         dynamically reloaded if a user opens the tab
@@ -107,14 +116,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         setupSummaryTableView()
         view.addSubview(chartContainer)
         setupChartContainer()
-        chartContainer.addSubview(keyContainer)
-        setupKeyContainer()
         setupSummaryTableViewSpecifics()
         if let start = startDate, let end = endDate {
             getDataForTimePeriod(date1: start, date2: end)
         }
     }
-    
+
     /**
         Sets up summary table view properties.
     */
@@ -126,7 +133,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.allowsSelection = true
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
     }
-    
+
     //Handles generation of the report
     @objc func handleReportButtonOnTap() {
         SwiftSpinner.show("Building Report")
@@ -137,8 +144,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
         SwiftSpinner.hide()
     }
-    
-    
+
+
     /**
         Triggered when a date is set insid a GraphDateEntryCell. UserInfo is passed
         into the function that identifies if the date is the From or To date in terms
@@ -160,7 +167,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
     }
-    
+
     /**
         Queries Firebase for the logs of data associated with a users
         account, wraps those logs up into an object for simplicity, and
@@ -173,43 +180,43 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func getDataForTimePeriod(date1: Date, date2: Date) {
         //Clear line model data
         lineModelData.removeAll()
-        
+
         //Setup differences needed for scaling
         setupDifferences(date1, date2)
-       
+
         //reformat dates so we can pull data
-        let dateF : DateFormatter = DateFormatter()
+        let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "yyyy-MMM-dd"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
-        
+
         let noDataBanner = NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning)
-        
+
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
-                
+
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
-              
+
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
                     self.log.info("User \(uid) searching for data in range: \(dateFromS) to \(dateToS)")
-                    
-                   if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
 
-                    if snapshots.isEmpty {
-                        self.log.info("User \(uid) had incomplete/missing data in range, checking for partial data")
-                        self.checkForIncompleteDataInPeriod(uid, dateFromS, date1, date2, noDataBanner)
-                    } else {
-                        for snap in snapshots {
+                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+
+                        if snapshots.isEmpty {
+                            self.log.info("User \(uid) had incomplete/missing data in range, checking for partial data")
+                            self.checkForIncompleteDataInPeriod(uid, dateFromS, date1, date2, noDataBanner)
+                        } else {
+                            for snap in snapshots {
                                 let date = snap.key
                                 if let subchildren = snap.children.allObjects as? [DataSnapshot] {
                                     for snap in subchildren {
                                         if let values = snap.value as? Dictionary<String, Any> {
                                             let time = date + " " + snap.key
-                                            guard let rating : Int = values["ranking"] as? Int else { return }
-                                            guard let type : String = values["type"] as? String else { return }
+                                            guard let rating: Int = values["ranking"] as? Int else { return }
+                                            guard let type: String = values["type"] as? String else { return }
                                             let w = LogWrapper(time, rating, type)
                                             self.wrappers.append(w)
                                         }
@@ -219,12 +226,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                         }
                     }
                     //Have all the data needed to build out graph
-                    self.buildChart(self.wrappers)
+                    self.buildChart()
                 }
             }
         }
     }
-    
+
     /**
         A function that is called if the snapshot is empty between the
         ranges the user initially input. The reason this exists is to basically
@@ -241,15 +248,15 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the initial "to" date.
         - parameter : noDataBanner, a banner used to display a message to the user
     */
-    private func checkForIncompleteDataInPeriod(_ uid: String,_ dateFromS: String, _ date1: Date, _ date2: Date, _ noDataBanner: NotificationBanner) {
+    private func checkForIncompleteDataInPeriod(_ uid: String, _ dateFromS: String, _ date1: Date, _ date2: Date, _ noDataBanner: NotificationBanner) {
         Database.database().reference(withPath: "users_metadata").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                 if snapshots.isEmpty {
-                self.log.info("User \(uid) had no data in the date range.")
-                noDataBanner.show()
+                    self.log.info("User \(uid) had no data in the date range.")
+                    noDataBanner.show()
                 } else {
                     for snap in snapshots {
-                        if let lastActive : String = snap.value as? String {
+                        if let lastActive: String = snap.value as? String {
                             guard let last = lastActive.toDate()?.date else { return }
                             if last.isAfterDate(date1, granularity: .day) {
                                 self.getDataForTimePeriod(date1: date1, date2: last)
@@ -266,7 +273,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         })
     }
-    
+
     /**
         A utility method used to find the difference in days, so that we
         can scale the data appropriately.
@@ -275,12 +282,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
     */
     private func setupDifferences(_ date1: Date, _ date2: Date) {
-        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2)+1
-        xAxisScale = Double(days)*_units
+        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2) + 1
+        xAxisScale = Double(days) * _units
         maxDifference = days
     }
-    
-    
+
+
     /**
         Builds the chart out, by collecting data relevant to certain
         types of pain and setting up the line data for those types of pain.
@@ -289,14 +296,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date1, the first date.
         - parameter : date2, the second date.
      */
-    private func buildChart(_ wrappers: [LogWrapper]) {
+    private func buildChart() {
         //Pull data that is from the same area and place them into
         //mapped wrappers, so that we can eventually graph them.
-        var mappedWrappers : Dictionary<String, [LogWrapper]> = Dictionary()
-        for item in wrappers {
+        var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
+        for item in self.wrappers {
             if mappedWrappers[item.getType()] != nil {
                 mappedWrappers[item.getType()]?.append(item)
-                
+
             } else {
                 mappedWrappers.updateValue([item], forKey: item.getType())
             }
@@ -305,33 +312,80 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         for area in mappedWrappers {
             setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
-        
+        //WHERE WE USED TO INITIATE THE CHART
+        initChart()
+
     }
-    
+
+    private func initChart() {
+      
+        
+        let chartViewWidth = self.chartContainer.frame.size.width
+        let chartViewHeight = self.chartContainer.frame.size.height
+        chartView = AAChartView()
+        if let chartV = chartView {
+            log.debug("Inside 1")
+            chartView?.frame = CGRect(x: 15, y: 0, width: chartViewWidth - 15, height: chartViewHeight)
+
+            chartContainer.addSubview(chartV)
+
+            chartModel = AAChartModel.init()
+                .chartType(AAChartType.Line)//Can be any of the chart types listed under `AAChartType`.
+            .animationType(AAChartAnimationType.Bounce)
+                .dataLabelEnabled(false) //Enable or disable the data labels. Defaults to false
+            .tooltipValueSuffix("USD")//the value suffix of the chart tooltip
+            .categories(["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+                .colorsTheme(["#fe117c", "#ffc069", "#06caf4", "#7dffc0"])
+                .backgroundColor("#030303")
+                .series([
+                    AASeriesElement()
+                        .name("Tokyo")
+                        .data([7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6])
+                        .toDic()!,
+                    AASeriesElement()
+                        .name("New York")
+                        .data([0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5])
+                        .toDic()!,
+                    AASeriesElement()
+                        .name("Berlin")
+                        .data([0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0])
+                        .toDic()!,
+                    AASeriesElement()
+                        .name("London")
+                        .data([3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8])
+                        .toDic()!,])
+            if let chartM = chartModel {
+                activityIndicator?.stopAnimating()
+                chartV.aa_drawChartWithChartModel(chartM)
+            }
+        }
+    }
+
     /**
         A function that sets up the linedata for a particular area.
      
         - parameter : area, a String representing the area.
         - parameter : wrapper, a log wrapper array containing the logs for that area.
      */
-    private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]){
+    private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]) {
         let lineData = LineDataWrapper()
-        var dataHolder = [(Double,Double)]()
+        var dataHolder = [(Double, Double)]()
         //So that it has somewhere to draw from
-        dataHolder.append((0.0,0.0))
+        dataHolder.append((0.0, 0.0))
         for item in wrapper {
             lineData.setType(item.getType())
             guard let dateFrom = startDate, let dateTo = item.getTime().toDate() else { return }
             let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
             let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
             let doubleRating = Double(item.getRating())
-            dataHolder.append((doubleTime,doubleRating))
+            dataHolder.append((doubleTime, doubleRating))
         }
-        
+
         lineData.setLineModelData(dataHolder)
         lineModelData.append(lineData)
     }
-    
+
     /**
         A function that takes two dates and does a comparison using
         a granularity level of days.
@@ -343,42 +397,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         let diff = secondDate.timeIntervalSince(firstDate)
         let hours = Int(diff) / 3600
-        return hours/Int(_units)
+        return hours / Int(_units)
     }
 
-    /**
-        Implemented as it allows us to investigate the keyContainers
-        subviews (a variable amount of UITextViews) representing chart
-        keys for types of pain logged. Once identified we remove them
-        so that they can be dynamically redrawn when the user opens the
-        tab again.
-     
-        - parameter : animated, a default boolean.
-     */
-//    override func viewDidDisappear(_ animated: Bool) {
-//        for item in keyContainer.subviews {
-//            item.removeFromSuperview()
-//        }
-//    }
-    
-    /**
-        Sets up the chart keys via investigating the map which holds the
-        color associated with a pain type (which is randomly generated)
-        and the pain types name.
-     */
-//    private func setupChartKey() {
-//        var yCounter : CGFloat = 0.0
-//        for item in typeKeyMap {
-//            let someFrame = CGRect(x: 30.0, y: yCounter, width: 750, height: 30.0)
-//            let newTextField = UITextField(frame: someFrame)
-//            newTextField.text = item.key
-//            newTextField.textColor = item.value
-//            newTextField.allowsEditingTextAttributes = false
-//            keyContainer.addSubview(newTextField)
-//            yCounter = yCounter + 20
-//        }
-//    }
-    
     /**
         A utility method used to format the input date into a double value
         that represents the time in 24 hour format. Takes into consideration
@@ -393,19 +414,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let timeTidied = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
         let timeDouble = Double(timeTidied)
         guard let unwrappedTime = timeDouble else { return 0.0 }
-        let adjustment = ((_units*difference) + unwrappedTime)
+        let adjustment = ((_units * difference) + unwrappedTime)
         return adjustment
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dateF : DateFormatter = DateFormatter()
+        let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "dd/MM/yyyy"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-        
+
         if (indexPath.row == 0) {
             let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             cell.textFieldName = "From"
@@ -428,15 +449,15 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             return cell
         }
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = UIColor.black
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return numberOfDateOptions
     }
@@ -447,21 +468,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
         chartContainer.bottomAnchor.constraint(equalTo: summaryTableView.safeAreaLayoutGuide.topAnchor).isActive = true
     }
-    
-    private func setupKeyContainer() {
-        keyContainer.topAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.topAnchor, constant: 30).isActive = true
-        keyContainer.leftAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.leftAnchor).isActive = true
-        keyContainer.rightAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.rightAnchor).isActive = true
-        keyContainer.bottomAnchor.constraint(equalTo: chartContainer.safeAreaLayoutGuide.bottomAnchor).isActive = true
-    }
-    
+
     private func setupSummaryTableView() {
         summaryTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         summaryTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         summaryTableView.heightAnchor.constraint(equalToConstant: 88).isActive = true
     }
-    
+
 }
 
 /**
@@ -481,25 +495,25 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
  
  */
 private class LogWrapper {
-    
+
     let time: String
     let rating: Int
     let type: String
-    
+
     init(_ time: String, _ rating: Int, _ type: String) {
         self.time = time
         self.rating = rating
         self.type = type
     }
-    
+
     func getTime() -> String {
         return self.time
     }
-    
+
     func getRating() -> Int {
         return self.rating
     }
-    
+
     func getType() -> String {
         return self.type
     }
@@ -511,22 +525,22 @@ private class LogWrapper {
  as the type of pain associated with that value.
  */
 private class LineDataWrapper {
-    
+
     var lineModelData = [(Double, Double)]()
     var type: String = ""
-    
+
     func setType(_ type: String) {
         self.type = type
     }
-    
+
     func getType() -> String {
         return self.type
     }
-    
+
     func getLineModelData() -> [(Double, Double)] {
         return self.lineModelData
     }
-    
+
     func setLineModelData(_ model: [(Double, Double)]) {
         self.lineModelData = model
     }
