@@ -269,7 +269,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let format = DateFormatter()
         format.dateFormat = "dd/MM/yyyy"
         datesInRange.append(String(start.day))
-        while start <= end {
+        while start <= end-1 {
             
             start = cal.date(byAdding: .day, value: 1, to: start)!
             log.debug("Setting x \(start.day)")
@@ -290,13 +290,25 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                         https://math.stackexchange.com/questions/106700/incremental-averageing
                     */
                     let prevMean = yValues[index]
+                    
                     let count = yValuesCount[index]
-                    let newValue = log.getRating()
+                    
+                    var newValue = 0.0
+                    if log.getType() == "General Fatigue"{
+                        newValue = log.getRating()
+                    
+                    }else{
+                        newValue = log.getRating() * 20
+                    }
+                    
                     let newMean = (prevMean * (Double(count - 1)) + newValue) / Double(count)
                     yValues[index] = newMean
+                    
                     yValuesCount[index] = count + 1
                 }
             }
+            
+            
             //Finished cycling through
             lineData.setLineModelData(yValues)
             lineData.setType(area.key)
