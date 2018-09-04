@@ -35,6 +35,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var chartElements = Array<Dictionary<String, Any>>()
     private var datesInRange = [String]()
     private var _units = 24.0
+    private var _factor = 20.0
+    private var _graphContentOffSet: CGFloat = 40
+    private var _graphFrameOffset: CGFloat = 15
+    
 
     private let summaryTableView: UITableView = {
         let t = UITableView()
@@ -121,22 +125,23 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
     }
 
-    //Handles generation of the report
+    //TODO
     @objc func handleReportButtonOnTap() {
-        SwiftSpinner.show("Building Report")
-        for item in wrappers {
-            print(item.getType())
-            print(item.getTime())
-            print(item.getRating())
-        }
-        SwiftSpinner.hide()
+//      SwiftSpinner.show("Building Report")
+//        for item in wrappers {
+//            print(item.getType())
+//            print(item.getTime())
+//            print(item.getRating())
+//        }
+//        SwiftSpinner.hide()
     }
 
 
     /**
-        Triggered when a date is set insid a GraphDateEntryCell. UserInfo is passed
+        Triggered when a date is set inside a GraphDateEntryCell. UserInfo is passed
         into the function that identifies if the date is the From or To date in terms
-        of the period, and it is handled accordingly.
+        of the period, and it is handled accordingly. If both the start and end date
+        are set, the getDataForTimePeriod function is triggered.
      
         - parameter : notif, the notification
     */
@@ -156,25 +161,22 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
 
     /**
-        Queries Firebase for the logs of data associated with a users
-        account, wraps those logs up into an object for simplicity, and
-        passes them to a function which cleans the data and builds the
-        graph.
+        Performs the pull for data from Firebase for a users logs between
+        a certain date range. These logs are then wrapped up into a wrapper
+        object for simplicity. Finally, after the pull has completed, the
+        build chart function is triggered.
      
         - parameter : date1, the first date.
         - parameter : date2, the second date.
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
-        refreshLineModelData()
-
+        refreshData()
         //reformat dates so we can pull data
         let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "yyyy-MMM-dd"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
-
-        let noDataBanner = NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning)
 
         if Auth.auth().currentUser != nil {
             if let uid = Auth.auth().currentUser?.uid {
@@ -184,16 +186,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 painRef.keepSynced(true)
 
                 painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
-                    self.log.info("User \(uid) searching for data in range: \(dateFromS) to \(dateToS)")
-
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                         if snapshots.isEmpty {
-                            self.log.info("User \(uid) had no data in the date range.")
-                            noDataBanner.show()
+                            NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
                         } else {
                             for snap in snapshots {
                                 let date = snap.key
-                                self.log.debug("DATE \(date)")
                                 if let subchildren = snap.children.allObjects as? [DataSnapshot] {
                                     for snap in subchildren {
                                         if let values = snap.value as? Dictionary<String, Any> {
@@ -207,18 +205,21 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                             }
                         }
                     }
-                    /*
-                        This is called here because we have finished pulling the data
-                        from firebase. If you call it from outside the thread, the thread
-                        pulling data may not have finished, and you may end up with no data.
-                    */
+                    //This is called here because we have finished pulling the data
+                    //from firebase. If you call it from outside the thread, the thread
+                    //pulling data may not have finished, and you may end up with no data.
                     self.buildChart()
                 }
             }
         }
     }
 
-    private func refreshLineModelData() {
+    /**
+        Refreshes the data associated with the graph. This is
+        used when the view controller is presented after initially
+        being presented via viewDidLoad.
+    */
+    private func refreshData() {
         chartElements.removeAll()
         datesInRange.removeAll()
         wrappers.removeAll()
@@ -226,95 +227,98 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 
 
     /**
-        Builds the chart out, by collecting data relevant to certain
-        types of pain and setting up the line data for those types of pain.
-        Finally, after this is complete, the chart is initiated.
-     
-        - parameter : date1, the first date.
-        - parameter : date2, the second date.
+        Builds the chart out. Initially this function maps the logs to
+        each of the corresponding body areas/muscle groups and then
+        proceeds to call a function that sets up the x and y values for
+        the graph. Finally, after all the data has been organised and mapped,
+        the chart is initiated.
      */
     private func buildChart() {
-        log.debug("Building Chart")
         //Grouping the log wrappers by pain type
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
             if mappedWrappers[item.getType()] != nil {
                 mappedWrappers[item.getType()]?.append(item)
-
             } else {
                 mappedWrappers.updateValue([item], forKey: item.getType())
             }
         }
-        //Scale the data so we can build it correctly
-        setupScaleAndCleanLineData(wrappers: mappedWrappers)
-
+        //Setup the graphs x and y values
+        setupXandYValues(wrappers: mappedWrappers)
         //Initiate the chart
         initChart()
     }
 
     /**
-        A function that sets up the linedata for a particular area. We want to get
-        our array of Y values that correspond with the x values (i.e. days) in the
-        period.
+        A function that sets up the linedata for a particular area. This essentially
+        calculates the x and y values for the graph. The calculation of the y values
+        is as follows:
      
-        - parameter : area, a String representing the area.
-        - parameter : wrapper, a log wrapper array containing the logs for that area.
+            e.g. a given date range of 05-Sep-2018 to 10-Sep-2018
+     
+        X: We get every day between the given period and place it into an array called
+           datesInRange. This is used as the x axis values.
+     
+                Here the array would look like ["5","6","7","8","9","10"]
+     
+        Y: For each type of pain logged over the period a x axis series is created. These
+           logs need to line up with the corresponding X axis values. If there is no log
+           corresponding to the x axis value, a 0 is inserted.
+     
+           e.g. "Back" which had a log of 4 on the 5th, 3 on the 6th, 5 on the 8th and 1
+           on the 10th.
+     
+            The corresponding series would look like: [4,3,0,5,0,1]
+     
+        For situations where there are more than one log per day per body part, for the
+        purposes of graphing we are calculating an incremental average. This simplifies
+        the graphing process and allows us to keep the fine granularity of detail within
+        the database. The equations and logic for our calculation can be found here:
+     
+            https://math.stackexchange.com/questions/106700/incremental-averageing
+     
+        - parameter : wrappers, a dictionary of mapped wrappers, where all logs for a
+                      particular area/muscle group are grouped together.
      */
-    private func setupScaleAndCleanLineData(wrappers: Dictionary<String, [LogWrapper]>) {
+    private func setupXandYValues(wrappers: Dictionary<String, [LogWrapper]>) {
         var lineModelData = [LineDataWrapper]()
-        
         //Setup the xValues for the period
         guard var start = startDate, let end = endDate else { return }
         let cal = Calendar.current
-        let format = DateFormatter()
-        format.dateFormat = "dd/MM/yyyy"
         datesInRange.append(String(start.day))
-        while start <= end-1 {
-            
+        while start <= end - 1 {
             start = cal.date(byAdding: .day, value: 1, to: start)!
-            log.debug("Setting x \(start.day)")
             datesInRange.append(String(start.day))
         }
-        
+        //Setup the yValues for the period
         for area in wrappers {
             let lineData = LineDataWrapper()
             var yValues: Array<Double> = Array(repeating: 0, count: datesInRange.count)
             var yValuesCount: Array<Int> = Array(repeating: 1, count: datesInRange.count)
-
             for log in area.value {
                 let xValue = String(log.getTime().suffix(2))
-                //find index associate with xValue
                 if let index = datesInRange.index(of: xValue) {
-                    /**
-                        Calculating an incremental average for each day.
-                        https://math.stackexchange.com/questions/106700/incremental-averageing
-                    */
                     let prevMean = yValues[index]
-                    
                     let count = yValuesCount[index]
-                    
-                    var newValue = 0.0
-                    if log.getType() == "General Fatigue"{
+                    //This logic exists due to te fatigue and pain scales
+                    //differing. Pain is rated on a scale of 0-5 whereas
+                    //fatigue is rated on a scale of 0-100.
+                    var newValue: Double
+                    if log.getType() == "General Fatigue" {
                         newValue = log.getRating()
-                    
-                    }else{
-                        newValue = log.getRating() * 20
+                    } else {
+                        newValue = log.getRating() * _factor
                     }
-                    
                     let newMean = (prevMean * (Double(count - 1)) + newValue) / Double(count)
                     yValues[index] = newMean
-                    
                     yValuesCount[index] = count + 1
                 }
             }
-            
-            
-            //Finished cycling through
             lineData.setLineModelData(yValues)
             lineData.setType(area.key)
             lineModelData.append(lineData)
         }
-        //Get into correct format for graphing
+        //Finally, create the series element
         for item in lineModelData {
             let series = AASeriesElement().name(item.getType()).data(item.getLineModelData())
             chartElements.append(series.toDic()!)
@@ -322,17 +326,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     }
 
     private func initChart() {
-        log.debug("Initializing Chart")
-
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
-
         chartView = AAChartView()
-
         if let chartV = chartView {
-            chartV.frame = CGRect(x: 15, y: 0, width: chartViewWidth - 15, height: chartViewHeight)
+            chartV.frame = CGRect(x: _graphFrameOffset, y: 0, width: chartViewWidth - _graphFrameOffset, height: chartViewHeight)
             chartV.isClearBackgroundColor = true
-            chartV.contentHeight = chartViewHeight - 40
+            chartV.contentHeight = chartViewHeight - _graphContentOffSet
             chartV.scrollEnabled = false
             chartContainer.addSubview(chartV)
             chartModel = AAChartModel.init()
@@ -348,7 +348,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
     }
-    
+
     /**
      A function that takes two dates and does a comparison using
      a granularity level of days.
@@ -360,7 +360,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
         let diff = secondDate.timeIntervalSince(firstDate)
         let hours = Int(diff) / 3600
-        return hours/Int(_units)
+        return hours / Int(_units)
     }
 
     deinit {
@@ -423,20 +423,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 }
 
 /**
- A wrapper object used to pull information from Firebase which
- exists in nodes that look like:
+    A wrapper object used to pull information from Firebase which
+    exists in nodes that look like:
  
- 2018-Jul-25
- - 20:46:47
-    - ranking: 3
-    - type: "Lower back"
- - 20:47:03
-   - ranking: 4
-   - type: "Collarbone"
- ...
-2018-Jul-26
- ...
- 
+    2018-Jul-25
+    - 20:46:47
+        - ranking: 3
+        - type: "Lower back"
+    - 20:47:03
+        - ranking: 4
+        - type: "Collarbone"
+        ...
+    2018-Jul-26
+    ...
  */
 private class LogWrapper {
 
@@ -464,9 +463,9 @@ private class LogWrapper {
 }
 
 /**
- A wrapper object that holds the x and y
- co-ordinates for a item being plotted, as well
- as the type of pain associated with that value.
+    A wrapper object that holds the x
+    co-ordinates for a item being plotted, as well
+    as the type of pain associated with that value.
  */
 private class LineDataWrapper {
 
