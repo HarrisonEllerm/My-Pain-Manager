@@ -271,6 +271,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         format.dateFormat = "dd/MM/yyyy"
         while start <= end {
             start = cal.date(byAdding: .day, value: 1, to: start)!
+            log.debug("Setting x \(start.day)")
             xValues.append(String(start.day))
         }
         
