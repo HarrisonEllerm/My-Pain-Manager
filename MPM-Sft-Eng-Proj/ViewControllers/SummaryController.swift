@@ -23,21 +23,20 @@ import SwiftSpinner
 class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     private var didLayout: Bool = false
-    private var lineModelData = [LineDataWrapper]()
-    private var typeKeyMap = Dictionary<String, UIColor>()
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
-    private var xAxisScale: Double?
     private var scaleMultiplier: Double?
     private var startDate: Date?
     private var endDate: Date?
     private var maxDifference: Int?
     private let _units: Double = 24.0
     private let log = SwiftyBeaver.self
-    private var wrappers: [LogWrapper] = []
     private var chartView: AAChartView?
     private var chartModel: AAChartModel?
-    private weak var activityIndicator: UIActivityIndicatorView?
+    private var lineModelData = [LineDataWrapper]()
+    private var wrappers: [LogWrapper] = []
+    private var chartElements = Array<Dictionary<String, Any>>()
+    private var datesInRange = [String]()
 
     private let summaryTableView: UITableView = {
         let t = UITableView()
@@ -58,16 +57,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         return view
     }()
 
-    func setupActivityIndicator() {
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
-        activityIndicator.startAnimating()
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: chartContainer.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: chartContainer.centerYAnchor).isActive = true
-        self.activityIndicator = activityIndicator
-    }
-
     /**
      This will be run once, therefore here we do everything that
      doesn't need to be repeated when the view controller is refreshed.
@@ -82,7 +71,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         view.backgroundColor = UIColor.black
         self.chartContainer.backgroundColor = UIColor.black
         setupView()
-        setupActivityIndicator()
         //Controller listens for changes in state of date cells
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
         endDate = Date().dateAtStartOf(.day)
@@ -90,6 +78,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         if let start = startDate, let end = endDate {
             getDataForTimePeriod(date1: start, date2: end)
         }
+       
     }
 
     /**
@@ -178,9 +167,8 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
-        //Clear line model data
-        lineModelData.removeAll()
-
+        refreshLineModelData()
+    
         //Setup differences needed for scaling
         setupDifferences(date1, date2)
 
@@ -204,17 +192,22 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                     self.log.info("User \(uid) searching for data in range: \(dateFromS) to \(dateToS)")
 
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-
                         if snapshots.isEmpty {
-                            self.log.info("User \(uid) had incomplete/missing data in range, checking for partial data")
-                            self.checkForIncompleteDataInPeriod(uid, dateFromS, date1, date2, noDataBanner)
+                            self.log.info("User \(uid) had no data in the date range.")
+                            noDataBanner.show()
                         } else {
                             for snap in snapshots {
                                 let date = snap.key
+                                self.log.debug("DATE \(date)")
                                 if let subchildren = snap.children.allObjects as? [DataSnapshot] {
                                     for snap in subchildren {
                                         if let values = snap.value as? Dictionary<String, Any> {
                                             let time = date + " " + snap.key
+                                            //Update map of x values
+                                            if !self.datesInRange.contains(String(date.suffix(2))) {
+                                                self.datesInRange.append(String(date.suffix(2)))
+                                                self.log.debug("Adding \(String(date.suffix(2)))")
+                                            }
                                             guard let rating: Int = values["ranking"] as? Int else { return }
                                             guard let type: String = values["type"] as? String else { return }
                                             let w = LogWrapper(time, rating, type)
@@ -222,6 +215,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                                         }
                                     }
                                 }
+                                //Set last date
                             }
                         }
                     }
@@ -231,47 +225,12 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
     }
-
-    /**
-        A function that is called if the snapshot is empty between the
-        ranges the user initially input. The reason this exists is to basically
-        check to see if there is ANY data in the time period asked for, i.e.
-        incomplete data. If there is, this function attempts to find it and then
-        continues on to display that data. To avoid searching for their last logged
-        entry, we store a "last_logged" timestamp in a "users_metadata" node within
-        the database, so we can quickly figure out if the user has viable data within
-        the range they requested.
-     
-        - parameter : uid, the users unique identifier.
-        - parameter : dateFromS, the original "from" date in String format.
-        - parameter : date1, the intiial "from" date.
-        - parameter : date2, the initial "to" date.
-        - parameter : noDataBanner, a banner used to display a message to the user
-    */
-    private func checkForIncompleteDataInPeriod(_ uid: String, _ dateFromS: String, _ date1: Date, _ date2: Date, _ noDataBanner: NotificationBanner) {
-        Database.database().reference(withPath: "users_metadata").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
-            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                if snapshots.isEmpty {
-                    self.log.info("User \(uid) had no data in the date range.")
-                    noDataBanner.show()
-                } else {
-                    for snap in snapshots {
-                        if let lastActive: String = snap.value as? String {
-                            guard let last = lastActive.toDate()?.date else { return }
-                            if last.isAfterDate(date1, granularity: .day) {
-                                self.getDataForTimePeriod(date1: date1, date2: last)
-                                let banner = NotificationBanner(title: "Some data was missing!", subtitle: "Displaying data from \(dateFromS) till \(lastActive)", style: .success)
-                                self.log.info("User \(uid) had partial data in the date range.")
-                                banner.show()
-                            } else {
-                                noDataBanner.show()
-                                self.log.info("User \(uid) had no data in the date range.")
-                            }
-                        }
-                    }
-                }
-            }
-        })
+    
+    private func refreshLineModelData() {
+        lineModelData.removeAll()
+        chartElements.removeAll()
+        datesInRange.removeAll()
+        wrappers.removeAll()
     }
 
     /**
@@ -282,9 +241,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
     */
     private func setupDifferences(_ date1: Date, _ date2: Date) {
-        let days = getDaysBetweenDates(firstDate: date1, secondDate: date2) + 1
-        xAxisScale = Double(days) * _units
-        maxDifference = days
+        maxDifference = getDaysBetweenDates(firstDate: date1, secondDate: date2) + 1
     }
 
 
@@ -297,6 +254,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
      */
     private func buildChart() {
+        log.debug("Building Chart")
         //Pull data that is from the same area and place them into
         //mapped wrappers, so that we can eventually graph them.
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
@@ -308,55 +266,47 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                 mappedWrappers.updateValue([item], forKey: item.getType())
             }
         }
-        //Get data into correct format for graphing
+        //Scale the data so we can build it correctly
         for area in mappedWrappers {
             setupAndScaleLineData(area: area.key, wrapper: area.value)
         }
-        //WHERE WE USED TO INITIATE THE CHART
+        //Get into correct format for graphing
+        for item in lineModelData {
+            let series = AASeriesElement().name(item.getType())
+            var seriesData = [Double]()
+            for tuple in item.getLineModelData() {
+                seriesData.append(tuple.1)
+            }
+            let _ = series.data(seriesData)
+            chartElements.append(series.toDic()!)
+        }
+        //Initiate the chart
         initChart()
-
     }
 
     private func initChart() {
-      
+        log.debug("Initializing Chart")
         
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
+        
         chartView = AAChartView()
+        
         if let chartV = chartView {
-            log.debug("Inside 1")
-            chartView?.frame = CGRect(x: 15, y: 0, width: chartViewWidth - 15, height: chartViewHeight)
-
+            chartV.frame = CGRect(x: 15, y: 0, width: chartViewWidth - 15, height: chartViewHeight)
+            chartV.isClearBackgroundColor = true
+            chartV.contentHeight = chartViewHeight - 40
+            chartV.scrollEnabled = false
             chartContainer.addSubview(chartV)
-
             chartModel = AAChartModel.init()
                 .chartType(AAChartType.Line)//Can be any of the chart types listed under `AAChartType`.
             .animationType(AAChartAnimationType.Bounce)
                 .dataLabelEnabled(false) //Enable or disable the data labels. Defaults to false
-            .tooltipValueSuffix("USD")//the value suffix of the chart tooltip
-            .categories(["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+            .categories(self.datesInRange)
                 .colorsTheme(["#fe117c", "#ffc069", "#06caf4", "#7dffc0"])
                 .backgroundColor("#030303")
-                .series([
-                    AASeriesElement()
-                        .name("Tokyo")
-                        .data([7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6])
-                        .toDic()!,
-                    AASeriesElement()
-                        .name("New York")
-                        .data([0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5])
-                        .toDic()!,
-                    AASeriesElement()
-                        .name("Berlin")
-                        .data([0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0])
-                        .toDic()!,
-                    AASeriesElement()
-                        .name("London")
-                        .data([3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8])
-                        .toDic()!,])
+                .series(chartElements)
             if let chartM = chartModel {
-                activityIndicator?.stopAnimating()
                 chartV.aa_drawChartWithChartModel(chartM)
             }
         }
@@ -371,8 +321,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]) {
         let lineData = LineDataWrapper()
         var dataHolder = [(Double, Double)]()
-        //So that it has somewhere to draw from
-        dataHolder.append((0.0, 0.0))
         for item in wrapper {
             lineData.setType(item.getType())
             guard let dateFrom = startDate, let dateTo = item.getTime().toDate() else { return }
@@ -381,7 +329,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             let doubleRating = Double(item.getRating())
             dataHolder.append((doubleTime, doubleRating))
         }
-
         lineData.setLineModelData(dataHolder)
         lineModelData.append(lineData)
     }
@@ -426,7 +373,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "dd/MM/yyyy"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-
+        
         if (indexPath.row == 0) {
             let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             cell.textFieldName = "From"
@@ -475,7 +422,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         summaryTableView.heightAnchor.constraint(equalToConstant: 88).isActive = true
     }
-
 }
 
 /**

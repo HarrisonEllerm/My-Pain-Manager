@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 class GraphDateEntryCell: UITableViewCell {
     
     var textFieldName: String?
@@ -65,7 +64,7 @@ class GraphDateEntryCell: UITableViewCell {
     
     @objc func datePickerChanged(sender: UIDatePicker) {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
+        formatter.dateFormat = "dd/MM/yyyy"
         textFieldValue = formatter.string(from: sender.date)
         layoutSubviews()
     }
