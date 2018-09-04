@@ -28,14 +28,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var scaleMultiplier: Double?
     private var startDate: Date?
     private var endDate: Date?
-    private var maxDifference: Int?
-    private let _units: Double = 24.0
     private let log = SwiftyBeaver.self
     private var chartView: AAChartView?
     private var chartModel: AAChartModel?
     private var wrappers: [LogWrapper] = []
     private var chartElements = Array<Dictionary<String, Any>>()
     private var datesInRange = [String]()
+    private var _units = 24.0
 
     private let summaryTableView: UITableView = {
         let t = UITableView()
@@ -198,11 +197,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                                 if let subchildren = snap.children.allObjects as? [DataSnapshot] {
                                     for snap in subchildren {
                                         if let values = snap.value as? Dictionary<String, Any> {
-                                            //Update map of x values
-                                            if !self.datesInRange.contains(String(date.suffix(2))) {
-                                                self.datesInRange.append(String(date.suffix(2)))
-                                                self.log.debug("Adding \(String(date.suffix(2)))")
-                                            }
                                             guard let rating: Double = values["ranking"] as? Double else { return }
                                             guard let type: String = values["type"] as? String else { return }
                                             let w = LogWrapper(date, rating, type)
@@ -252,7 +246,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
         //Scale the data so we can build it correctly
-        setupAndScaleLineData(wrappers: mappedWrappers)
+        setupScaleAndCleanLineData(wrappers: mappedWrappers)
 
         //Initiate the chart
         initChart()
@@ -266,10 +260,20 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : area, a String representing the area.
         - parameter : wrapper, a log wrapper array containing the logs for that area.
      */
-    private func setupAndScaleLineData(wrappers: Dictionary<String, [LogWrapper]>) {
+    private func setupScaleAndCleanLineData(wrappers: Dictionary<String, [LogWrapper]>) {
         var lineModelData = [LineDataWrapper]()
-        let xValues = self.datesInRange
-
+        var xValues = [String]()
+        
+        //Setup the xValues for the period
+        guard var start = startDate, let end = endDate else { return }
+        let cal = Calendar.current
+        let format = DateFormatter()
+        format.dateFormat = "dd/MM/yyyy"
+        while start <= end {
+            start = cal.date(byAdding: .day, value: 1, to: start)!
+            xValues.append(String(start.day))
+        }
+        
         for area in wrappers {
             let lineData = LineDataWrapper()
             var yValues: Array<Double> = Array(repeating: 0, count: xValues.count)
@@ -330,24 +334,19 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
     }
-
-
+    
     /**
-        A utility method used to format the input date into a double value
-        that represents the time in 24 hour format. Takes into consideration
-        the day that the time fell within the time period being graphed,
-        in order to determine the corresponding x value.
+     A function that takes two dates and does a comparison using
+     a granularity level of days.
      
-        - parameter : input, an input String
-        - returns: Double, the double value of the String
-    */
-    func getDoubleFromTimeString(input: String, difference: Double) -> Double {
-        let timeSplit = input.split(separator: " ")
-        let timeTidied = timeSplit[1].dropLast(3).replacingOccurrences(of: ":", with: ".")
-        let timeDouble = Double(timeTidied)
-        guard let unwrappedTime = timeDouble else { return 0.0 }
-        let adjustment = ((_units * difference) + unwrappedTime)
-        return adjustment
+     - parameter : firstDate, the first date.
+     - parameter : secondDate, the second date.
+     - returns: an Int representing the difference in days.
+     */
+    func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
+        let diff = secondDate.timeIntervalSince(firstDate)
+        let hours = Int(diff) / 3600
+        return hours/Int(_units)
     }
 
     deinit {
