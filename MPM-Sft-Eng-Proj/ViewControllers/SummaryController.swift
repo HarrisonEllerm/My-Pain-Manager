@@ -262,28 +262,29 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
      */
     private func setupScaleAndCleanLineData(wrappers: Dictionary<String, [LogWrapper]>) {
         var lineModelData = [LineDataWrapper]()
-        var xValues = [String]()
         
         //Setup the xValues for the period
         guard var start = startDate, let end = endDate else { return }
         let cal = Calendar.current
         let format = DateFormatter()
         format.dateFormat = "dd/MM/yyyy"
+        datesInRange.append(String(start.day))
         while start <= end {
+            
             start = cal.date(byAdding: .day, value: 1, to: start)!
             log.debug("Setting x \(start.day)")
-            xValues.append(String(start.day))
+            datesInRange.append(String(start.day))
         }
         
         for area in wrappers {
             let lineData = LineDataWrapper()
-            var yValues: Array<Double> = Array(repeating: 0, count: xValues.count)
-            var yValuesCount: Array<Int> = Array(repeating: 1, count: xValues.count)
+            var yValues: Array<Double> = Array(repeating: 0, count: datesInRange.count)
+            var yValuesCount: Array<Int> = Array(repeating: 1, count: datesInRange.count)
 
             for log in area.value {
                 let xValue = String(log.getTime().suffix(2))
                 //find index associate with xValue
-                if let index = xValues.index(of: xValue) {
+                if let index = datesInRange.index(of: xValue) {
                     /**
                         Calculating an incremental average for each day.
                         https://math.stackexchange.com/questions/106700/incremental-averageing
