@@ -19,19 +19,7 @@ class SummaryControllerTests: XCTestCase {
         controller = SummaryController()
     }
     
-    /**
-        Tests the function defined inside Summary controller
-        to ensure that it is returning the correct number of
-        days. This is vital to ensure that we are scaling
-        the data correctly when graphing.
-    */
-    func testDaysBetweenDates() {
-        guard let date1 = "04/08/2018".toDate("dd/MM/yyyy")?.date else { return }
-        guard let date2 = "07/08/2018".toDate("dd/MM/yyyy")?.date else { return }
-        let expectation = controller.getDaysBetweenDates(firstDate: date1, secondDate: date2)
-        XCTAssertEqual(expectation, 3)
-    }
-    
+   
     /**
         Tests the function that defines an x value for each
         log. This function takes into account the day in the

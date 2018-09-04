@@ -33,7 +33,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private let log = SwiftyBeaver.self
     private var chartView: AAChartView?
     private var chartModel: AAChartModel?
-    private var lineModelData = [LineDataWrapper]()
     private var wrappers: [LogWrapper] = []
     private var chartElements = Array<Dictionary<String, Any>>()
     private var datesInRange = [String]()
@@ -78,7 +77,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         if let start = startDate, let end = endDate {
             getDataForTimePeriod(date1: start, date2: end)
         }
-       
+
     }
 
     /**
@@ -168,9 +167,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
         refreshLineModelData()
-    
-        //Setup differences needed for scaling
-        setupDifferences(date1, date2)
 
         //reformat dates so we can pull data
         let dateF: DateFormatter = DateFormatter()
@@ -202,46 +198,36 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
                                 if let subchildren = snap.children.allObjects as? [DataSnapshot] {
                                     for snap in subchildren {
                                         if let values = snap.value as? Dictionary<String, Any> {
-                                            let time = date + " " + snap.key
                                             //Update map of x values
                                             if !self.datesInRange.contains(String(date.suffix(2))) {
                                                 self.datesInRange.append(String(date.suffix(2)))
                                                 self.log.debug("Adding \(String(date.suffix(2)))")
                                             }
-                                            guard let rating: Int = values["ranking"] as? Int else { return }
+                                            guard let rating: Double = values["ranking"] as? Double else { return }
                                             guard let type: String = values["type"] as? String else { return }
-                                            let w = LogWrapper(time, rating, type)
+                                            let w = LogWrapper(date, rating, type)
                                             self.wrappers.append(w)
                                         }
                                     }
                                 }
-                                //Set last date
                             }
                         }
                     }
-                    //Have all the data needed to build out graph
+                    /*
+                        This is called here because we have finished pulling the data
+                        from firebase. If you call it from outside the thread, the thread
+                        pulling data may not have finished, and you may end up with no data.
+                    */
                     self.buildChart()
                 }
             }
         }
     }
-    
+
     private func refreshLineModelData() {
-        lineModelData.removeAll()
         chartElements.removeAll()
         datesInRange.removeAll()
         wrappers.removeAll()
-    }
-
-    /**
-        A utility method used to find the difference in days, so that we
-        can scale the data appropriately.
-     
-        - parameter : date1, the first date.
-        - parameter : date2, the second date.
-    */
-    private func setupDifferences(_ date1: Date, _ date2: Date) {
-        maxDifference = getDaysBetweenDates(firstDate: date1, secondDate: date2) + 1
     }
 
 
@@ -255,8 +241,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
      */
     private func buildChart() {
         log.debug("Building Chart")
-        //Pull data that is from the same area and place them into
-        //mapped wrappers, so that we can eventually graph them.
+        //Grouping the log wrappers by pain type
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
             if mappedWrappers[item.getType()] != nil {
@@ -267,31 +252,65 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
             }
         }
         //Scale the data so we can build it correctly
-        for area in mappedWrappers {
-            setupAndScaleLineData(area: area.key, wrapper: area.value)
-        }
-        //Get into correct format for graphing
-        for item in lineModelData {
-            let series = AASeriesElement().name(item.getType())
-            var seriesData = [Double]()
-            for tuple in item.getLineModelData() {
-                seriesData.append(tuple.1)
-            }
-            let _ = series.data(seriesData)
-            chartElements.append(series.toDic()!)
-        }
+        setupAndScaleLineData(wrappers: mappedWrappers)
+
         //Initiate the chart
         initChart()
     }
 
+    /**
+        A function that sets up the linedata for a particular area. We want to get
+        our array of Y values that correspond with the x values (i.e. days) in the
+        period.
+     
+        - parameter : area, a String representing the area.
+        - parameter : wrapper, a log wrapper array containing the logs for that area.
+     */
+    private func setupAndScaleLineData(wrappers: Dictionary<String, [LogWrapper]>) {
+        var lineModelData = [LineDataWrapper]()
+        let xValues = self.datesInRange
+
+        for area in wrappers {
+            let lineData = LineDataWrapper()
+            var yValues: Array<Double> = Array(repeating: 0, count: xValues.count)
+            var yValuesCount: Array<Int> = Array(repeating: 1, count: xValues.count)
+
+            for log in area.value {
+                let xValue = String(log.getTime().suffix(2))
+                //find index associate with xValue
+                if let index = xValues.index(of: xValue) {
+                    /**
+                        Calculating an incremental average for each day.
+                        https://math.stackexchange.com/questions/106700/incremental-averageing
+                    */
+                    let prevMean = yValues[index]
+                    let count = yValuesCount[index]
+                    let newValue = log.getRating()
+                    let newMean = (prevMean * (Double(count - 1)) + newValue) / Double(count)
+                    yValues[index] = newMean
+                    yValuesCount[index] = count + 1
+                }
+            }
+            //Finished cycling through
+            lineData.setLineModelData(yValues)
+            lineData.setType(area.key)
+            lineModelData.append(lineData)
+        }
+        //Get into correct format for graphing
+        for item in lineModelData {
+            let series = AASeriesElement().name(item.getType()).data(item.getLineModelData())
+            chartElements.append(series.toDic()!)
+        }
+    }
+
     private func initChart() {
         log.debug("Initializing Chart")
-        
+
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
-        
+
         chartView = AAChartView()
-        
+
         if let chartV = chartView {
             chartV.frame = CGRect(x: 15, y: 0, width: chartViewWidth - 15, height: chartViewHeight)
             chartV.isClearBackgroundColor = true
@@ -312,40 +331,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         }
     }
 
-    /**
-        A function that sets up the linedata for a particular area.
-     
-        - parameter : area, a String representing the area.
-        - parameter : wrapper, a log wrapper array containing the logs for that area.
-     */
-    private func setupAndScaleLineData(area: String, wrapper: [LogWrapper]) {
-        let lineData = LineDataWrapper()
-        var dataHolder = [(Double, Double)]()
-        for item in wrapper {
-            lineData.setType(item.getType())
-            guard let dateFrom = startDate, let dateTo = item.getTime().toDate() else { return }
-            let difference = getDaysBetweenDates(firstDate: dateFrom, secondDate: dateTo.date)
-            let doubleTime: Double = getDoubleFromTimeString(input: item.getTime(), difference: Double(difference))
-            let doubleRating = Double(item.getRating())
-            dataHolder.append((doubleTime, doubleRating))
-        }
-        lineData.setLineModelData(dataHolder)
-        lineModelData.append(lineData)
-    }
-
-    /**
-        A function that takes two dates and does a comparison using
-        a granularity level of days.
-     
-        - parameter : firstDate, the first date.
-        - parameter : secondDate, the second date.
-        - returns: an Int representing the difference in days.
-     */
-    func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
-        let diff = secondDate.timeIntervalSince(firstDate)
-        let hours = Int(diff) / 3600
-        return hours / Int(_units)
-    }
 
     /**
         A utility method used to format the input date into a double value
@@ -373,7 +358,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "dd/MM/yyyy"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-        
+
         if (indexPath.row == 0) {
             let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
             cell.textFieldName = "From"
@@ -443,10 +428,10 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 private class LogWrapper {
 
     let time: String
-    let rating: Int
+    let rating: Double
     let type: String
 
-    init(_ time: String, _ rating: Int, _ type: String) {
+    init(_ time: String, _ rating: Double, _ type: String) {
         self.time = time
         self.rating = rating
         self.type = type
@@ -456,7 +441,7 @@ private class LogWrapper {
         return self.time
     }
 
-    func getRating() -> Int {
+    func getRating() -> Double {
         return self.rating
     }
 
@@ -472,7 +457,7 @@ private class LogWrapper {
  */
 private class LineDataWrapper {
 
-    var lineModelData = [(Double, Double)]()
+    var lineModelData = [(Double)]()
     var type: String = ""
 
     func setType(_ type: String) {
@@ -483,11 +468,11 @@ private class LineDataWrapper {
         return self.type
     }
 
-    func getLineModelData() -> [(Double, Double)] {
+    func getLineModelData() -> [(Double)] {
         return self.lineModelData
     }
 
-    func setLineModelData(_ model: [(Double, Double)]) {
+    func setLineModelData(_ model: [(Double)]) {
         self.lineModelData = model
     }
 }
