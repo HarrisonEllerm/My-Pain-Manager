@@ -38,7 +38,7 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var _factor = 20.0
     private var _graphContentOffSet: CGFloat = 40
     private var _graphFrameOffset: CGFloat = 15
-    
+
 
     private let summaryTableView: UITableView = {
         let t = UITableView()
@@ -75,13 +75,32 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         setupView()
         //Controller listens for changes in state of date cells
         NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
-        endDate = Date().dateAtStartOf(.day)
-        startDate = endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 1, weeks: 0, months: 0, years: 0))
-        if let start = startDate, let end = endDate {
-            getDataForTimePeriod(date1: start, date2: end)
-        }
-
+        setupDates()
     }
+    
+    func setupDates() {
+        if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
+            let metadataRef = Database.database().reference(withPath: "users_metadata").child(uid)
+            //Ignore caching
+            metadataRef.keepSynced(true)
+            metadataRef.observeSingleEvent(of: .value) { (snapshot) in
+                self.log.debug("inside query")
+                let value = snapshot.value as? NSDictionary
+                self.log.debug(value)
+                let lastDateLogged = value?["last_active_log"] as? String ?? ""
+                self.log.error(lastDateLogged)
+                self.endDate = lastDateLogged.toDate()?.date
+                self.log.debug("End \(self.endDate)")
+                self.startDate = self.endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                self.log.debug("Start \(self.startDate)")
+                if let start = self.startDate, let end = self.endDate {
+                    self.getDataForTimePeriod(date1: start, date2: end)
+                }
+            }
+        }
+    }
+    
+    
 
     /**
         Employed to allow the dynamic refreshing of data
@@ -148,7 +167,14 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     @objc func dateSet(notif: NSNotification) {
         if let name = notif.userInfo?["name"] as? String, let date = notif.userInfo?["date"] as? String {
             if name == "From" {
+
                 startDate = date.toDate("dd/MM/yyyy")?.date
+                let indexPath = IndexPath(row: 1, section: 0)
+                if let endCell = summaryTableView.cellForRow(at: indexPath) as? GraphDateEntryCell {
+                    endCell.dp.maximumDate = startDate?.dateByAdding(1, .month).date
+                }
+
+
             } else {
                 endDate = date.toDate("dd/MM/yyyy")?.date
             }
@@ -170,6 +196,9 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         - parameter : date2, the second date.
     */
     private func getDataForTimePeriod(date1: Date, date2: Date) {
+        log.debug("Date 1 \(date1)")
+        log.debug("Date 2 \(date2)")
+
         refreshData()
         //reformat dates so we can pull data
         let dateF: DateFormatter = DateFormatter()
@@ -178,38 +207,39 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         let dateFromS = dateF.string(from: date1)
         let dateToS = dateF.string(from: date2)
 
-        if Auth.auth().currentUser != nil {
-            if let uid = Auth.auth().currentUser?.uid {
+        log.debug("DateFromS \(dateFromS)")
+        log.debug("DateToS \(dateToS)")
 
-                let painRef = Database.database().reference(withPath: "pain").child(uid)
-                //Refresh data and ignore cache
-                painRef.keepSynced(true)
+        if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
 
-                painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
-                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                        if snapshots.isEmpty {
-                            NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
-                        } else {
-                            for snap in snapshots {
-                                let date = snap.key
-                                if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                    for snap in subchildren {
-                                        if let values = snap.value as? Dictionary<String, Any> {
-                                            guard let rating: Double = values["ranking"] as? Double else { return }
-                                            guard let type: String = values["type"] as? String else { return }
-                                            let w = LogWrapper(date, rating, type)
-                                            self.wrappers.append(w)
-                                        }
+            let painRef = Database.database().reference(withPath: "pain").child(uid)
+            //Refresh data and ignore cache
+            painRef.keepSynced(true)
+
+            painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
+                if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                    if snapshots.isEmpty {
+                        NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
+                    } else {
+                        for snap in snapshots {
+                            let date = snap.key
+                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                for snap in subchildren {
+                                    if let values = snap.value as? Dictionary<String, Any> {
+                                        guard let rating: Double = values["ranking"] as? Double else { return }
+                                        guard let type: String = values["type"] as? String else { return }
+                                        let w = LogWrapper(date, rating, type)
+                                        self.wrappers.append(w)
                                     }
                                 }
                             }
                         }
                     }
-                    //This is called here because we have finished pulling the data
-                    //from firebase. If you call it from outside the thread, the thread
-                    //pulling data may not have finished, and you may end up with no data.
-                    self.buildChart()
                 }
+                //This is called here because we have finished pulling the data
+                //from firebase. If you call it from outside the thread, the data
+                //pull may not have finished, resulting in an empty chart
+                self.buildChart()
             }
         }
     }

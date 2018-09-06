@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         //Configure Firebase
         FirebaseApp.configure()
         //Enable Disk Persistence
-        Database.database().isPersistenceEnabled = true
+        //Database.database().isPersistenceEnabled = true
 
         //Configure Google
         GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID

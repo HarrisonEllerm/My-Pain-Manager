@@ -13,6 +13,7 @@ import SceneKit.ModelIO
 import SwiftSpinner
 import PopupDialog
 import SwiftyBeaver
+import SwiftDate
 
 class HomeController: UIViewController {
 
@@ -366,10 +367,9 @@ class HomeController: UIViewController {
     func logPainRating(_ rating: Double, _ notesDescription: String, _ medsDescription: String, _ area: String) {
         
         if rating > 0 {
-            //Get date and use it as a key under the particular pain type
             let dateF : DateFormatter = DateFormatter()
-            let hoursMins : DateFormatter = DateFormatter()
             dateF.dateFormat = "yyyy-MMM-dd"
+            let hoursMins : DateFormatter = DateFormatter()
             hoursMins.dateFormat = "HH:mm:ss"
             let date = Date()
             let dateFull = dateF.string(from: date)
@@ -397,24 +397,24 @@ class HomeController: UIViewController {
                 painDictionary = ["type": area, "ranking": rating]
             }
     
-            //Write to DB in correct structure to allow quick searching
             Database.database().reference()
                 .child("pain")
                 .child(uid)
-                .child(dateFull)
+                .child(String(date.year))
+                .child(String(date.monthName(.short)))
+                .child(String(date.day))
                 .child(dateHoursMins)
                 .updateChildValues(painDictionary) { (err, dbRef) in
-                    //Update metadata
                     Database.database().reference()
                         .child("users_metadata")
                         .child(uid)
                         .updateChildValues(["last_active_log": dateFull])
-                    if let error = err {
-                        SwiftSpinner.show("Error logging pain...").addTapHandler({
-                            SwiftSpinner.hide()
-                            self.log.error("Error when writing a log to the DB: \(error.localizedDescription)")
-                            return
-                        })
+                            if let error = err {
+                                SwiftSpinner.show("Error logging pain...").addTapHandler({
+                                SwiftSpinner.hide()
+                                self.log.error("Error when writing a log to the DB: \(error.localizedDescription)")
+                                    return
+                                })
                 }
             }
         }
