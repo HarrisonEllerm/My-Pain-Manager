@@ -37,7 +37,7 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
         
         collectionView?.dataSource = self
         collectionView?.delegate = self
-        collectionView?.backgroundColor = UIColor.white
+        collectionView?.backgroundColor = UIColor.black
 
         collectionView?.register(CalendarDateRangePickerCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
         collectionView?.register(CalendarDateRangePickerHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: headerReuseIdentifier)
@@ -53,7 +53,7 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(CalendarDateRangePickerViewController.didTapCancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(CalendarDateRangePickerViewController.didTapDone))
         self.navigationItem.rightBarButtonItem?.isEnabled = selectedStartDate != nil && selectedEndDate != nil
-    }
+        self.navigationController?.navigationBar.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)   }
     
     @objc func didTapCancel() {
         delegate.didTapCancel()
@@ -131,6 +131,7 @@ extension CalendarDateRangePickerViewController {
         case UICollectionElementKindSectionHeader:
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseIdentifier, for: indexPath) as! CalendarDateRangePickerHeaderView
             headerView.label.text = getMonthLabel(date: getFirstDateForSection(section: indexPath.section))
+            headerView.label.textColor = UIColor.white
             return headerView
         default:
             fatalError("Unexpected element kind")

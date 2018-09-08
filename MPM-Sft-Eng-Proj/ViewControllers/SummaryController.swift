@@ -89,10 +89,12 @@ class SummaryController: UIViewController {
     
     @objc private func handleDateRangeButtonOnTap() {
         let dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
-        
+
         dateRangePickerViewController.delegate = self
-        
         let navigationController = UINavigationController(rootViewController: dateRangePickerViewController)
+        navigationController.navigationBar.barTintColor = UIColor.black
+        navigationController.navigationBar.titleTextAttributes =
+            [NSAttributedStringKey.foregroundColor:UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
     
