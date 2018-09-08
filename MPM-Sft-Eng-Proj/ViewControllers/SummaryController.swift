@@ -153,80 +153,47 @@ class SummaryController: UIViewController {
     
     private func getDataForMonth(){
         if ((startDate) != nil){
-            print("Month: \(startDate!.month)")
+            let month = "\(startDate!.monthName(.short))"
+            let year = "\(startDate!.year)"
+            print(month)
+            print(year)
+            
             refreshData()
+            
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
+                
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
-
-            
-            
-            
-            
-            
-            
-            }
-        }else{
-            print("No Date")
-        }
-    }
-
-    /**
-        Performs the pull for data from Firebase for a users logs between
-        a certain date range. These logs are then wrapped up into a wrapper
-        object for simplicity. Finally, after the pull has completed, the
-        build chart function is triggered.
-     
-        - parameter : date1, the first date.
-        - parameter : date2, the second date.
-    */
-    private func getDataForTimePeriod(date1: Date, date2: Date) {
-        log.debug("Date 1 \(date1)")
-        log.debug("Date 2 \(date2)")
-
-        refreshData()
-        //reformat dates so we can pull data
-        let dateF: DateFormatter = DateFormatter()
-        dateF.dateFormat = "yyyy-MMM-dd"
-        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-        let dateFromS = dateF.string(from: date1)
-        let dateToS = dateF.string(from: date2)
-
-        log.debug("DateFromS \(dateFromS)")
-        log.debug("DateToS \(dateToS)")
-
-        if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-
-            let painRef = Database.database().reference(withPath: "pain").child(uid)
-            //Refresh data and ignore cache
-            painRef.keepSynced(true)
-
-            painRef.queryOrderedByKey().queryStarting(atValue: dateFromS).queryEnding(atValue: dateToS).observeSingleEvent(of: .value) { (snapshot) in
-                if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                    if snapshots.isEmpty {
-                        NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
-                    } else {
-                        for snap in snapshots {
-                            let date = snap.key
-                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                for snap in subchildren {
-                                    if let values = snap.value as? Dictionary<String, Any> {
-                                        guard let rating: Double = values["ranking"] as? Double else { return }
-                                        guard let type: String = values["type"] as? String else { return }
-                                        let w = LogWrapper(date, rating, type)
-                                        self.wrappers.append(w)
+                painRef.child("\(year)").child("\(month)").observeSingleEvent(of: .value){ (snapshot) in
+                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                        if snapshots.isEmpty {
+                            NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
+                        } else {
+                            for snap in snapshots {
+                                let date = snap.key
+                                if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                    for snap in subchildren {
+                                        if let values = snap.value as? Dictionary<String, Any> {
+                                            guard let rating: Double = values["ranking"] as? Double else { return }
+                                            guard let type: String = values["type"] as? String else { return }
+                                            let w = LogWrapper(date, rating, type)
+                                            self.wrappers.append(w)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    //This is called here because we have finished pulling the data
+                    //from firebase. If you call it from outside the thread, the data
+                    //pull may not have finished, resulting in an empty chart
+                    self.buildChart()
                 }
-                //This is called here because we have finished pulling the data
-                //from firebase. If you call it from outside the thread, the data
-                //pull may not have finished, resulting in an empty chart
-                self.buildChart()
+
             }
+        }else{
+            print("No Date")
         }
     }
 
@@ -254,6 +221,9 @@ class SummaryController: UIViewController {
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
             if mappedWrappers[item.getType()] != nil {
+                print(item.getRating())
+                print(item.getTime())
+                print(item.getRating())
                 mappedWrappers[item.getType()]?.append(item)
             } else {
                 mappedWrappers.updateValue([item], forKey: item.getType())
@@ -301,6 +271,7 @@ class SummaryController: UIViewController {
         //Setup the xValues for the period
         guard var start = startDate, let end = endDate else { return }
         let cal = Calendar.current
+        
         datesInRange.append(String(start.day))
         while start <= end - 1 {
             start = cal.date(byAdding: .day, value: 1, to: start)!
@@ -342,6 +313,7 @@ class SummaryController: UIViewController {
     }
 
     private func initChart() {
+       
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
         chartView = AAChartView()
