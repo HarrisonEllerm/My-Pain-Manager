@@ -1,6 +1,7 @@
 PODS:
   - AAInfographics (2.0.4)
   - Alamofire (4.7.3)
+  - CalendarDateRangePickerViewController (0.1.0)
   - Cosmos (16.0.0)
   - DateToolsSwift (4.0.0)
   - DynamicBlurView (2.0.2)
@@ -109,6 +110,7 @@ PODS:
 DEPENDENCIES:
   - AAInfographics
   - Alamofire
+  - CalendarDateRangePickerViewController
   - Cosmos
   - DateToolsSwift
   - Firebase/Auth
@@ -129,6 +131,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AAInfographics
     - Alamofire
+    - CalendarDateRangePickerViewController
     - Cosmos
     - DateToolsSwift
     - DynamicBlurView
@@ -171,6 +174,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AAInfographics: 10f87e06fc007a0adbb05de020e4a2fe3119f8de
   Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  CalendarDateRangePickerViewController: 9e82a36a21ad7338f4e21a314469bfabe1f738fb
   Cosmos: 7bcee0fa858a9355a214f2a181be5dffcee42c81
   DateToolsSwift: 875d97ff9e3a5d54abdd67a269b3f51c757b71ab
   DynamicBlurView: aa6db4defc6e537eb86fc5e58dd3991666178399
@@ -201,6 +205,6 @@ SPEC CHECKSUMS:
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyBeaver: e45759613e50b522b0e6f53b1f0f14389b45ca34
 
-PODFILE CHECKSUM: 9f294d83c2f62f1401030264d2e3cf7c27489710
+PODFILE CHECKSUM: 2b67deb81d5ac901a003f8c803179142761d0358
 
 COCOAPODS: 1.5.3

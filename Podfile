@@ -28,6 +28,7 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'NotificationBannerSwift'
     pod 'PopupDialog', '~> 0.7'
     pod 'SwiftyBeaver'
+    pod 'CalendarDateRangePickerViewController'
     
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths

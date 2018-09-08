@@ -98,7 +98,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FDFC7845FC1352C2218C8E08069A302B"
+               BlueprintIdentifier = "9058F427857C2AEB57B571A752FCB62B"
                BuildableName = "Pods_MPM_Sft_Eng_Proj.framework"
                BlueprintName = "Pods-MPM-Sft-Eng-Proj"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -140,7 +140,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5B4A05DE77EF2F1B8DC95AF4DF4622BB"
+               BlueprintIdentifier = "EE1E4617A36C48368F70927B4CDEBA4A"
                BuildableName = "SwiftSpinner.framework"
                BlueprintName = "SwiftSpinner"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -154,7 +154,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B3F5528AB7884D04A393F6CB58B1F2AA"
+               BlueprintIdentifier = "02E68944DB76ADABCFC90C9185459EE3"
                BuildableName = "SwiftValidator.framework"
                BlueprintName = "SwiftValidator"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

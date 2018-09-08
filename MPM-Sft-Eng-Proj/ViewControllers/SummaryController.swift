@@ -19,9 +19,10 @@ import SwiftDate
 import NotificationBannerSwift
 import SwiftyBeaver
 import SwiftSpinner
+import CalendarDateRangePickerViewController
 
-class SummaryController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
+class SummaryController: UIViewController {
+    
     private var didLayout: Bool = false
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
@@ -38,19 +39,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
     private var _factor = 20.0
     private var _graphContentOffSet: CGFloat = 40
     private var _graphFrameOffset: CGFloat = 15
-
-
-    private let summaryTableView: UITableView = {
-        let t = UITableView()
-        t.translatesAutoresizingMaskIntoConstraints = false
-        t.isScrollEnabled = true
-        t.tableFooterView = UIView(frame: .zero)
-        t.allowsSelection = true
-        t.allowsMultipleSelection = false
-        t.separatorInset = .zero
-        t.layoutMargins = .zero
-        return t
-    }()
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -69,35 +57,43 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         Service.setupNavBar(controller: self)
         self.navigationItem.title = "Summary"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Date Range", style: .done, target: self, action: #selector(handleDateRangeButtonOnTap))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
         view.backgroundColor = UIColor.black
         self.chartContainer.backgroundColor = UIColor.black
         setupView()
-        //Controller listens for changes in state of date cells
-        NotificationCenter.default.addObserver(self, selector: #selector(self.dateSet), name: NSNotification.Name(rawValue: "dateSet"), object: nil)
-        setupDates()
+        handleDateRangeButtonOnTap()
     }
     
     func setupDates() {
         if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
             let metadataRef = Database.database().reference(withPath: "users_metadata").child(uid)
             //Ignore caching
-            metadataRef.keepSynced(true)
-            metadataRef.observeSingleEvent(of: .value) { (snapshot) in
-                self.log.debug("inside query")
-                let value = snapshot.value as? NSDictionary
-                self.log.debug(value)
-                let lastDateLogged = value?["last_active_log"] as? String ?? ""
-                self.log.error(lastDateLogged)
-                self.endDate = lastDateLogged.toDate()?.date
-                self.log.debug("End \(self.endDate)")
-                self.startDate = self.endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
-                self.log.debug("Start \(self.startDate)")
-                if let start = self.startDate, let end = self.endDate {
-                    self.getDataForTimePeriod(date1: start, date2: end)
-                }
-            }
+//            metadataRef.keepSynced(true)
+//            metadataRef.observeSingleEvent(of: .value) { (snapshot) in
+//                self.log.debug("inside query")
+//                let value = snapshot.value as? NSDictionary
+//                self.log.debug(value)
+//                let lastDateLogged = value?["last_active_log"] as? String ?? ""
+//                self.log.error(lastDateLogged)
+//                self.endDate = lastDateLogged.toDate()?.date
+//                self.log.debug("End \(self.endDate)")
+//                self.startDate = self.endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+//                self.log.debug("Start \(self.startDate)")
+//                if let start = self.startDate, let end = self.endDate {
+//                    self.getDataForTimePeriod(date1: start, date2: end)
+//                }
+//            }
         }
+    }
+    
+    @objc private func handleDateRangeButtonOnTap() {
+        let dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
+        
+        dateRangePickerViewController.delegate = self
+        
+        let navigationController = UINavigationController(rootViewController: dateRangePickerViewController)
+        self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
     
     
@@ -122,27 +118,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         after it has initially loaded.
     */
     private func setupView() {
-        view.addSubview(summaryTableView)
-        setupSummaryTableView()
         view.addSubview(chartContainer)
         setupChartContainer()
-        setupSummaryTableViewSpecifics()
         if let start = startDate, let end = endDate {
             getDataForTimePeriod(date1: start, date2: end)
         }
     }
 
-    /**
-        Sets up summary table view properties.
-    */
-    private func setupSummaryTableViewSpecifics() {
-        summaryTableView.delegate = self
-        summaryTableView.dataSource = self
-        summaryTableView.rowHeight = 44
-        summaryTableView.isScrollEnabled = false
-        summaryTableView.allowsSelection = true
-        summaryTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
-    }
 
     //TODO
     @objc func handleReportButtonOnTap() {
@@ -153,37 +135,6 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
 //            print(item.getRating())
 //        }
 //        SwiftSpinner.hide()
-    }
-
-
-    /**
-        Triggered when a date is set inside a GraphDateEntryCell. UserInfo is passed
-        into the function that identifies if the date is the From or To date in terms
-        of the period, and it is handled accordingly. If both the start and end date
-        are set, the getDataForTimePeriod function is triggered.
-     
-        - parameter : notif, the notification
-    */
-    @objc func dateSet(notif: NSNotification) {
-        if let name = notif.userInfo?["name"] as? String, let date = notif.userInfo?["date"] as? String {
-            if name == "From" {
-
-                startDate = date.toDate("dd/MM/yyyy")?.date
-                let indexPath = IndexPath(row: 1, section: 0)
-                if let endCell = summaryTableView.cellForRow(at: indexPath) as? GraphDateEntryCell {
-                    endCell.dp.maximumDate = startDate?.dateByAdding(1, .month).date
-                }
-
-
-            } else {
-                endDate = date.toDate("dd/MM/yyyy")?.date
-            }
-        }
-        if let start = startDate, let end = endDate {
-            if start.equals(end) || start.isEarlier(than: end) {
-                getDataForTimePeriod(date1: start, date2: end)
-            }
-        }
     }
 
     /**
@@ -393,63 +344,13 @@ class SummaryController: UIViewController, UITableViewDataSource, UITableViewDel
         return hours / Int(_units)
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let dateF: DateFormatter = DateFormatter()
-        dateF.dateFormat = "dd/MM/yyyy"
-        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
-
-        if (indexPath.row == 0) {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
-            cell.textFieldName = "From"
-            if let start = startDate {
-                let startString = dateF.string(from: start)
-                cell.textFieldValue = startString
-            }
-            cell.accessoryType = .disclosureIndicator
-            cell.layoutSubviews()
-            return cell
-        } else {
-            let cell = self.summaryTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
-            cell.textFieldName = "To"
-            if let end = endDate {
-                let endString = dateF.string(from: end)
-                cell.textFieldValue = endString
-            }
-            cell.accessoryType = .disclosureIndicator
-            cell.layoutSubviews()
-            return cell
-        }
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cell.backgroundColor = UIColor.black
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return numberOfDateOptions
-    }
-
     private func setupChartContainer() {
         chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -120).isActive = true
         chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: -20).isActive = true
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
-        chartContainer.bottomAnchor.constraint(equalTo: summaryTableView.safeAreaLayoutGuide.topAnchor).isActive = true
+        chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
 
-    private func setupSummaryTableView() {
-        summaryTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-        summaryTableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-        summaryTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
-        summaryTableView.heightAnchor.constraint(equalToConstant: 88).isActive = true
-    }
 }
 
 /**
@@ -518,5 +419,19 @@ private class LineDataWrapper {
         self.lineModelData = model
     }
 }
+
+extension SummaryController : CalendarDateRangePickerViewControllerDelegate {
+    func didTapCancel() {
+        self.navigationController?.dismiss(animated: true, completion: nil)
+    }
+    
+    func didTapDoneWithDateRange(startDate: Date!, endDate: Date!) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE, MMM d, yyyy"
+        print("Start Date \(startDate)")
+        self.navigationController?.dismiss(animated: true, completion: nil)
+    }
+}
+
 
 
