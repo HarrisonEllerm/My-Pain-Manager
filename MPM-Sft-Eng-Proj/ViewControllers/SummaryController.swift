@@ -39,6 +39,11 @@ class SummaryController: UIViewController {
     private var _factor = 20.0
     private var _graphContentOffSet: CGFloat = 40
     private var _graphFrameOffset: CGFloat = 15
+    private var month: String?
+    private var dateRangePickerViewController = CalendarDateRangePickerViewController()
+    
+    
+    
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -88,7 +93,7 @@ class SummaryController: UIViewController {
     }
     
     @objc private func handleDateRangeButtonOnTap() {
-        let dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
+        dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
 
         dateRangePickerViewController.delegate = self
         let navigationController = UINavigationController(rootViewController: dateRangePickerViewController)
@@ -96,6 +101,9 @@ class SummaryController: UIViewController {
         navigationController.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
+      
+        
+        
     }
     
     
@@ -122,9 +130,12 @@ class SummaryController: UIViewController {
     private func setupView() {
         view.addSubview(chartContainer)
         setupChartContainer()
-        if let start = startDate, let end = endDate {
-            getDataForTimePeriod(date1: start, date2: end)
-        }
+       
+        getDataForMonth()
+        
+//        if let start = startDate, let end = endDate {
+//            getDataForTimePeriod(date1: start, date2: end)
+//        }
     }
 
 
@@ -137,6 +148,28 @@ class SummaryController: UIViewController {
 //            print(item.getRating())
 //        }
 //        SwiftSpinner.hide()
+    }
+
+    
+    private func getDataForMonth(){
+        if ((startDate) != nil){
+            print("Month: \(startDate!.month)")
+            refreshData()
+            if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
+                let painRef = Database.database().reference(withPath: "pain").child(uid)
+                //Refresh data and ignore cache
+                painRef.keepSynced(true)
+
+            
+            
+            
+            
+            
+            
+            }
+        }else{
+            print("No Date")
+        }
     }
 
     /**
@@ -430,10 +463,14 @@ extension SummaryController : CalendarDateRangePickerViewControllerDelegate {
     func didTapDoneWithDateRange(startDate: Date!, endDate: Date!) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEEE, MMM d, yyyy"
-        print("Start Date \(startDate)")
+        self.startDate = startDate
+        self.endDate = endDate
+      //  print("Start Date \(startDate)")
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
 }
+
+
 
 
 

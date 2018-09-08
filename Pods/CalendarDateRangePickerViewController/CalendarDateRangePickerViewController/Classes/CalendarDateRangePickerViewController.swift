@@ -13,8 +13,8 @@ public protocol CalendarDateRangePickerViewControllerDelegate {
     func didTapDoneWithDateRange(startDate: Date!, endDate: Date!)
 }
 
-public class CalendarDateRangePickerViewController: UICollectionViewController {
-    
+public class CalendarDateRangePickerViewController: UICollectionViewController{
+
     let cellReuseIdentifier = "CalendarDateRangePickerCell"
     let headerReuseIdentifier = "CalendarDateRangePickerHeaderView"
     
@@ -29,6 +29,9 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
     
     public var selectedStartDate: Date?
     public var selectedEndDate: Date?
+    
+    
+    
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -44,16 +47,25 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
         collectionView?.contentInset = collectionViewInsets
         
         if minimumDate == nil {
-            minimumDate = Date()
+            minimumDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())
         }
         if maximumDate == nil {
-            maximumDate = Calendar.current.date(byAdding: .year, value: 3, to: minimumDate)
+            maximumDate = Date()
         }
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(CalendarDateRangePickerViewController.didTapCancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(CalendarDateRangePickerViewController.didTapDone))
         self.navigationItem.rightBarButtonItem?.isEnabled = selectedStartDate != nil && selectedEndDate != nil
-        self.navigationController?.navigationBar.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)   }
+        self.navigationController?.navigationBar.tintColor = UIColor(red: 216/255, green: 161/255, blue: 72/255, alpha: 1.0)
+ 
+        let numberOfSec = self.numberOfSections(in: self.collectionView!)
+
+        self.scrollToLast(numberOfSections: numberOfSec)
+    }
+    
+
+    
+    
     
     @objc func didTapCancel() {
         delegate.didTapCancel()
@@ -65,6 +77,10 @@ public class CalendarDateRangePickerViewController: UICollectionViewController {
         }
         delegate.didTapDoneWithDateRange(startDate: selectedStartDate!, endDate: selectedEndDate!)
     }
+    
+   // @objc func scrollToLast() {
+        
+   // }
     
 }
 
@@ -102,6 +118,10 @@ extension CalendarDateRangePickerViewController {
             if isBefore(dateA: date, dateB: minimumDate) {
                 cell.disable()
             }
+            if date.compare(maximumDate).rawValue > 0{
+                cell.disable()
+            }
+            
             
             if selectedStartDate != nil && selectedEndDate != nil && isBefore(dateA: selectedStartDate!, dateB: date) && isBefore(dateA: date, dateB: selectedEndDate!) {
                 // Cell falls within selected range
@@ -150,6 +170,10 @@ extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLa
         if isBefore(dateA: cell.date!, dateB: minimumDate) {
             return
         }
+        
+        
+        
+        
         if selectedStartDate == nil {
             selectedStartDate = cell.date
         } else if selectedEndDate == nil {
@@ -245,4 +269,27 @@ extension CalendarDateRangePickerViewController {
         return Calendar.current.compare(dateA, to: dateB, toGranularity: .day) == ComparisonResult.orderedAscending
     }
     
+    func scrollToLast(numberOfSections: Int) {
+        guard numberOfSections > 0 else {
+            return
+        }
+        
+        let lastSection = numberOfSections - 1
+        
+//        guard numberOfItems(inSection: lastSection) > 0 else {
+//            return
+//        }
+        
+        let lastItemIndexPath = IndexPath(item: 39,
+                                          section: lastSection)
+        self.collectionView!.scrollToItem(at: lastItemIndexPath, at: .bottom, animated: true)
+    }
+    
+
 }
+
+
+
+
+
+
