@@ -104,10 +104,9 @@ class SummaryController: UIViewController {
     @objc func handleReportButtonOnTap() {
     }
 
-
     private func getDataForMonth() {
         refreshData()
-        if let sDate = startDate {
+        if let sDate = startDate, let eDate = endDate {
             noDataLabel.isHidden = true
             self.noDataImageView?.isHidden = true
             loading?.isHidden = false
@@ -117,28 +116,51 @@ class SummaryController: UIViewController {
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
                 painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
+                    self.log.debug("Inside first block")
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                        if snapshots.isEmpty {
-                            self.loading?.stopAnimating()
-                            self.loading?.isHidden = true
-                            self.chartContainer.isHidden = true
-                            self.noDataLabel.isHidden = false
-                            self.noDataImageView?.isHidden = false
-                        } else {
-                            for snap in snapshots {
-                                let date = snap.key
-                                if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                    for snap in subchildren {
-                                        if let values = snap.value as? Dictionary<String, Any> {
-                                            guard let rating: Double = values["ranking"] as? Double else { return }
-                                            guard let type: String = values["type"] as? String else { return }
-                                            let w = LogWrapper(date, rating, type)
-                                            self.wrappers.append(w)
+                        for snap in snapshots {
+                            let date = snap.key
+                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                for snap in subchildren {
+                                    if let values = snap.value as? Dictionary<String, Any> {
+                                        guard let rating: Double = values["ranking"] as? Double else { return }
+                                        guard let type: String = values["type"] as? String else { return }
+                                        let w = LogWrapper(date, rating, type)
+                                        self.wrappers.append(w)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //If they have selected a range which includes two months
+                    if (sDate.month < eDate.month) {
+                        self.log.debug("Inside second block")
+                        painRef.child("\(sDate.year)").child("\(eDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
+                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                                for snap in snapshots {
+                                    let date = snap.key
+                                    if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+                                        for snap in subchildren {
+                                            if let values = snap.value as? Dictionary<String, Any> {
+                                                guard let rating: Double = values["ranking"] as? Double else { return }
+                                                guard let type: String = values["type"] as? String else { return }
+                                                let w = LogWrapper(date, rating, type)
+                                                self.wrappers.append(w)
+                                            }
                                         }
                                     }
                                 }
                             }
-                            self.buildChart()
+                            if self.wrappers.count > 0 {
+                                self.buildChart()
+                            } else {
+                                //There was no data in given period
+                                self.loading?.stopAnimating()
+                                self.loading?.isHidden = true
+                                self.chartContainer.isHidden = true
+                                self.noDataLabel.isHidden = false
+                                self.noDataImageView?.isHidden = false
+                            }
                         }
                     }
                 }
