@@ -16,7 +16,6 @@ import FirebaseDatabase
 import FirebaseAuth
 import DateToolsSwift
 import SwiftDate
-import NotificationBannerSwift
 import SwiftyBeaver
 import SwiftSpinner
 import CalendarDateRangePickerViewController
@@ -25,7 +24,6 @@ import NVActivityIndicatorView
 class SummaryController: UIViewController {
 
     private var didLayout: Bool = false
-    private var isLoadingViewController = false
     private let numberOfDateOptions = 2
     private var scaleMultiplier: Double?
     private var startDate: Date?
@@ -44,17 +42,19 @@ class SummaryController: UIViewController {
     private var month: String?
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
     private var loading: NVActivityIndicatorView?
+    private var noDataImageView: UIImageView?
 
     private var chartContainer: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
         return view
     }()
 
     private let noDataLabel: UILabel = {
         let label = UILabel()
-        label.text = "Couldn't find any data!\nTry entering some dates..."
+        label.text = "Couldn't find any data!\nTry setting some dates."
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont(name: "HelveticaNeue-Thin", size: 20)
         label.lineBreakMode = .byWordWrapping
@@ -63,13 +63,8 @@ class SummaryController: UIViewController {
         return label
     }()
 
-    /**
-     This will be run once, therefore here we do everything that
-     doesn't need to be repeated when the view controller is refreshed.
-    */
     override func viewDidLoad() {
         super.viewDidLoad()
-        isLoadingViewController = true
         Service.setupNavBar(controller: self)
         self.navigationItem.title = "Summary"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
@@ -77,19 +72,21 @@ class SummaryController: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
         view.backgroundColor = UIColor.black
         self.chartContainer.backgroundColor = UIColor.black
-        setupView()
+        view.addSubview(chartContainer)
+        setupChartContainer()
         loading = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), type: .ballClipRotatePulse, color: UIColor.white, padding: 0)
-        loading?.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2 - 100)
+        loading?.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
         loading?.isHidden = true
+        view.addSubview(loading!)
         setupNoDataSubView()
     }
 
     private func setupNoDataSubView() {
-        let noDataView = UIImageView(frame: CGRect(x: self.view.center.x - 50, y: self.view.center.y - 50, width: 100, height: 100))
-        noDataView.image = UIImage(named: "noData")
-        self.view.addSubview(noDataView)
+        noDataImageView = UIImageView(frame: CGRect(x: self.view.center.x - 50, y: self.view.center.y - 100, width: 100, height: 100))
+        noDataImageView!.image = UIImage(named: "noData")
+        self.view.addSubview(noDataImageView!)
         self.view.addSubview(noDataLabel)
-        noDataLabel.topAnchor.constraint(equalTo: noDataView.bottomAnchor).isActive = true
+        noDataLabel.topAnchor.constraint(equalTo: noDataImageView!.bottomAnchor).isActive = true
         noDataLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
     }
 
@@ -103,49 +100,16 @@ class SummaryController: UIViewController {
         self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
 
-    /**
-        Employed to allow the dynamic refreshing of data
-        when a user opens the tab again, after it has
-        initially been loaded via viewDidLoad().
-    */
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if isLoadingViewController {
-            isLoadingViewController = false
-        } else {
-            setupView()
-        }
-    }
-
-    /**
-        Sets up the parts of the view that need to be
-        dynamically reloaded if a user opens the tab
-        after it has initially loaded.
-    */
-    private func setupView() {
-        if startDate != nil && endDate != nil {
-            view.addSubview(chartContainer)
-            setupChartContainer()
-            //getDataForMonth()
-        }
-    }
-
-
     //TODO
     @objc func handleReportButtonOnTap() {
-//      SwiftSpinner.show("Building Report")
-//        for item in wrappers {
-//            print(item.getType())
-//            print(item.getTime())
-//            print(item.getRating())
-//        }
-//        SwiftSpinner.hide()
     }
 
 
     private func getDataForMonth() {
         refreshData()
         if let sDate = startDate {
+            noDataLabel.isHidden = true
+            self.noDataImageView?.isHidden = true
             loading?.isHidden = false
             loading?.startAnimating()
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
@@ -155,9 +119,11 @@ class SummaryController: UIViewController {
                 painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                         if snapshots.isEmpty {
-                            NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
                             self.loading?.stopAnimating()
                             self.loading?.isHidden = true
+                            self.chartContainer.isHidden = true
+                            self.noDataLabel.isHidden = false
+                            self.noDataImageView?.isHidden = false
                         } else {
                             for snap in snapshots {
                                 let date = snap.key
@@ -172,12 +138,9 @@ class SummaryController: UIViewController {
                                     }
                                 }
                             }
+                            self.buildChart()
                         }
                     }
-                    //This is called here because we have finished pulling the data
-                    //from firebase. If you call it from outside the thread, the data
-                    //pull may not have finished, resulting in an empty chart
-                    self.buildChart()
                 }
             }
         } else {
@@ -305,22 +268,22 @@ class SummaryController: UIViewController {
         if let chartV = chartView {
             chartV.frame = CGRect(x: 0, y: 0, width: chartViewWidth, height: chartViewHeight)
             chartV.center = CGPoint(x: self.chartContainer.frame.size.width / 2, y: self.chartContainer.frame.size.height / 2)
-            
             chartV.isClearBackgroundColor = true
             chartV.contentHeight = chartViewHeight
             chartV.scrollEnabled = false
             chartContainer.addSubview(chartV)
             chartModel = AAChartModel.init()
                 .chartType(AAChartType.Line)
-            .animationType(AAChartAnimationType.Bounce)
+                .animationType(AAChartAnimationType.Bounce)
                 .dataLabelEnabled(false)
-            .categories(self.datesInRange)
+                .categories(self.datesInRange)
                 .colorsTheme(["#fe117c", "#ffc069", "#06caf4", "#7dffc0"])
                 .backgroundColor("#030303")
                 .series(chartElements)
             if let chartM = chartModel {
                 loading?.stopAnimating()
                 loading?.isHidden = true
+                self.chartContainer.isHidden = false
                 chartV.aa_drawChartWithChartModel(chartM)
             }
         }
@@ -331,9 +294,6 @@ class SummaryController: UIViewController {
         chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        if let loader = loading {
-            chartContainer.addSubview(loader)
-        }
     }
 }
 
