@@ -87,9 +87,9 @@ class HomeController: UIViewController {
             self.scnView.scene = self.scene;
             
             let mb = ModelBuilder()
-            mb.addMaleSkin(hc: self)
-            mb.addMaleSkeleton(hc: self)
-            mb.addMuscles(hc: self)
+            mb.addMaleSkin(self)
+            mb.addMaleSkeleton(self)
+            mb.addMuscles(self)
             
             self.createCamera()
             self.createTapRecognizer()

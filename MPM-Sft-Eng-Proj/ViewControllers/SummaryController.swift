@@ -34,6 +34,7 @@ class SummaryController: UIViewController {
     private var chartModel: AAChartModel?
     private var wrappers: [LogWrapper] = []
     private var chartElements = Array<Dictionary<String, Any>>()
+    private var chartElementsHidden = Array<Dictionary<String, Any>>()
     private var datesInRange = [String]()
     private var _units = 24.0
     private var _factor = 20.0
@@ -294,8 +295,10 @@ class SummaryController: UIViewController {
                 .colorsTheme(["#fe117c", "#ffc069", "#06caf4", "#7dffc0"])
                 .backgroundColor("#030303")
                 .series(chartElements)
+            
             if let chartM = chartModel {
                 chartV.aa_drawChartWithChartModel(chartM)
+                
             }
         }
     }
