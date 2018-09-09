@@ -99,6 +99,9 @@ PODS:
   - NotificationBannerSwift (1.6.3):
     - MarqueeLabel/Swift
     - SnapKit (~> 4.0)
+  - NVActivityIndicatorView (4.3.0):
+    - NVActivityIndicatorView/Presenter (= 4.3.0)
+  - NVActivityIndicatorView/Presenter (4.3.0)
   - PopupDialog (0.8.1):
     - DynamicBlurView (~> 2.0)
   - SnapKit (4.0.0)
@@ -121,6 +124,7 @@ DEPENDENCIES:
   - JGProgressHUD
   - LBTAComponents
   - NotificationBannerSwift
+  - NVActivityIndicatorView
   - PopupDialog (~> 0.7)
   - SwiftDate (~> 5.0)
   - SwiftSpinner
@@ -155,6 +159,7 @@ SPEC REPOS:
     - MarqueeLabel
     - nanopb
     - NotificationBannerSwift
+    - NVActivityIndicatorView
     - PopupDialog
     - SnapKit
     - SwiftDate
@@ -198,6 +203,7 @@ SPEC CHECKSUMS:
   MarqueeLabel: 0c41f08ef5773e29c0f71064a8fa788a2fd8b365
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   NotificationBannerSwift: b231e4c3244848ef300e1c53ce027b9756b9b06f
+  NVActivityIndicatorView: 963f62bf9f993fcf23218e55958e5b1761b9504c
   PopupDialog: 3d4e8e0795c3a614f407d730986c9b9af9781123
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
   SwiftDate: f053fb89250c59af5eff777f3b832d2b9dd57403
@@ -205,6 +211,6 @@ SPEC CHECKSUMS:
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyBeaver: e45759613e50b522b0e6f53b1f0f14389b45ca34
 
-PODFILE CHECKSUM: 2b67deb81d5ac901a003f8c803179142761d0358
+PODFILE CHECKSUM: 64413abce94425936d053791f239c8d593556904
 
 COCOAPODS: 1.5.3

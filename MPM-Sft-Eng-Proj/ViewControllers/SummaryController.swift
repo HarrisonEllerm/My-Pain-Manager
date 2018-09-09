@@ -20,6 +20,7 @@ import NotificationBannerSwift
 import SwiftyBeaver
 import SwiftSpinner
 import CalendarDateRangePickerViewController
+import NVActivityIndicatorView
 
 class SummaryController: UIViewController {
 
@@ -42,12 +43,24 @@ class SummaryController: UIViewController {
     private var _graphFrameOffset: CGFloat = 15
     private var month: String?
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
+    private var loading: NVActivityIndicatorView?
 
     private var chartContainer: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+
+    private let noDataLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Couldn't find any data!\nTry entering some dates..."
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont(name: "HelveticaNeue-Thin", size: 20)
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        label.textColor = UIColor.white
+        return label
     }()
 
     /**
@@ -60,18 +73,25 @@ class SummaryController: UIViewController {
         Service.setupNavBar(controller: self)
         self.navigationItem.title = "Summary"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Date Range", style: .done, target: self, action: #selector(handleDateRangeButtonOnTap))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dates", style: .done, target: self, action: #selector(handleDateRangeButtonOnTap))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
         view.backgroundColor = UIColor.black
         self.chartContainer.backgroundColor = UIColor.black
-        //We want to graph this month intially, even if empty
-        startDate = Date().dateAtStartOf(.weekOfMonth)
-        endDate = Date().dateAtEndOf(.weekOfMonth) - 1
         setupView()
-       
-        handleDateRangeButtonOnTap()
+        loading = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), type: .ballClipRotatePulse, color: UIColor.white, padding: 0)
+        loading?.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2 - 100)
+        loading?.isHidden = true
+        setupNoDataSubView()
     }
 
+    private func setupNoDataSubView() {
+        let noDataView = UIImageView(frame: CGRect(x: self.view.center.x - 50, y: self.view.center.y - 50, width: 100, height: 100))
+        noDataView.image = UIImage(named: "noData")
+        self.view.addSubview(noDataView)
+        self.view.addSubview(noDataLabel)
+        noDataLabel.topAnchor.constraint(equalTo: noDataView.bottomAnchor).isActive = true
+        noDataLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+    }
 
     @objc private func handleDateRangeButtonOnTap() {
         dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
@@ -103,10 +123,10 @@ class SummaryController: UIViewController {
         after it has initially loaded.
     */
     private func setupView() {
-        view.addSubview(chartContainer)
-        setupChartContainer()
         if startDate != nil && endDate != nil {
-             getDataForMonth()
+            view.addSubview(chartContainer)
+            setupChartContainer()
+            //getDataForMonth()
         }
     }
 
@@ -124,8 +144,10 @@ class SummaryController: UIViewController {
 
 
     private func getDataForMonth() {
+        refreshData()
         if let sDate = startDate {
-            refreshData()
+            loading?.isHidden = false
+            loading?.startAnimating()
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
@@ -134,6 +156,8 @@ class SummaryController: UIViewController {
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                         if snapshots.isEmpty {
                             NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
+                            self.loading?.stopAnimating()
+                            self.loading?.isHidden = true
                         } else {
                             for snap in snapshots {
                                 let date = snap.key
@@ -185,9 +209,6 @@ class SummaryController: UIViewController {
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
             if mappedWrappers[item.getType()] != nil {
-                print(item.getRating())
-                print(item.getTime())
-                print(item.getRating())
                 mappedWrappers[item.getType()]?.append(item)
             } else {
                 mappedWrappers.updateValue([item], forKey: item.getType())
@@ -231,6 +252,7 @@ class SummaryController: UIViewController {
                       particular area/muscle group are grouped together.
      */
     private func setupXandYValues(wrappers: Dictionary<String, [LogWrapper]>) {
+        log.debug("Setting up X and Y Values")
         var lineModelData = [LineDataWrapper]()
         //Setup the xValues for the period
         guard var start = startDate, let end = endDate else { return }
@@ -277,39 +299,42 @@ class SummaryController: UIViewController {
     }
 
     private func initChart() {
-
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
         chartView = AAChartView()
         if let chartV = chartView {
-            chartV.frame = CGRect(x: _graphFrameOffset, y: 0, width: chartViewWidth - _graphFrameOffset, height: chartViewHeight)
+            chartV.frame = CGRect(x: 0, y: 0, width: chartViewWidth, height: chartViewHeight)
+            chartV.center = CGPoint(x: self.chartContainer.frame.size.width / 2, y: self.chartContainer.frame.size.height / 2)
+            
             chartV.isClearBackgroundColor = true
-            chartV.contentHeight = chartViewHeight - _graphContentOffSet
+            chartV.contentHeight = chartViewHeight
             chartV.scrollEnabled = false
             chartContainer.addSubview(chartV)
             chartModel = AAChartModel.init()
-                .chartType(AAChartType.Line)//Can be any of the chart types listed under `AAChartType`.
+                .chartType(AAChartType.Line)
             .animationType(AAChartAnimationType.Bounce)
-                .dataLabelEnabled(false) //Enable or disable the data labels. Defaults to false
+                .dataLabelEnabled(false)
             .categories(self.datesInRange)
                 .colorsTheme(["#fe117c", "#ffc069", "#06caf4", "#7dffc0"])
                 .backgroundColor("#030303")
                 .series(chartElements)
-            
             if let chartM = chartModel {
+                loading?.stopAnimating()
+                loading?.isHidden = true
                 chartV.aa_drawChartWithChartModel(chartM)
-                
             }
         }
     }
 
     private func setupChartContainer() {
-        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -120).isActive = true
-        chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: -20).isActive = true
-        chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 20).isActive = true
+        chartContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        chartContainer.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
+        chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        if let loader = loading {
+            chartContainer.addSubview(loader)
+        }
     }
-
 }
 
 /**
