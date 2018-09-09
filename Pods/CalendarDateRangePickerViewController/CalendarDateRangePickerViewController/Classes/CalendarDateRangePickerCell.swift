@@ -68,7 +68,6 @@ class CalendarDateRangePickerCell: UICollectionViewCell {
         selectedView?.layer.cornerRadius = height / 2
         self.addSubview(selectedView!)
         self.sendSubview(toBack: selectedView!)
-        
         label.textColor = UIColor.white
     }
     
@@ -92,7 +91,6 @@ class CalendarDateRangePickerCell: UICollectionViewCell {
         halfBackgroundView?.backgroundColor = highlightedColor
         self.addSubview(halfBackgroundView!)
         self.sendSubview(toBack: halfBackgroundView!)
-        
         addRoundHighlightView()
     }
     

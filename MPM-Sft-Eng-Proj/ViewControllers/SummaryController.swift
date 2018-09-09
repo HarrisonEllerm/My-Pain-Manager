@@ -22,7 +22,7 @@ import SwiftSpinner
 import CalendarDateRangePickerViewController
 
 class SummaryController: UIViewController {
-    
+
     private var didLayout: Bool = false
     private var isLoadingViewController = false
     private let numberOfDateOptions = 2
@@ -41,9 +41,6 @@ class SummaryController: UIViewController {
     private var _graphFrameOffset: CGFloat = 15
     private var month: String?
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
-    
-    
-    
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -66,47 +63,24 @@ class SummaryController: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
         view.backgroundColor = UIColor.black
         self.chartContainer.backgroundColor = UIColor.black
+        //We want to graph this month intially, even if empty
+        startDate = Date().dateAtStartOf(.weekOfMonth)
+        endDate = Date().dateAtEndOf(.weekOfMonth) - 1
         setupView()
+       
         handleDateRangeButtonOnTap()
     }
-    
-    func setupDates() {
-        if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-            let metadataRef = Database.database().reference(withPath: "users_metadata").child(uid)
-            //Ignore caching
-//            metadataRef.keepSynced(true)
-//            metadataRef.observeSingleEvent(of: .value) { (snapshot) in
-//                self.log.debug("inside query")
-//                let value = snapshot.value as? NSDictionary
-//                self.log.debug(value)
-//                let lastDateLogged = value?["last_active_log"] as? String ?? ""
-//                self.log.error(lastDateLogged)
-//                self.endDate = lastDateLogged.toDate()?.date
-//                self.log.debug("End \(self.endDate)")
-//                self.startDate = self.endDate?.subtract(TimeChunk.init(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
-//                self.log.debug("Start \(self.startDate)")
-//                if let start = self.startDate, let end = self.endDate {
-//                    self.getDataForTimePeriod(date1: start, date2: end)
-//                }
-//            }
-        }
-    }
-    
+
+
     @objc private func handleDateRangeButtonOnTap() {
         dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
-
         dateRangePickerViewController.delegate = self
         let navigationController = UINavigationController(rootViewController: dateRangePickerViewController)
         navigationController.navigationBar.barTintColor = UIColor.black
         navigationController.navigationBar.titleTextAttributes =
-            [NSAttributedStringKey.foregroundColor:UIColor.white]
+            [NSAttributedStringKey.foregroundColor: UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
-      
-        
-        
     }
-    
-    
 
     /**
         Employed to allow the dynamic refreshing of data
@@ -130,12 +104,9 @@ class SummaryController: UIViewController {
     private func setupView() {
         view.addSubview(chartContainer)
         setupChartContainer()
-       
-        getDataForMonth()
-        
-//        if let start = startDate, let end = endDate {
-//            getDataForTimePeriod(date1: start, date2: end)
-//        }
+        if startDate != nil && endDate != nil {
+             getDataForMonth()
+        }
     }
 
 
@@ -150,22 +121,15 @@ class SummaryController: UIViewController {
 //        SwiftSpinner.hide()
     }
 
-    
-    private func getDataForMonth(){
-        if ((startDate) != nil){
-            let month = "\(startDate!.monthName(.short))"
-            let year = "\(startDate!.year)"
-            print(month)
-            print(year)
-            
+
+    private func getDataForMonth() {
+        if let sDate = startDate {
             refreshData()
-            
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-                
                 let painRef = Database.database().reference(withPath: "pain").child(uid)
                 //Refresh data and ignore cache
                 painRef.keepSynced(true)
-                painRef.child("\(year)").child("\(month)").observeSingleEvent(of: .value){ (snapshot) in
+                painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
                     if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                         if snapshots.isEmpty {
                             NotificationBanner(title: "No Data for Specified Period!", subtitle: "Try entering some data to view a summary...", style: .warning).show()
@@ -190,10 +154,9 @@ class SummaryController: UIViewController {
                     //pull may not have finished, resulting in an empty chart
                     self.buildChart()
                 }
-
             }
-        }else{
-            print("No Date")
+        } else {
+            log.error("Start Date was nil even though it was set...")
         }
     }
 
@@ -271,7 +234,7 @@ class SummaryController: UIViewController {
         //Setup the xValues for the period
         guard var start = startDate, let end = endDate else { return }
         let cal = Calendar.current
-        
+
         datesInRange.append(String(start.day))
         while start <= end - 1 {
             start = cal.date(byAdding: .day, value: 1, to: start)!
@@ -313,7 +276,7 @@ class SummaryController: UIViewController {
     }
 
     private func initChart() {
-       
+
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
         chartView = AAChartView()
@@ -335,20 +298,6 @@ class SummaryController: UIViewController {
                 chartV.aa_drawChartWithChartModel(chartM)
             }
         }
-    }
-
-    /**
-     A function that takes two dates and does a comparison using
-     a granularity level of days.
-     
-     - parameter : firstDate, the first date.
-     - parameter : secondDate, the second date.
-     - returns: an Int representing the difference in days.
-     */
-    func getDaysBetweenDates(firstDate: Date, secondDate: Date) -> Int {
-        let diff = secondDate.timeIntervalSince(firstDate)
-        let hours = Int(diff) / 3600
-        return hours / Int(_units)
     }
 
     private func setupChartContainer() {
@@ -427,18 +376,21 @@ private class LineDataWrapper {
     }
 }
 
-extension SummaryController : CalendarDateRangePickerViewControllerDelegate {
+extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
+
     func didTapCancel() {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
-    
+
     func didTapDoneWithDateRange(startDate: Date!, endDate: Date!) {
+        //Format date to be in correct timezone
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE, MMM d, yyyy"
-        self.startDate = startDate
-        self.endDate = endDate
-      //  print("Start Date \(startDate)")
+        dateFormatter.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        self.startDate = dateFormatter.string(from: startDate).toDate("dd/MM/yyyy")?.date
+        self.endDate = dateFormatter.string(from: endDate).toDate("dd/MM/yyyy")?.date
         self.navigationController?.dismiss(animated: true, completion: nil)
+        getDataForMonth()
     }
 }
 

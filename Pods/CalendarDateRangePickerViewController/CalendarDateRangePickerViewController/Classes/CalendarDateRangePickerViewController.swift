@@ -77,17 +77,9 @@ public class CalendarDateRangePickerViewController: UICollectionViewController{
         }
         delegate.didTapDoneWithDateRange(startDate: selectedStartDate!, endDate: selectedEndDate!)
     }
-    
-   // @objc func scrollToLast() {
-        
-   // }
-    
 }
 
 extension CalendarDateRangePickerViewController {
-    
-    // UICollectionViewDataSource
-    
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
         let difference = Calendar.current.dateComponents([.month], from: minimumDate, to: maximumDate)
         return difference.month! + 1
@@ -273,13 +265,7 @@ extension CalendarDateRangePickerViewController {
         guard numberOfSections > 0 else {
             return
         }
-        
         let lastSection = numberOfSections - 1
-        
-//        guard numberOfItems(inSection: lastSection) > 0 else {
-//            return
-//        }
-        
         let lastItemIndexPath = IndexPath(item: 39,
                                           section: lastSection)
         self.collectionView!.scrollToItem(at: lastItemIndexPath, at: .bottom, animated: true)
