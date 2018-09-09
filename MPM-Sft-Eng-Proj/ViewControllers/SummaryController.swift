@@ -399,6 +399,24 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
         dateFormatter.dateFormat = "dd/MM/yyyy"
         self.startDate = dateFormatter.string(from: startDate).toDate("dd/MM/yyyy")?.date
         self.endDate = dateFormatter.string(from: endDate).toDate("dd/MM/yyyy")?.date
+       //Enforce one month max period for viewing summary data
+       //If there is either 0 months or 1 months difference in dates
+       if (endDate.month - startDate.month < 2) {
+            //case 2 when end date day is less than the start date day
+            if endDate.date.day > startDate.date.day {
+                //change the endDate
+                self.endDate = startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                dateRangePickerViewController.selectedEndDate = self.endDate
+                dateRangePickerViewController.collectionView?.reloadData()
+                return
+            }
+        //More than one months difference, must adjust always
+       } else {
+            self.endDate = startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+            dateRangePickerViewController.selectedEndDate = self.endDate
+            dateRangePickerViewController.collectionView?.reloadData()
+            return
+        }
         self.navigationController?.dismiss(animated: true, completion: nil)
         getDataForMonth()
     }

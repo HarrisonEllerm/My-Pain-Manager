@@ -79,7 +79,6 @@ class CalendarDateRangePickerCell: UICollectionViewCell {
         halfBackgroundView?.backgroundColor = highlightedColor
         self.addSubview(halfBackgroundView!)
         self.sendSubview(toBack: halfBackgroundView!)
-        
         addRoundHighlightView()
     }
     

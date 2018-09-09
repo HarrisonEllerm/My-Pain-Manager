@@ -30,9 +30,6 @@ public class CalendarDateRangePickerViewController: UICollectionViewController{
     public var selectedStartDate: Date?
     public var selectedEndDate: Date?
     
-    
-    
-
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -162,10 +159,7 @@ extension CalendarDateRangePickerViewController : UICollectionViewDelegateFlowLa
         if isBefore(dateA: cell.date!, dateB: minimumDate) {
             return
         }
-        
-        
-        
-        
+    
         if selectedStartDate == nil {
             selectedStartDate = cell.date
         } else if selectedEndDate == nil {
