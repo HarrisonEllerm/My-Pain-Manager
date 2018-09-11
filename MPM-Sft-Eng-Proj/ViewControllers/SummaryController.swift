@@ -23,8 +23,8 @@ import NVActivityIndicatorView
 
 class SummaryController: UIViewController {
 
-    private var startDate: Date?
-    private var endDate: Date?
+    private var start: Date?
+    private var end: Date?
     private let log = SwiftyBeaver.self
     private var chartView: AAChartView?
     private var chartModel: AAChartModel?
@@ -70,8 +70,8 @@ class SummaryController: UIViewController {
         view.addSubview(loading!)
         setupNoDataSubView()
     }
-    
-  
+
+
     @objc private func handleDateRangeButtonOnTap() {
         dateRangePickerViewController = CalendarDateRangePickerViewController(collectionViewLayout: UICollectionViewFlowLayout())
         dateRangePickerViewController.delegate = self
@@ -102,7 +102,7 @@ class SummaryController: UIViewController {
     */
     private func getDataForMonth() {
         refreshData()
-        if let sDate = startDate, let eDate = endDate {
+        if let sDate = start, let eDate = end {
             noDataLabel.isHidden = true
             self.noDataImageView?.isHidden = true
             loading?.isHidden = false
@@ -145,22 +145,30 @@ class SummaryController: UIViewController {
                                     }
                                 }
                             }
-                            if self.wrappers.count > 0 {
-                                self.buildChart()
-                            } else {
-                                //There was no data in given period
-                                self.loading?.stopAnimating()
-                                self.loading?.isHidden = true
-                                self.chartContainer.isHidden = true
-                                self.noDataLabel.isHidden = false
-                                self.noDataImageView?.isHidden = false
-                            }
+                            //Was in multiple month range
+                           self.buildGraphOrNot()
                         }
+                    } else {
+                        //Was in one month range
+                        self.buildGraphOrNot()
                     }
                 }
             }
         } else {
-            log.error("Start Date was nil even though it was set...")
+            log.error("Start Date was nil even though it was set when searching for data [getDataForMonth]", context: SummaryController.self)
+        }
+    }
+    
+    private func buildGraphOrNot() {
+        if self.wrappers.count > 0 {
+            self.buildChart()
+        } else {
+            //There was no data in given period
+            self.loading?.stopAnimating()
+            self.loading?.isHidden = true
+            self.chartContainer.isHidden = true
+            self.noDataLabel.isHidden = false
+            self.noDataImageView?.isHidden = false
         }
     }
 
@@ -233,7 +241,7 @@ class SummaryController: UIViewController {
     private func setupXandYValues(wrappers: Dictionary<String, [LogWrapper]>) {
         var lineModelData = [LineDataWrapper]()
         //Setup the xValues for the period
-        guard var start = startDate, let end = endDate else { return }
+        guard var start = start, let end = end else { return }
         let cal = Calendar.current
 
         datesInRange.append(String(start.day))
@@ -314,14 +322,14 @@ class SummaryController: UIViewController {
         chartContainer.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         chartContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
-    
+
     private func setupNavBarButtons() {
         self.navigationItem.title = "Summary"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Report", style: .done, target: self, action: #selector(handleReportButtonOnTap))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Dates", style: .done, target: self, action: #selector(handleDateRangeButtonOnTap))
         self.navigationController?.navigationBar.tintColor = UIColor(r: 254, g: 162, b: 25)
     }
-    
+
     private func setupNoDataSubView() {
         noDataImageView = UIImageView(frame: CGRect(x: self.view.center.x - 50, y: self.view.center.y - 100, width: 100, height: 100))
         noDataImageView!.image = UIImage(named: "noData")
@@ -401,7 +409,7 @@ private class LineDataWrapper {
 
 
 extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
-    
+
     /**
         Triggered if the user cancels the date
         range selection.
@@ -421,31 +429,33 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
     func didTapDoneWithDateRange(startDate: Date!, endDate: Date!) {
         //Format date to be in correct timezone
         let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+        dateFormatter.timeZone = TimeZone.current
         dateFormatter.dateFormat = "dd/MM/yyyy"
-        self.startDate = dateFormatter.string(from: startDate).toDate("dd/MM/yyyy")?.date
-        self.endDate = dateFormatter.string(from: endDate).toDate("dd/MM/yyyy")?.date
-        
-       //If there is either 0 or 1 months difference in dates.
-       if (endDate.month - startDate.month < 2) {
-           //if endDate day is greater than start date day we must adjust, as
-           //this means they have selected more than a months worth of data.
-            if endDate.date.day > startDate.date.day {
-                //change the endDate
-                self.endDate = startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
-                dateRangePickerViewController.selectedEndDate = self.endDate
+        self.start = dateFormatter.string(from: startDate).toDate("dd/MM/yyyy")?.date
+        self.end = dateFormatter.string(from: endDate).toDate("dd/MM/yyyy")?.date
+
+        if let s = self.start, let e = self.end {
+            //If there is a 1 months difference in dates.
+            if e.month - s.month == 1 {
+                //if endDate day is greater than start date day we must adjust, as
+                //this means they have selected more than a months worth of data.
+                if e.date.day > s.date.day {
+                    //change the endDate
+                    self.end = s.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                    dateRangePickerViewController.selectedEndDate = self.end
+                    dateRangePickerViewController.collectionView?.reloadData()
+                    return
+                }
+                //More than one months difference, must adjust always.
+            } else if e.month - s.month > 1 {
+                self.end = s.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                dateRangePickerViewController.selectedEndDate = self.end
                 dateRangePickerViewController.collectionView?.reloadData()
                 return
             }
-        //More than one months difference, must adjust always.
-       } else {
-            self.endDate = startDate.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
-            dateRangePickerViewController.selectedEndDate = self.endDate
-            dateRangePickerViewController.collectionView?.reloadData()
-            return
+            self.navigationController?.dismiss(animated: true, completion: nil)
+            getDataForMonth()
         }
-        self.navigationController?.dismiss(animated: true, completion: nil)
-        getDataForMonth()
     }
 }
 

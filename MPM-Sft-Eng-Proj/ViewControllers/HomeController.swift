@@ -14,6 +14,7 @@ import SwiftSpinner
 import PopupDialog
 import SwiftyBeaver
 import SwiftDate
+import NVActivityIndicatorView
 
 class HomeController: UIViewController {
 
@@ -27,7 +28,7 @@ class HomeController: UIViewController {
     private var isLoading = true
     private var hasLoaded = false
     private let updateQueue = DispatchQueue(label: "updateQueue")
-    private weak var activityIndicator: UIActivityIndicatorView?
+    private var loading: NVActivityIndicatorView?
     private var previousLocation = SCNVector3Make(0,0,0)
     private var rating: Double?
     private var tapCount = 0
@@ -53,23 +54,21 @@ class HomeController: UIViewController {
         Service.setupNavBar(controller: self)
         view.backgroundColor = UIColor.black
         self.definesPresentationContext = true
-        setupActivityIndicator()
+        setupLoading()
         self.createSlider()
     }
     
-    /*
-     Activity Indicator Used to show users that the model is being loaded,
-     which can take around a second since it is reading in large files to render
-     the body.
+    /**
+        Loading Indicator Used to show users that the model is being loaded,
+        which can take around a second since it is reading in large files to render
+        the body.
      */
-    func setupActivityIndicator() {
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .white)
-        activityIndicator.startAnimating()
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        self.activityIndicator = activityIndicator
+    private func setupLoading() {
+        loading = NVActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), type: .ballClipRotatePulse, color: UIColor.white, padding: 0)
+        loading?.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height / 2)
+        loading?.isHidden = false
+        view.addSubview(loading!)
+        loading?.startAnimating()
     }
     
     func loadScene() {
