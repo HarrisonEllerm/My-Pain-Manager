@@ -84,6 +84,8 @@ class SummaryController: UIViewController {
 
     //TODO
     @objc func handleReportButtonOnTap() {
+        let testController = TestViewController()
+        self.navigationController?.pushViewController(testController, animated: true)
     }
 
     /**
@@ -100,7 +102,66 @@ class SummaryController: UIViewController {
         If no data is found, the noDataView is presented,
         and (if showing) the chartContainer hidden.
     */
-    private func getDataForMonth() {
+//    private func getDataForMonth() {
+//        refreshData()
+//        if let sDate = start, let eDate = end {
+//            noDataLabel.isHidden = true
+//            self.noDataImageView?.isHidden = true
+//            loading?.isHidden = false
+//            loading?.startAnimating()
+//            if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
+//                let painRef = Database.database().reference(withPath: "pain").child(uid)
+//                //Refresh data and ignore cache
+//                painRef.keepSynced(true)
+//                painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
+//                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+//                        for snap in snapshots {
+//                            let date = snap.key
+//                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+//                                for snap in subchildren {
+//                                    if let values = snap.value as? Dictionary<String, Any> {
+//                                        guard let rating: Double = values["ranking"] as? Double else { return }
+//                                        guard let type: String = values["type"] as? String else { return }
+//                                        let w = LogWrapper(date, rating, type)
+//                                        self.wrappers.append(w)
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    //If they have selected a range which includes two months
+//                    if (sDate.month < eDate.month) {
+//                        painRef.child("\(sDate.year)").child("\(eDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
+//                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+//                                for snap in snapshots {
+//                                    let date = snap.key
+//                                    if let subchildren = snap.children.allObjects as? [DataSnapshot] {
+//                                        for snap in subchildren {
+//                                            if let values = snap.value as? Dictionary<String, Any> {
+//                                                guard let rating: Double = values["ranking"] as? Double else { return }
+//                                                guard let type: String = values["type"] as? String else { return }
+//                                                let w = LogWrapper(date, rating, type)
+//                                                self.wrappers.append(w)
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            //Was in multiple month range
+//                           self.buildGraphOrNot()
+//                        }
+//                    } else {
+//                        //Was in one month range
+//                        self.buildGraphOrNot()
+//                    }
+//                }
+//            }
+//        } else {
+//            log.error("Start Date was nil even though it was set when searching for data [getDataForMonth]", context: SummaryController.self)
+//        }
+//    }
+
+    private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
             noDataLabel.isHidden = true
@@ -108,57 +169,29 @@ class SummaryController: UIViewController {
             loading?.isHidden = false
             loading?.startAnimating()
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-                let painRef = Database.database().reference(withPath: "pain").child(uid)
-                //Refresh data and ignore cache
-                painRef.keepSynced(true)
-                painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
-                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                        for snap in snapshots {
-                            let date = snap.key
-                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                for snap in subchildren {
-                                    if let values = snap.value as? Dictionary<String, Any> {
-                                        guard let rating: Double = values["ranking"] as? Double else { return }
-                                        guard let type: String = values["type"] as? String else { return }
-                                        let w = LogWrapper(date, rating, type)
-                                        self.wrappers.append(w)
-                                    }
+                let ref = Database.database().reference(withPath: "pain_log_test").child(uid)
+                ref.queryOrdered(byChild: "month_short_name").queryStarting(atValue: sDate.month)
+                    .queryEnding(atValue: eDate.month)
+                    .observeSingleEvent(of: .value, with: { (snapshot) in
+                        if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
+                            for snap in snapshots {
+                                if let values = snap.value as? Dictionary<String, Any> {
+                                    guard let rating = values["ranking"] as? Double,
+                                        let type = values["type"] as? String,
+                                        let dateString = values["date_string"] as? String
+                                        else { return }
+                                    let w = LogWrapper(dateString, rating, type)
+                                    self.wrappers.append(w)
                                 }
                             }
                         }
-                    }
-                    //If they have selected a range which includes two months
-                    if (sDate.month < eDate.month) {
-                        painRef.child("\(sDate.year)").child("\(eDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
-                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-                                for snap in snapshots {
-                                    let date = snap.key
-                                    if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-                                        for snap in subchildren {
-                                            if let values = snap.value as? Dictionary<String, Any> {
-                                                guard let rating: Double = values["ranking"] as? Double else { return }
-                                                guard let type: String = values["type"] as? String else { return }
-                                                let w = LogWrapper(date, rating, type)
-                                                self.wrappers.append(w)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            //Was in multiple month range
-                           self.buildGraphOrNot()
-                        }
-                    } else {
-                        //Was in one month range
-                        self.buildGraphOrNot()
-                    }
+                    }) { (error) in
+                        self.log.error("Error thrown when querying for months data", context: SummaryController.self)
                 }
             }
-        } else {
-            log.error("Start Date was nil even though it was set when searching for data [getDataForMonth]", context: SummaryController.self)
         }
     }
-    
+
     private func buildGraphOrNot() {
         if self.wrappers.count > 0 {
             self.buildChart()
@@ -454,7 +487,7 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
                 return
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
-            getDataForMonth()
+            getDataForMonths()
         }
     }
 }
