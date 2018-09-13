@@ -161,47 +161,53 @@ class SummaryController: UIViewController {
 //        }
 //    }
 
+    ///
+    /// Initial pull just gets all data in the months they
+    /// specified. Then we need to filter further on client.
+    ///
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
-            noDataLabel.isHidden = true
+            self.chartContainer.isHidden = true
+            self.noDataLabel.isHidden = true
             self.noDataImageView?.isHidden = true
-            loading?.isHidden = false
+            self.loading?.isHidden = false
             loading?.startAnimating()
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 let ref = Database.database().reference(withPath: "pain_log_test").child(uid)
-                ref.queryOrdered(byChild: "month_short_name").queryStarting(atValue: sDate.month)
+                ref.queryOrdered(byChild: "month_num").queryStarting(atValue: sDate.month)
                     .queryEnding(atValue: eDate.month)
                     .observeSingleEvent(of: .value, with: { (snapshot) in
                         if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                             for snap in snapshots {
+                                self.log.debug(snap)
                                 if let values = snap.value as? Dictionary<String, Any> {
                                     guard let rating = values["ranking"] as? Double,
                                         let type = values["type"] as? String,
+                                        let dayInMonth = values["day_in_month"] as? Int,
                                         let dateString = values["date_string"] as? String
                                         else { return }
-                                    let w = LogWrapper(dateString, rating, type)
-                                    self.wrappers.append(w)
+                                    let date = Date(dateString)
+                                    if let dateUnwrapped = date {
+                                        let w = LogWrapper(dayInMonth, rating, type, dateUnwrapped)
+                                        self.log.debug("Adding logwrapper \(w)")
+                                        self.wrappers.append(w)
+                                    }
                                 }
                             }
+                            self.buildChart()
+                        } else {
+                            //There was no data in given period
+                            self.loading?.stopAnimating()
+                            self.loading?.isHidden = true
+                            self.chartContainer.isHidden = true
+                            self.noDataLabel.isHidden = false
+                            self.noDataImageView?.isHidden = false
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
                 }
             }
-        }
-    }
-
-    private func buildGraphOrNot() {
-        if self.wrappers.count > 0 {
-            self.buildChart()
-        } else {
-            //There was no data in given period
-            self.loading?.stopAnimating()
-            self.loading?.isHidden = true
-            self.chartContainer.isHidden = true
-            self.noDataLabel.isHidden = false
-            self.noDataImageView?.isHidden = false
         }
     }
 
@@ -225,6 +231,16 @@ class SummaryController: UIViewController {
         the chart is initiated.
      */
     private func buildChart() {
+        // Filter further on the client
+        if let sDate = start, let eDate = end {
+            for (index, wrap) in wrappers.enumerated().reversed() {
+                if wrap.date.isBeforeDate(sDate, granularity: .day) ||
+                    wrap.date.isAfterDate(eDate, granularity: .day) {
+                    log.debug("REMOVING WRAPPER")
+                    wrappers.remove(at: index)
+                }
+            }
+        }
         //Grouping the log wrappers by pain type
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
@@ -288,7 +304,7 @@ class SummaryController: UIViewController {
             var yValues: Array<Double> = Array(repeating: 0, count: datesInRange.count)
             var yValuesCount: Array<Int> = Array(repeating: 1, count: datesInRange.count)
             for log in area.value {
-                let xValue = String(log.getTime().suffix(2))
+                let xValue = String(log.getDayNumInMonth())
                 if let index = datesInRange.index(of: xValue) {
                     let prevMean = yValues[index]
                     let count = yValuesCount[index]
@@ -373,35 +389,22 @@ class SummaryController: UIViewController {
     }
 }
 
-/**
-    A wrapper object used to pull information from Firebase which
-    exists in nodes that look like:
- 
-    2018-Jul-25
-    - 20:46:47
-        - ranking: 3
-        - type: "Lower back"
-    - 20:47:03
-        - ranking: 4
-        - type: "Collarbone"
-        ...
-    2018-Jul-26
-    ...
- */
 private class LogWrapper {
 
-    let time: String
+    let date: Date
+    let dayNumInMonth: Int
     let rating: Double
     let type: String
 
-    init(_ time: String, _ rating: Double, _ type: String) {
-        self.time = time
+    init(_ dayNumInMonth: Int, _ rating: Double, _ type: String, _ date: Date) {
+        self.dayNumInMonth = dayNumInMonth
         self.rating = rating
         self.type = type
+        self.date = date
     }
 
-    func getTime() -> String {
-        return self.time
+    func getDayNumInMonth() -> Int {
+        return self.dayNumInMonth
     }
 
     func getRating() -> Double {
@@ -410,6 +413,10 @@ private class LogWrapper {
 
     func getType() -> String {
         return self.type
+    }
+
+    func getDate() -> Date {
+        return self.date
     }
 }
 
@@ -475,6 +482,7 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
                 if e.date.day > s.date.day {
                     //change the endDate
                     self.end = s.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                    Service.showAlert(on: dateRangePickerViewController, style: .alert, title: "Input Range", message: "Please select a months data maximum.")
                     dateRangePickerViewController.selectedEndDate = self.end
                     dateRangePickerViewController.collectionView?.reloadData()
                     return
@@ -482,6 +490,7 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
                 //More than one months difference, must adjust always.
             } else if e.month - s.month > 1 {
                 self.end = s.add(TimeChunk(seconds: 0, minutes: 0, hours: 0, days: 0, weeks: 0, months: 1, years: 0))
+                Service.showAlert(on: dateRangePickerViewController, style: .alert, title: "Input Range", message: "Please select a months data maximum.")
                 dateRangePickerViewController.selectedEndDate = self.end
                 dateRangePickerViewController.collectionView?.reloadData()
                 return

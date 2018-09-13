@@ -363,6 +363,7 @@ class HomeController: UIViewController {
         (unique_identifier) {
             date_string : "..."
             month_num : ...
+            day_in_month: ...
             time_string : "..."
             type : "..."
             ranking : ...
@@ -394,6 +395,7 @@ class HomeController: UIViewController {
                 //NEW WAY
                 let painDictionary = ["date_string": dateFull,
                     "month_num": date.month,
+                    "day_in_month": date.day,
                     "time_string": dateHoursMins,
                     "type": area,
                     "ranking": rating,

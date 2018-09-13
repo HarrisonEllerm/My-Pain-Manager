@@ -28,7 +28,28 @@ class TestViewController: UIViewController {
     }
     
     @objc func pushDataToFirebase() {
-        let painDictionary = ["date_string": "15/08/2018", "medsNotes": "N/A", "month_short_name": "Aug", "notes": "N/A", "ranking": "5", "time_string": "12:00:00", "type": "Stomach"]
+        /**
+         let painDictionary = ["date_string": dateFull,
+         "month_num": date.month,
+         "day_in_month": date.day,
+         "time_string": dateHoursMins,
+         "type": area,
+         "ranking": rating,
+         "notesDescription": notesDescription.isEmpty ? "" : notesDescription,
+         "medsDescription": medsDescription.isEmpty ? "" : medsDescription] as [String: Any]
+ 
+        */
+        
+        
+        let painDictionary = ["date_string": "15/08/2018",
+                              "medsNotes": "N/A",
+                              "month_short_name": "Aug",
+                              "notes": "N/A",
+                              "ranking": "5",
+                              "time_string": "12:00:00",
+                              "type": "Stomach"]
+        
+        
         //Push to firebase generating auto unique id
         Database.database().reference()
             .child("pain_log_test")
