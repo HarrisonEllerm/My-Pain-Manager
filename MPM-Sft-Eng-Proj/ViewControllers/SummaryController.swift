@@ -90,81 +90,11 @@ class SummaryController: UIViewController {
 
     /**
         Pulls a users pain/vatigue logs over the month
-        they provided when selecting dates. This may be
-     
-        (i) Within one month i.e. 1st to 31st
-        (ii) Split accross months i.e. 25th to 25th
-     
-        Therefore, we need to handle both cases, which is
-        why the initial firebase pull calls the second after
-        it has completed.
-     
-        If no data is found, the noDataView is presented,
-        and (if showing) the chartContainer hidden.
+        they provided when selecting dates. This initial
+        pull of data just gets all the data in the months
+        they were querying between. We then need to filter
+        further on the client.
     */
-//    private func getDataForMonth() {
-//        refreshData()
-//        if let sDate = start, let eDate = end {
-//            noDataLabel.isHidden = true
-//            self.noDataImageView?.isHidden = true
-//            loading?.isHidden = false
-//            loading?.startAnimating()
-//            if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-//                let painRef = Database.database().reference(withPath: "pain").child(uid)
-//                //Refresh data and ignore cache
-//                painRef.keepSynced(true)
-//                painRef.child("\(sDate.year)").child("\(sDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
-//                    if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-//                        for snap in snapshots {
-//                            let date = snap.key
-//                            if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-//                                for snap in subchildren {
-//                                    if let values = snap.value as? Dictionary<String, Any> {
-//                                        guard let rating: Double = values["ranking"] as? Double else { return }
-//                                        guard let type: String = values["type"] as? String else { return }
-//                                        let w = LogWrapper(date, rating, type)
-//                                        self.wrappers.append(w)
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    //If they have selected a range which includes two months
-//                    if (sDate.month < eDate.month) {
-//                        painRef.child("\(sDate.year)").child("\(eDate.monthName(.short))").observeSingleEvent(of: .value) { (snapshot) in
-//                            if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
-//                                for snap in snapshots {
-//                                    let date = snap.key
-//                                    if let subchildren = snap.children.allObjects as? [DataSnapshot] {
-//                                        for snap in subchildren {
-//                                            if let values = snap.value as? Dictionary<String, Any> {
-//                                                guard let rating: Double = values["ranking"] as? Double else { return }
-//                                                guard let type: String = values["type"] as? String else { return }
-//                                                let w = LogWrapper(date, rating, type)
-//                                                self.wrappers.append(w)
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                            //Was in multiple month range
-//                           self.buildGraphOrNot()
-//                        }
-//                    } else {
-//                        //Was in one month range
-//                        self.buildGraphOrNot()
-//                    }
-//                }
-//            }
-//        } else {
-//            log.error("Start Date was nil even though it was set when searching for data [getDataForMonth]", context: SummaryController.self)
-//        }
-//    }
-
-    ///
-    /// Initial pull just gets all data in the months they
-    /// specified. Then we need to filter further on client.
-    ///
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
