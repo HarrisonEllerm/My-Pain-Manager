@@ -405,6 +405,7 @@ class HomeController: UIViewController {
                 Database.database().reference()
                     .child("pain_log_test")
                     .child(uid)
+                    .child(String(date.year))
                     //Firebase will auto generate uniqueID
                     .childByAutoId()
                     .updateChildValues(painDictionary)

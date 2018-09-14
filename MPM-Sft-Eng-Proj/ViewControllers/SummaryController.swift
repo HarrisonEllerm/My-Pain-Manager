@@ -97,13 +97,21 @@ class SummaryController: UIViewController {
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
+            
+            //figure out if a graph has already been drawn.
+            //if it has been drawn we dont need to do any of this.
+            
+            
             self.chartContainer.isHidden = true
             self.noDataLabel.isHidden = true
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
+            
+            
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
-                let ref = Database.database().reference(withPath: "pain_log_test").child(uid)
+                //Note users are restricted accross years due to this
+                let ref = Database.database().reference(withPath: "pain_log_test").child(uid).child(String(sDate.year))
                 ref.queryOrdered(byChild: "month_num").queryStarting(atValue: sDate.month)
                     .queryEnding(atValue: eDate.month)
                     .observeSingleEvent(of: .value, with: { (snapshot) in
@@ -181,7 +189,15 @@ class SummaryController: UIViewController {
         //Setup the graphs x and y values
         setupXandYValues(wrappers: mappedWrappers)
         //Initiate the chart
+        
+        
+        //
         initChart()
+        //or refreshchart
+        chartView?.aa_onlyRefreshTheChartDataWithChartModelSeries(chartElements)
+        
+        
+        
     }
 
     /**
@@ -269,6 +285,7 @@ class SummaryController: UIViewController {
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
         chartView = AAChartView()
+        
         if let chartV = chartView {
             chartV.frame = CGRect(x: 0, y: 0, width: chartViewWidth, height: chartViewHeight)
             chartV.center = CGPoint(x: self.chartContainer.frame.size.width / 2, y: self.chartContainer.frame.size.height / 2)
@@ -425,6 +442,9 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
             getDataForMonths()
+            
+            
+            
         }
     }
 }
