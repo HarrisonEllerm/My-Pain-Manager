@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -25,12 +25,19 @@
                                 <rect key="frame" x="-1226" y="-943" width="2795" height="2718"/>
                                 <autoresizingMask key="autoresizingMask"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="MPM_logo2" translatesAutoresizingMaskIntoConstraints="NO" id="jlP-Hg-F6w">
-                                <rect key="frame" x="67" y="262" width="240" height="223"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MPM_logo2" translatesAutoresizingMaskIntoConstraints="NO" id="jlP-Hg-F6w">
+                                <rect key="frame" x="67" y="217.5" width="240" height="232"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="232" id="SMd-kd-tkI"/>
+                                    <constraint firstAttribute="width" constant="240" id="dhC-9q-oCO"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.29019607843137252" green="0.79607843137254897" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="jlP-Hg-F6w" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="3Ta-f7-mSN"/>
+                            <constraint firstItem="jlP-Hg-F6w" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="ygH-sO-KG0"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                     </view>
                 </viewController>
