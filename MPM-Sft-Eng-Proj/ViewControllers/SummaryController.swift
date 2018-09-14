@@ -36,6 +36,7 @@ class SummaryController: UIViewController {
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
     private var loading: NVActivityIndicatorView?
     private var noDataImageView: UIImageView?
+    //private var firstTime = true
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -80,6 +81,10 @@ class SummaryController: UIViewController {
         navigationController.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor: UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
+        
+        
+        
+        
     }
 
     //TODO
@@ -102,6 +107,10 @@ class SummaryController: UIViewController {
             //if it has been drawn we dont need to do any of this.
             
             
+             //if the chart container contains something remove whats inside it
+            for subView in self.chartContainer.subviews {
+                subView.removeFromSuperview()
+            }
             self.chartContainer.isHidden = true
             self.noDataLabel.isHidden = true
             self.noDataImageView?.isHidden = true
@@ -189,13 +198,9 @@ class SummaryController: UIViewController {
         //Setup the graphs x and y values
         setupXandYValues(wrappers: mappedWrappers)
         //Initiate the chart
-        
-        
-        //
         initChart()
-        //or refreshchart
-        chartView?.aa_onlyRefreshTheChartDataWithChartModelSeries(chartElements)
         
+      
         
         
     }
@@ -442,7 +447,7 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
             getDataForMonths()
-            
+           
             
             
         }
