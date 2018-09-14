@@ -47,7 +47,21 @@ class HomeController: UIViewController {
         s.maximumValue = 100
         return s
     }()
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
+        UIView.animate(withDuration: 5, animations: {
+            //self.myFirstLabel.alpha = 1.0
+            //self.myFirstButton.alpha = 1.0
+            //self.mySecondButton.alpha = 1.0
+            
+            self.scnView.alpha = CGFloat(1.0)
+            return
+        })
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Home"
@@ -56,6 +70,7 @@ class HomeController: UIViewController {
         self.definesPresentationContext = true
         setupLoading()
         self.createSlider()
+        
     }
 
     /**
@@ -80,6 +95,7 @@ class HomeController: UIViewController {
         DispatchQueue.main.async {
             //add scene
             self.scnView = SCNView(frame: self.view.frame)
+            self.scnView.alpha = CGFloat(0)
             self.view.addSubview(self.scnView)
             self.scene = SCNScene()
             self.scene.background.contents = UIImage(named: "spot")
