@@ -84,8 +84,7 @@ class SummaryController: UIViewController {
 
     //TODO
     @objc func handleReportButtonOnTap() {
-        let testController = TestViewController()
-        self.navigationController?.pushViewController(testController, animated: true)
+        log.info("TODO")
     }
 
     /**
@@ -166,7 +165,6 @@ class SummaryController: UIViewController {
             for (index, wrap) in wrappers.enumerated().reversed() {
                 if wrap.date.isBeforeDate(sDate, granularity: .day) ||
                     wrap.date.isAfterDate(eDate, granularity: .day) {
-                    log.debug("REMOVING WRAPPER")
                     wrappers.remove(at: index)
                 }
             }

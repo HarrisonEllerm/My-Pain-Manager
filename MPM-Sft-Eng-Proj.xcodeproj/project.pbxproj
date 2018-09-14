@@ -137,7 +137,6 @@
 		6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AAB82097C796009A3446 /* HealthProfileController.swift */; };
 		6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABA2097D06D009A3446 /* DateEntryCell.swift */; };
 		6F26AABD2097D2EA009A3446 /* DateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */; };
-		6F2B98D221492DE50098AE6B /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2B98D121492DE50098AE6B /* TestViewController.swift */; };
 		6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */; };
 		6F439B7C211911E60002A960 /* SummaryControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F439B7B211911E60002A960 /* SummaryControllerTests.swift */; };
 		6F4FCA86213DEAA700D4882F /* AAChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4FCA81213DEAA700D4882F /* AAChartView.swift */; };
@@ -305,7 +304,6 @@
 		6F26AAB82097C796009A3446 /* HealthProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthProfileController.swift; sourceTree = "<group>"; };
 		6F26AABA2097D06D009A3446 /* DateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCell.swift; sourceTree = "<group>"; };
 		6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateEntryCellDelegate.swift; sourceTree = "<group>"; };
-		6F2B98D121492DE50098AE6B /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		6F439B7721183EB00002A960 /* SwiftyBeaverCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyBeaverCredentials.swift; sourceTree = "<group>"; };
 		6F439B7B211911E60002A960 /* SummaryControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryControllerTests.swift; sourceTree = "<group>"; };
 		6F4FCA81213DEAA700D4882F /* AAChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AAChartView.swift; sourceTree = "<group>"; };
@@ -529,7 +527,6 @@
 				38324DF0208B14FC005605B9 /* SummaryController.swift */,
 				6F26AAB82097C796009A3446 /* HealthProfileController.swift */,
 				6FD4A77820A6D97D00F10250 /* LoginViewController.swift */,
-				6F2B98D121492DE50098AE6B /* TestViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -972,7 +969,6 @@
 				6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */,
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
 				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
-				6F2B98D221492DE50098AE6B /* TestViewController.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
 				6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */,
 				6F4FCA88213DEAA700D4882F /* AASerializable.swift in Sources */,
