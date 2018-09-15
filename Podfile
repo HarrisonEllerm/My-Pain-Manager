@@ -30,7 +30,8 @@ target 'MPM-Sft-Eng-Proj' do
     pod 'SwiftyBeaver'
     pod 'CalendarDateRangePickerViewController'
     pod 'NVActivityIndicatorView'
-    
+    pod 'AUPickerCell'    
+ 
   target 'MPM-Sft-Eng-ProjTests' do
     inherit! :search_paths
     # Pods for testing

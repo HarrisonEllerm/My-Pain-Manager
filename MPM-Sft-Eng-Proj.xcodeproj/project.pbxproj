@@ -883,6 +883,7 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-MPM-Sft-Eng-Proj/Pods-MPM-Sft-Eng-Proj-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AAInfographics/AAInfographics.framework",
+				"${BUILT_PRODUCTS_DIR}/AUPickerCell/AUPickerCell.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/CalendarDateRangePickerViewController/CalendarDateRangePickerViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework",
@@ -909,6 +910,7 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AAInfographics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AUPickerCell.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CalendarDateRangePickerViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Cosmos.framework",

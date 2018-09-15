@@ -152,6 +152,7 @@ class SummaryController: UIViewController {
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
+                        
                 }
             }
         }
