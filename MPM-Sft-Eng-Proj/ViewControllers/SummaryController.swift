@@ -20,6 +20,7 @@ import SwiftyBeaver
 import SwiftSpinner
 import CalendarDateRangePickerViewController
 import NVActivityIndicatorView
+import Alamofire
 
 class SummaryController: UIViewController {
 
@@ -81,15 +82,32 @@ class SummaryController: UIViewController {
         navigationController.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor: UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
-        
-        
-        
-        
+
+
+
+
     }
 
+
     //TODO
+    //
     @objc func handleReportButtonOnTap() {
-        log.info("TODO")
+        let reportController = ReportController()
+        self.navigationController?.pushViewController(reportController, animated: true)
+    }
+    
+    private func sendReportGenRequest() {
+        let params = ["uuid": "G0LZ3XNH6JYf9zRtl7ocIvsD3ZD2",
+                      "year": 2018,
+                      "first_Month": 1,
+                      "end_Month": 12,
+                      "email": "harryellerm@gmail.com"] as [String: Any]
+        
+        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
+        
+        let headers = ["Content-Type": "application/json"]
+        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
+        Service.showAlert(on: self, style: .alert, title: "Thanks!", message: "You should recieve a pdf report shortly!")
     }
 
     /**
@@ -102,12 +120,12 @@ class SummaryController: UIViewController {
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
-            
+
             //figure out if a graph has already been drawn.
             //if it has been drawn we dont need to do any of this.
-            
-            
-             //if the chart container contains something remove whats inside it
+
+
+            //if the chart container contains something remove whats inside it
             for subView in self.chartContainer.subviews {
                 subView.removeFromSuperview()
             }
@@ -116,8 +134,8 @@ class SummaryController: UIViewController {
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
-            
-            
+
+
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 //Note users are restricted accross years due to this
                 let ref = Database.database().reference(withPath: "pain_log_test").child(uid).child(String(sDate.year))
@@ -152,7 +170,7 @@ class SummaryController: UIViewController {
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
-                        
+
                 }
             }
         }
@@ -200,10 +218,10 @@ class SummaryController: UIViewController {
         setupXandYValues(wrappers: mappedWrappers)
         //Initiate the chart
         initChart()
-        
-      
-        
-        
+
+
+
+
     }
 
     /**
@@ -291,7 +309,7 @@ class SummaryController: UIViewController {
         let chartViewWidth = self.chartContainer.frame.size.width
         let chartViewHeight = self.chartContainer.frame.size.height
         chartView = AAChartView()
-        
+
         if let chartV = chartView {
             chartV.frame = CGRect(x: 0, y: 0, width: chartViewWidth, height: chartViewHeight)
             chartV.center = CGPoint(x: self.chartContainer.frame.size.width / 2, y: self.chartContainer.frame.size.height / 2)
@@ -448,9 +466,9 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
             getDataForMonths()
-           
-            
-            
+
+
+
         }
     }
 }
