@@ -18,16 +18,16 @@ class GraphDateEntryCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont(name: label.font.fontName, size: 18)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = UIColor.black
-        label.textColor = UIColor.white
+        label.backgroundColor = UIColor.white
+        label.textColor = UIColor.black
         return label
     }()
     
     var textField: UITextField = {
         let tf = UITextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.textColor = UIColor.white
-        tf.backgroundColor = UIColor.black
+        tf.textColor = UIColor.black
+        tf.backgroundColor = UIColor.white
         //gets rid of cursor
         tf.tintColor = UIColor.clear
         return tf

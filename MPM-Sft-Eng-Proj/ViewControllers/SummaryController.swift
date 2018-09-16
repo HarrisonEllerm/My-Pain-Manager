@@ -82,34 +82,14 @@ class SummaryController: UIViewController {
         navigationController.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor: UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
-
-
-
-
     }
 
-
-    //TODO
     //
     @objc func handleReportButtonOnTap() {
         let reportController = ReportController()
         self.navigationController?.pushViewController(reportController, animated: true)
     }
     
-    private func sendReportGenRequest() {
-        let params = ["uuid": "G0LZ3XNH6JYf9zRtl7ocIvsD3ZD2",
-                      "year": 2018,
-                      "first_Month": 1,
-                      "end_Month": 12,
-                      "email": "harryellerm@gmail.com"] as [String: Any]
-        
-        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
-        
-        let headers = ["Content-Type": "application/json"]
-        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
-        Service.showAlert(on: self, style: .alert, title: "Thanks!", message: "You should recieve a pdf report shortly!")
-    }
-
     /**
         Pulls a users pain/vatigue logs over the month
         they provided when selecting dates. This initial
