@@ -105,6 +105,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
             Auth.auth().sendPasswordReset(withEmail: entryStr, completion: { (error) in
                 if let err = error {
                     self.log.error("An error ocurred when requesting password reset: \(err.localizedDescription)")
+                    Service.notifyStaffOfError(#file, "\(#function) \(#line): An error ocurred when requesting password reset: \(err.localizedDescription)")
                 }
                 let notif = UIAlertController(title: "Reset", message: "Please check your email for instructions on how to reset your password", preferredStyle: UIAlertControllerStyle.alert)
                 notif.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) -> Void in
@@ -138,6 +139,7 @@ class LoginViewConroller: UIViewController, UITextFieldDelegate, ValidationDeleg
         Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             if let error = error {
                 self.log.error("There was an error signing in: \(error.localizedDescription)")
+                Service.notifyStaffOfError(#file, "\(#function) \(#line): There was an error signing in: \(error.localizedDescription)")
                 SwiftSpinner.show("Failed to sign in...")
                 SwiftSpinner.hide()
                 return

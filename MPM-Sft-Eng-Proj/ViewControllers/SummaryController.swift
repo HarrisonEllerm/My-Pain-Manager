@@ -20,7 +20,6 @@ import SwiftyBeaver
 import SwiftSpinner
 import CalendarDateRangePickerViewController
 import NVActivityIndicatorView
-import Alamofire
 
 class SummaryController: UIViewController {
 
@@ -37,7 +36,6 @@ class SummaryController: UIViewController {
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
     private var loading: NVActivityIndicatorView?
     private var noDataImageView: UIImageView?
-    //private var firstTime = true
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -100,11 +98,6 @@ class SummaryController: UIViewController {
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
-
-            //figure out if a graph has already been drawn.
-            //if it has been drawn we dont need to do any of this.
-
-
             //if the chart container contains something remove whats inside it
             for subView in self.chartContainer.subviews {
                 subView.removeFromSuperview()
@@ -150,7 +143,7 @@ class SummaryController: UIViewController {
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
-
+                        Service.notifyStaffOfError(#file, "\(#function) \(#line): Error thrown when querying for months data \(error)")
                 }
             }
         }
@@ -446,9 +439,6 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
             getDataForMonths()
-
-
-
         }
     }
 }

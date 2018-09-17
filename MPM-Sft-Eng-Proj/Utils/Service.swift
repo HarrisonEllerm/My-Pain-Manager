@@ -9,6 +9,7 @@
 import UIKit
 import LBTAComponents
 import JGProgressHUD
+import Alamofire
 
 class Service {
     
@@ -53,6 +54,13 @@ class Service {
         controller.navigationController?.navigationBar.barTintColor = UIColor.black
         controller.view.backgroundColor = UIColor.black
     }
-
+    
+    static func notifyStaffOfError(_ clazz: String, _ exception: String) {
+        let params = ["class": clazz,
+                      "exception_message": exception]
+        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/exception")
+        let headers = ["Content-Type": "application/json"]
+        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
+    }
 }
 
