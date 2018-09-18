@@ -32,5 +32,7 @@ DerivedData/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
+### Project ###
+Utils/SwiftyBeaverCredentials.swift
 
 # End of https://www.gitignore.io/api/xcode

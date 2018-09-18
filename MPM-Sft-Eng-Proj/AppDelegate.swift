@@ -134,6 +134,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
                         if let error = error {
                             SwiftSpinner.show("Error Signing Up...").addTapHandler({
                                 self.log.error("Error signing up with Google: \(error.localizedDescription)")
+                                Service.notifyStaffOfError(#file, "\(#function) \(#line):  Error signing up with Google: \(error.localizedDescription)")
                             })
                             return
                         }
@@ -163,6 +164,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
 
     func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
         self.log.error("\(user.userID) disconnected from the app with error: \(error.localizedDescription)")
+        Service.notifyStaffOfError(#file, "\(#function) \(#line):  disconnected from the app with error: \(error.localizedDescription)")
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

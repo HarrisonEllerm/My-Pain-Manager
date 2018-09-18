@@ -13,11 +13,21 @@ import SwiftyBeaver
 import Alamofire
 
 class ReportController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+<<<<<<< HEAD
     
     private var startDate: Date?
     private var endDate: Date?
     private let log = SwiftyBeaver.self
     
+||||||| merged common ancestors
+
+=======
+
+    private var startDate: Date?
+    private var endDate: Date?
+    private let log = SwiftyBeaver.self
+
+>>>>>>> ReportGenBranch
     private let reportTableView: UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
@@ -27,6 +37,7 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         t.allowsMultipleSelection = false
         return t
     }()
+<<<<<<< HEAD
     
     private lazy var generateButton: UIButton = {
         var button = UIButton(type: .system)
@@ -40,6 +51,26 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         return button
     }()
     
+||||||| merged common ancestors
+
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+=======
+
+    private lazy var generateButton: UIButton = {
+        var button = UIButton(type: .system)
+        button.setTitle("Generate", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: Service.buttonFontSize)
+        button.backgroundColor = Service.mainThemeColor
+        button.layer.cornerRadius = Service.buttonCornerRadius
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.addTarget(self, action: #selector(handleReportGen), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+>>>>>>> ReportGenBranch
     override func viewDidLoad() {
         super.viewDidLoad()
         Service.setupNavBar(controller: self)
@@ -55,6 +86,7 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         view.addSubview(reportTableView)
         setUpTable()
     }
+<<<<<<< HEAD
     
     @objc private func handleReportGen() {
         log.info("Report Gen Triggered")
@@ -108,6 +140,65 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
     
     private func setUpTable() {
         reportTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
+||||||| merged common ancestors
+
+    fileprivate func setUpTable() {
+        view.addSubview(reportTableView)
+=======
+
+    @objc private func handleReportGen() {
+        log.info("Report Gen Triggered")
+        if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid,
+            let sDate = startDate, let eDate = endDate, let email = Auth.auth().currentUser?.email {
+            //Limit users to pull a years worth of data
+            if sDate.year != eDate.year {
+                Service.showAlert(on: self, style: .alert, title: "Input", message: "Please use a maximum range of one year!")
+                return
+            } else {
+                //Set email intially as the one associated with the users account
+                var inputTextField: UITextField?
+                
+                let alert = UIAlertController(title: "Enter email", message: "Please enter the email address you wish the report to be sent to.", preferredStyle: UIAlertControllerStyle.alert)
+
+                alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
+                    self.log.info("User cancelled request for report")
+                }))
+
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
+                    let entryStr: String = (inputTextField?.text)!.trimmingCharacters(in: .whitespaces)
+                    self.log.info("User requested report with email: \(entryStr)")
+                    self.finishSendingReport(uid: uid, year: sDate.year, firstMonth: sDate.month, endMonth: eDate.month, email: entryStr)
+                }))
+                alert.addTextField(configurationHandler: { (textField: UITextField!) in
+                    textField.text = email
+                    textField.textAlignment = .center
+                    inputTextField = textField
+                })
+                self.present(alert, animated: true, completion: nil)
+            }
+        } else {
+            Service.showAlert(on: self, style: .alert, title: "Whoops!", message: "Something went wrong, make sure both dates are set!")
+        }
+    }
+
+    private func finishSendingReport(uid: String, year: Int, firstMonth: Int, endMonth: Int, email: String) {
+        let params = ["uuid": uid,
+            "year": year,
+            "first_Month": firstMonth,
+            "end_Month": endMonth,
+            "email": email] as [String: Any]
+        log.info("Sending summary to \(email)")
+        log.info("Request details \(params.description)")
+        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
+        let headers = ["Content-Type": "application/json"]
+        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
+        Service.showAlert(on: self, style: .alert, title: "Generating Report", message: "Check your email shortly for your generated report!")
+    }
+
+
+    private func setUpTable() {
+        reportTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")
+>>>>>>> ReportGenBranch
         anchorTable()
         reportTableView.delegate = self
         reportTableView.dataSource = self
@@ -115,6 +206,7 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         reportTableView.isScrollEnabled = false
         reportTableView.allowsSelection = true
     }
+<<<<<<< HEAD
     
     private func setupGenerateButton() {
         generateButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
@@ -122,6 +214,17 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         generateButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -10).isActive = true
     }
     
+||||||| merged common ancestors
+
+=======
+
+    private func setupGenerateButton() {
+        generateButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
+        generateButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 10).isActive = true
+        generateButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -10).isActive = true
+    }
+
+>>>>>>> ReportGenBranch
     func anchorTable() {
         reportTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
         reportTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -130,7 +233,17 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+<<<<<<< HEAD
         return 2
+||||||| merged common ancestors
+        return 3
+=======
+        return 2
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+>>>>>>> ReportGenBranch
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -138,6 +251,7 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+<<<<<<< HEAD
         let dateF: DateFormatter = DateFormatter()
         dateF.dateFormat = "dd/MM/yyyy"
         dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
@@ -151,6 +265,33 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
             }
             cell.accessoryType = .disclosureIndicator
             cell.layoutSubviews()
+||||||| merged common ancestors
+        if indexPath.row == 0 {
+            let cell = AUPickerCell(type: .default, reuseIdentifier: "TableCell")
+            cell.values = months
+            cell.selectedRow = 1
+            cell.leftLabel.text = "Start Month"
+            return cell
+        } else if indexPath.row == 1 {
+            let cell = AUPickerCell(type: .default, reuseIdentifier: "TableCell")
+            cell.values = months
+            cell.selectedRow = 1
+            cell.leftLabel.text = "End Month"
+=======
+        let dateF: DateFormatter = DateFormatter()
+        dateF.dateFormat = "dd/MM/yyyy"
+        dateF.timeZone = TimeZone(abbreviation: "Pacific/Auckland")
+
+        if (indexPath.row == 0) {
+            let cell = self.reportTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell
+            cell.textFieldName = "From"
+            if let start = startDate {
+                let startString = dateF.string(from: start)
+                cell.textFieldValue = startString
+            }
+            cell.accessoryType = .disclosureIndicator
+            cell.layoutSubviews()
+>>>>>>> ReportGenBranch
             return cell
         } else {
             let cell = self.reportTableView.dequeueReusableCell(withIdentifier: "graphDateEntry") as! GraphDateEntryCell

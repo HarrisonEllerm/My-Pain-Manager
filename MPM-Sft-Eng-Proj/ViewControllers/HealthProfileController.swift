@@ -48,6 +48,8 @@ class HealthProfileController: UIViewController, UITableViewDataSource, UITableV
         setUpTable()
         setupTableData()
     }
+    
+    
     /**
      A function to show a table data in the health profile and set the data to database
      */

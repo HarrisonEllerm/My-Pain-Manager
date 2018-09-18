@@ -20,7 +20,6 @@ import SwiftyBeaver
 import SwiftSpinner
 import CalendarDateRangePickerViewController
 import NVActivityIndicatorView
-import Alamofire
 
 class SummaryController: UIViewController {
 
@@ -37,7 +36,6 @@ class SummaryController: UIViewController {
     private var dateRangePickerViewController = CalendarDateRangePickerViewController()
     private var loading: NVActivityIndicatorView?
     private var noDataImageView: UIImageView?
-    //private var firstTime = true
 
     private var chartContainer: UIView = {
         let view = UIView()
@@ -82,34 +80,14 @@ class SummaryController: UIViewController {
         navigationController.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor: UIColor.white]
         self.navigationController?.present(navigationController, animated: true, completion: nil)
-
-
-
-
     }
 
-
-    //TODO
     //
     @objc func handleReportButtonOnTap() {
         let reportController = ReportController()
         self.navigationController?.pushViewController(reportController, animated: true)
     }
     
-    private func sendReportGenRequest() {
-        let params = ["uuid": "G0LZ3XNH6JYf9zRtl7ocIvsD3ZD2",
-                      "year": 2018,
-                      "first_Month": 1,
-                      "end_Month": 12,
-                      "email": "harryellerm@gmail.com"] as [String: Any]
-        
-        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
-        
-        let headers = ["Content-Type": "application/json"]
-        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
-        Service.showAlert(on: self, style: .alert, title: "Thanks!", message: "You should recieve a pdf report shortly!")
-    }
-
     /**
         Pulls a users pain/vatigue logs over the month
         they provided when selecting dates. This initial
@@ -118,6 +96,7 @@ class SummaryController: UIViewController {
         further on the client.
     */
     private func getDataForMonths() {
+        log.debug("Getting data for the month")
         refreshData()
         if let sDate = start, let eDate = end {
             //if the chart container contains something remove whats inside it
@@ -129,7 +108,14 @@ class SummaryController: UIViewController {
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
+<<<<<<< HEAD
             
+||||||| merged common ancestors
+
+
+=======
+
+>>>>>>> ReportGenBranch
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 //Note users are restricted accross years due to this
                 let ref = Database.database().reference(withPath: "pain_log_test").child(uid).child(String(sDate.year))
@@ -171,7 +157,7 @@ class SummaryController: UIViewController {
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
-
+                        Service.notifyStaffOfError(#file, "\(#function) \(#line): Error thrown when querying for months data \(error)")
                 }
             }
         }
@@ -467,9 +453,6 @@ extension SummaryController: CalendarDateRangePickerViewControllerDelegate {
             }
             self.navigationController?.dismiss(animated: true, completion: nil)
             getDataForMonths()
-
-
-
         }
     }
 }

@@ -70,8 +70,6 @@ class WelcomeController: UIViewController {
         
     }
     
-    
-    
     /**
         Sets the video player up that is used to  display the rotating
         model behind the login screen. Adds an observer to analyse if

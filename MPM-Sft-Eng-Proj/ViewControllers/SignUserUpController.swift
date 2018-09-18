@@ -102,6 +102,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                 SwiftSpinner.hide()
             })
             log.error("Form was not valid, but validationSuccessful was called.")
+            Service.notifyStaffOfError(#file, "\(#function) \(#line): Form was not valid, but validationSuccessful was called.")
             return
         }
         //Authenticate new user
@@ -111,6 +112,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                     SwiftSpinner.hide()
                 })
                 self.log.error("There was an error creating the new user: \(err.localizedDescription)")
+                Service.notifyStaffOfError(#file, "\(#function) \(#line): There was an error creating the new user: \(err.localizedDescription)")
                 return
             }
             //sucessfully authenticated now store in firebase database
@@ -121,6 +123,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                     SwiftSpinner.hide()
                 })
                 self.log.error("The users UID was not valid, even though the account was created.")
+                Service.notifyStaffOfError(#file, "\(#function) \(#line): The users UID was not valid, even though the account was created.")
                 return
             }
             let dictionaryValues = ["name": name, "email": email,
@@ -135,6 +138,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                         SwiftSpinner.hide()
                     })
                     self.log.error("There was an updating the DB for a new user: \(err.localizedDescription)")
+                     Service.notifyStaffOfError(#file, "\(#function) \(#line): There was an updating the DB for a new user: \(err.localizedDescription)")
                     return
                 }
                 //No error, it validated correctly push back to sign in page
@@ -189,7 +193,6 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
                                 rules: [RequiredRule(message: "Password Required!"),
                                         MinLengthRule(length: 6, message: "Password must be at least 6 characters long!")])
         validator.registerField(nameTextField, rules: [FullNameRule(message: "Please enter your full name!")])
-        
         view.accessibilityIdentifier = "signUserUpController"
     }
     
