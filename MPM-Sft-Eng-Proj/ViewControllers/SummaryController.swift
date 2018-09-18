@@ -108,14 +108,7 @@ class SummaryController: UIViewController {
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
-<<<<<<< HEAD
-            
-||||||| merged common ancestors
 
-
-=======
-
->>>>>>> ReportGenBranch
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 //Note users are restricted accross years due to this
                 let ref = Database.database().reference(withPath: "pain_log_test").child(uid).child(String(sDate.year))

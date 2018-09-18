@@ -211,12 +211,6 @@ SPEC CHECKSUMS:
   SwiftValidator: 25ded5ca1f10c05adf57f6ac82a72d28ac8d91af
   SwiftyBeaver: e45759613e50b522b0e6f53b1f0f14389b45ca34
 
-<<<<<<< HEAD
-PODFILE CHECKSUM: eb3a50573442320c0efc5b9e94195edc8ea14118
-||||||| merged common ancestors
-PODFILE CHECKSUM: 85c5301ac0084d43ee7ce466246c4f524bc44cad
-=======
 PODFILE CHECKSUM: 9d7f029f3a4fe51759633aff19cb2abd57378f59
->>>>>>> ReportGenBranch
 
 COCOAPODS: 1.5.3

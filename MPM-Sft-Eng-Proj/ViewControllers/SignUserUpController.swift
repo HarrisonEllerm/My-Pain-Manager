@@ -31,7 +31,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         label.textColor = UIColor.white
         return label
     }()
-    // Creates alreadyHaveAccountButton in sing up page to take a user back to the sing in page.
+    
     private let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
         let attributeTitle = NSMutableAttributedString(string: "Already have an account? ", attributes: [NSAttributedStringKey.foregroundColor: Service.mainThemeColor, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)])
@@ -40,7 +40,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         button.addTarget(self, action: #selector(signInAction), for: .touchUpInside)
         return button
     }()
-    // creates name text field in sign up page.
+ 
     private let nameTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "name", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
@@ -51,7 +51,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
-    // creates email text field in sign up page.
+    
     private let emailTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "email", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
@@ -62,7 +62,7 @@ class SignUserUpController: UIViewController, UITextFieldDelegate, ValidationDel
         textField.setBottomBorder(backgroundColor: UIColor.white, borderColor: .white)
         return textField
     }()
-    // creates password text field in sign up page.
+  
     private let passwordTextField: UITextField = {
         let textField = UITextField()
         let attributedPlaceholder = NSAttributedString(string: "password", attributes: [NSAttributedStringKey.foregroundColor: UIColor.white])
