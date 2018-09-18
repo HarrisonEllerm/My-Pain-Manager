@@ -103,6 +103,11 @@
 		38B9E591209EF5CC00773B0F /* neck_R.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E539209EF5CB00773B0F /* neck_R.obj */; };
 		38B9E592209EF5CC00773B0F /* triceptR.obj in Resources */ = {isa = PBXBuildFile; fileRef = 38B9E53A209EF5CC00773B0F /* triceptR.obj */; };
 		38BC72F42144B8530000629A /* ModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BC72F32144B8530000629A /* ModelBuilder.swift */; };
+		38DC0C102150FF31009F425B /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C0F2150FF31009F425B /* NotificationsController.swift */; };
+		38DC0C1221510581009F425B /* PeriodEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C1121510581009F425B /* PeriodEntryCell.swift */; };
+		38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */; };
+		38DC0C1821510CC4009F425B /* TimeEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C1721510CC4009F425B /* TimeEntryCell.swift */; };
+		38DC0C1A2151106D009F425B /* TimeEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */; };
 		6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */; };
 		6F04659A209AC2FF0066FA14 /* GenderEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */; };
 		6F04659C209ACB860066FA14 /* HeightEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659B209ACB860066FA14 /* HeightEntryCell.swift */; };
@@ -266,6 +271,11 @@
 		38B9E53A209EF5CC00773B0F /* triceptR.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = triceptR.obj; sourceTree = "<group>"; };
 		38B9E5A0209EF80700773B0F /* man_skele.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = man_skele.obj; sourceTree = "<group>"; };
 		38BC72F32144B8530000629A /* ModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelBuilder.swift; sourceTree = "<group>"; };
+		38DC0C0F2150FF31009F425B /* NotificationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsController.swift; sourceTree = "<group>"; };
+		38DC0C1121510581009F425B /* PeriodEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCell.swift; sourceTree = "<group>"; };
+		38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCellDelegate.swift; sourceTree = "<group>"; };
+		38DC0C1721510CC4009F425B /* TimeEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCell.swift; sourceTree = "<group>"; };
+		38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCellDelegate.swift; sourceTree = "<group>"; };
 		4B8FAAEE662DE03393C1BA20 /* Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderEntryCell.swift; sourceTree = "<group>"; };
 		6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderEntryCellDelegate.swift; sourceTree = "<group>"; };
@@ -528,6 +538,7 @@
 				6F1705D12085E8B600F6265C /* WelcomeController.swift */,
 				38324DF0208B14FC005605B9 /* SummaryController.swift */,
 				6F26AAB82097C796009A3446 /* HealthProfileController.swift */,
+				38DC0C0F2150FF31009F425B /* NotificationsController.swift */,
 				6FD4A77820A6D97D00F10250 /* LoginViewController.swift */,
 				6F253ECB214F09A1003D90A6 /* ReportController.swift */,
 			);
@@ -562,11 +573,15 @@
 				6F0EFF7020B57134004AAD2E /* PageCell.swift */,
 				6F26AA9B20959707009A3446 /* ButtonCell.swift */,
 				6F26AABA2097D06D009A3446 /* DateEntryCell.swift */,
+				38DC0C1121510581009F425B /* PeriodEntryCell.swift */,
+				38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */,
+				38DC0C1721510CC4009F425B /* TimeEntryCell.swift */,
 				6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */,
 				6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */,
 				6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */,
 				6F04659B209ACB860066FA14 /* HeightEntryCell.swift */,
 				6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */,
+				38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */,
 				6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */,
 				6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */,
 				6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */,
@@ -971,6 +986,7 @@
 				38BC72F42144B8530000629A /* ModelBuilder.swift in Sources */,
 				6F26AAB92097C796009A3446 /* HealthProfileController.swift in Sources */,
 				6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */,
+				38DC0C1821510CC4009F425B /* TimeEntryCell.swift in Sources */,
 				6F0EFF7120B57134004AAD2E /* PageCell.swift in Sources */,
 				6F1705D22085E8B600F6265C /* WelcomeController.swift in Sources */,
 				6F439B7821183EB00002A960 /* SwiftyBeaverCredentials.swift in Sources */,
@@ -982,6 +998,7 @@
 				6F26AABB2097D06D009A3446 /* DateEntryCell.swift in Sources */,
 				6F4FCA89213DEAA700D4882F /* AASeriesElement.swift in Sources */,
 				6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */,
+				38DC0C1A2151106D009F425B /* TimeEntryCellDelegate.swift in Sources */,
 				6F0465A0209B1EB10066FA14 /* WeightEntryCell.swift in Sources */,
 				6F26AA982095952E009A3446 /* NoButtonCell.swift in Sources */,
 				6F04659A209AC2FF0066FA14 /* GenderEntryCellDelegate.swift in Sources */,
@@ -989,18 +1006,21 @@
 				6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */,
 				6F26AAB720974524009A3446 /* Object.swift in Sources */,
 				6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */,
+				38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */,
 				6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */,
 				6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */,
 				6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */,
 				6F0EFF4520B19274004AAD2E /* AlertDialog.swift in Sources */,
 				6F0465A2209B1F350066FA14 /* WeightEntryCellDelegate.swift in Sources */,
 				6F0EFF7320B57142004AAD2E /* PageModel.swift in Sources */,
+				38DC0C102150FF31009F425B /* NotificationsController.swift in Sources */,
 				6FE4D8B1208AFAD2000F8B62 /* LoginFlowWorker.swift in Sources */,
 				6F253ECC214F09A1003D90A6 /* ReportController.swift in Sources */,
 				6F26AAB5209744FE009A3446 /* ObjectWrapper.swift in Sources */,
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,
 				6F4FCA87213DEAA700D4882F /* AAChartModel.swift in Sources */,
 				6F1705D62085E8EF00F6265C /* Service.swift in Sources */,
+				38DC0C1221510581009F425B /* PeriodEntryCell.swift in Sources */,
 				6F1705CE2085E81E00F6265C /* SignUserUpController.swift in Sources */,
 				6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */,
 				6F4FCA86213DEAA700D4882F /* AAChartView.swift in Sources */,

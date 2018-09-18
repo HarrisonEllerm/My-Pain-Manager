@@ -295,11 +295,17 @@ class UserController: UIViewController, UITableViewDataSource, UITableViewDelega
         if(indexPath.row == 0) {
             let healthProfileController = HealthProfileController()
             self.navigationController?.pushViewController(healthProfileController, animated: true)
-        } else if (indexPath.row == 5) {
+        }else if (indexPath.row == 1){
+            let healthProfileController = NotificationsController()
+            self.navigationController?.pushViewController(healthProfileController, animated: true)
+        }
+        else if (indexPath.row == 5) {
 
         }
     }
+    
 
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
@@ -309,10 +315,10 @@ class UserController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.accessoryType = .disclosureIndicator
             return cell
         } else if indexPath.row == 1 {
-            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            let cell = self.settingsTableView.dequeueReusableCell(withIdentifier: "noButtonCell") as! NoButtonCell
             cell.mainImage = data[indexPath.row].image
             cell.name = data[indexPath.row].message
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            cell.accessoryType = .disclosureIndicator
             cell.id = 1
             return cell
         } else if indexPath.row == 2 {
