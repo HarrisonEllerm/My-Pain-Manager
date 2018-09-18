@@ -120,11 +120,6 @@ class SummaryController: UIViewController {
     private func getDataForMonths() {
         refreshData()
         if let sDate = start, let eDate = end {
-
-            //figure out if a graph has already been drawn.
-            //if it has been drawn we dont need to do any of this.
-
-
             //if the chart container contains something remove whats inside it
             for subView in self.chartContainer.subviews {
                 subView.removeFromSuperview()
@@ -134,11 +129,17 @@ class SummaryController: UIViewController {
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
-
-
+            
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 //Note users are restricted accross years due to this
                 let ref = Database.database().reference(withPath: "pain_log_test").child(uid).child(String(sDate.year))
+                ///IMPORTANT///
+                // -> Telling firebase to download and cache
+                //    all data from this reference. This is important
+                //    because otherwise the query will fail (as we have
+                //    enabled persistance in the app delegate).
+                ref.keepSynced(true)
+                //////////////
                 ref.queryOrdered(byChild: "month_num").queryStarting(atValue: sDate.month)
                     .queryEnding(atValue: eDate.month)
                     .observeSingleEvent(of: .value, with: { (snapshot) in

@@ -52,11 +52,7 @@ class HomeController: UIViewController {
         super.viewDidAppear(animated)
         
         
-        UIView.animate(withDuration: 5, animations: {
-            //self.myFirstLabel.alpha = 1.0
-            //self.myFirstButton.alpha = 1.0
-            //self.mySecondButton.alpha = 1.0
-            
+        UIView.animate(withDuration: 2.5, animations: {
             self.scnView.alpha = CGFloat(1.0)
             return
         })
