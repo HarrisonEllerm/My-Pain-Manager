@@ -65,21 +65,44 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
                 Service.showAlert(on: self, style: .alert, title: "Input", message: "Please use a maximum range of one year!")
                 return
             } else {
-                let params = ["uuid": uid,
-                    "year": sDate.year,
-                    "first_Month": sDate.month,
-                    "end_Month": eDate.month,
-                    "email": email] as [String: Any]
-                log.info("Sending summary to \(email)")
-                log.info("Request details \(params.description)")
-                let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
-                let headers = ["Content-Type": "application/json"]
-                Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
-                Service.showAlert(on: self, style: .alert, title: "Generating Report", message: "Check your email shortly for your generated report!")
+                //Set email intially as the one associated with the users account
+                var inputTextField: UITextField?
+                
+                let alert = UIAlertController(title: "Enter email", message: "Please enter the email address you wish the report to be sent to.", preferredStyle: UIAlertControllerStyle.alert)
+
+                alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.default, handler: { (action) -> Void in
+                    self.log.info("User cancelled request for report")
+                }))
+
+                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
+                    let entryStr: String = (inputTextField?.text)!.trimmingCharacters(in: .whitespaces)
+                    self.log.info("User requested report with email: \(entryStr)")
+                    self.finishSendingReport(uid: uid, year: sDate.year, firstMonth: sDate.month, endMonth: eDate.month, email: entryStr)
+                }))
+                alert.addTextField(configurationHandler: { (textField: UITextField!) in
+                    textField.text = email
+                    textField.textAlignment = .center
+                    inputTextField = textField
+                })
+                self.present(alert, animated: true, completion: nil)
             }
         } else {
             Service.showAlert(on: self, style: .alert, title: "Whoops!", message: "Something went wrong, make sure both dates are set!")
         }
+    }
+
+    private func finishSendingReport(uid: String, year: Int, firstMonth: Int, endMonth: Int, email: String) {
+        let params = ["uuid": uid,
+            "year": year,
+            "first_Month": firstMonth,
+            "end_Month": endMonth,
+            "email": email] as [String: Any]
+        log.info("Sending summary to \(email)")
+        log.info("Request details \(params.description)")
+        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
+        let headers = ["Content-Type": "application/json"]
+        Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
+        Service.showAlert(on: self, style: .alert, title: "Generating Report", message: "Check your email shortly for your generated report!")
     }
 
 
