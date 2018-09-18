@@ -96,6 +96,7 @@ class SummaryController: UIViewController {
         further on the client.
     */
     private func getDataForMonths() {
+        log.debug("Getting data for the month")
         refreshData()
         if let sDate = start, let eDate = end {
             //if the chart container contains something remove whats inside it
@@ -107,7 +108,6 @@ class SummaryController: UIViewController {
             self.noDataImageView?.isHidden = true
             self.loading?.isHidden = false
             loading?.startAnimating()
-
 
             if Auth.auth().currentUser != nil, let uid = Auth.auth().currentUser?.uid {
                 //Note users are restricted accross years due to this
