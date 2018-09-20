@@ -67,7 +67,7 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
         view.addSubview(label)
         NotificationTableView.register(PeriodEntryCell.self, forCellReuseIdentifier: "periodEntry")
         NotificationTableView.register(TimeEntryCell.self, forCellReuseIdentifier: "timeEntry")
-        NotificationTableView.register(ButtonCell.self, forCellReuseIdentifier: "buttonCell")
+        NotificationTableView.register(EnableButtonCell.self, forCellReuseIdentifier: "buttonCell")
         anchorTable()
         NotificationTableView.delegate = self
         NotificationTableView.dataSource = self
@@ -103,7 +103,7 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
             cell.layoutSubviews()
             return cell
         } else {
-            let cell = self.NotificationTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! ButtonCell
+            let cell = self.NotificationTableView.dequeueReusableCell(withIdentifier: "buttonCell") as! EnableButtonCell
             cell.name = "Enabled"
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell

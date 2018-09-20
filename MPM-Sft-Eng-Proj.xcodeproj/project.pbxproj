@@ -108,6 +108,7 @@
 		38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */; };
 		38DC0C1821510CC4009F425B /* TimeEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C1721510CC4009F425B /* TimeEntryCell.swift */; };
 		38DC0C1A2151106D009F425B /* TimeEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */; };
+		38F3E0B0215390A600555635 /* EnableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F3E0AF215390A600555635 /* EnableButtonCell.swift */; };
 		6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */; };
 		6F04659A209AC2FF0066FA14 /* GenderEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */; };
 		6F04659C209ACB860066FA14 /* HeightEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F04659B209ACB860066FA14 /* HeightEntryCell.swift */; };
@@ -276,6 +277,7 @@
 		38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCellDelegate.swift; sourceTree = "<group>"; };
 		38DC0C1721510CC4009F425B /* TimeEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCell.swift; sourceTree = "<group>"; };
 		38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCellDelegate.swift; sourceTree = "<group>"; };
+		38F3E0AF215390A600555635 /* EnableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableButtonCell.swift; sourceTree = "<group>"; };
 		4B8FAAEE662DE03393C1BA20 /* Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MPM-Sft-Eng-ProjUITests/Pods-MPM-Sft-Eng-ProjUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderEntryCell.swift; sourceTree = "<group>"; };
 		6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderEntryCellDelegate.swift; sourceTree = "<group>"; };
@@ -574,6 +576,7 @@
 				6F26AA9B20959707009A3446 /* ButtonCell.swift */,
 				6F26AABA2097D06D009A3446 /* DateEntryCell.swift */,
 				38DC0C1121510581009F425B /* PeriodEntryCell.swift */,
+				38F3E0AF215390A600555635 /* EnableButtonCell.swift */,
 				38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */,
 				38DC0C1721510CC4009F425B /* TimeEntryCell.swift */,
 				6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */,
@@ -1004,6 +1007,7 @@
 				6F04659A209AC2FF0066FA14 /* GenderEntryCellDelegate.swift in Sources */,
 				6F1705D42085E8D300F6265C /* Extensions.swift in Sources */,
 				6F17059A2085DFE100F6265C /* AppDelegate.swift in Sources */,
+				38F3E0B0215390A600555635 /* EnableButtonCell.swift in Sources */,
 				6F26AAB720974524009A3446 /* Object.swift in Sources */,
 				6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */,
 				38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */,
