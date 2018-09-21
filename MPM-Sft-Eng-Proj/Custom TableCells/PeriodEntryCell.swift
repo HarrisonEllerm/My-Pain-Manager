@@ -11,14 +11,16 @@ import Foundation
 import UIKit
 import FirebaseAuth
 import FirebaseDatabase
+import SwiftyBeaver
 
 class PeriodEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataSource {
+    
+    let log = SwiftyBeaver.self
     
     let options = ["Daily", "Weekly", "Yearly"]
     var textFieldName: String?
     var textFieldValue: String?
     var delegate: PeriodEntryCellDelegate?
-    
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -57,7 +59,6 @@ class PeriodEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataS
         inputAccessoryToolbar.setItems([ spaceButton, doneButton], animated: false)
         textField.inputView = gp
         textField.inputAccessoryView = inputAccessoryToolbar
-        
         let gesture = UITapGestureRecognizer(target: self, action: #selector(PeriodEntryCell.didSelectCell))
         addGestureRecognizer(gesture)
         //Initial option
@@ -71,21 +72,20 @@ class PeriodEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataS
     
     @objc func doneClick() {
         self.endEditing(true)
-        //guard let inputText = textField.text else { return }
+        if let period = textField.text {
+             delegate?.textFieldInCell(cell: self, editingChangedInTextField: period)
+        }
     }
     
     func setupViews() {
-        
         addSubview(nameLabel)
         addSubview(textField)
         nameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        
         textField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        
     }
     
     open override func layoutSubviews() {
@@ -115,15 +115,14 @@ class PeriodEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataS
         layoutSubviews()
         
     }
-    
 }
 
 extension PeriodEntryCell {
     
     @objc func didSelectCell() {
         textField.becomeFirstResponder()
-        delegate?.textFieldInCell(didSelect: self)
     }
+    
     @objc func textFieldValueChanged(_ sender: UITextField) {
         if let text = sender.text {
             delegate?.textFieldInCell(cell: self, editingChangedInTextField: text)

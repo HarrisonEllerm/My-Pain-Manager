@@ -11,6 +11,5 @@ import Foundation
 import UIKit
 
 protocol TimeEntryCellDelegate {
-    func textFieldInCell(didSelect cell: TimeEntryCell)
     func textFieldInCell(cell: TimeEntryCell, editingChangedInTextField newText:String)
 }

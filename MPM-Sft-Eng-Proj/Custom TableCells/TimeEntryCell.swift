@@ -36,7 +36,7 @@ class TimeEntryCell: UITableViewCell {
     let dp: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .time
-        datePicker.maximumDate = Date()
+        datePicker.maximumDate = nil
         return datePicker
     }()
     
@@ -48,30 +48,27 @@ class TimeEntryCell: UITableViewCell {
         return toolBar
     }()
     
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
         dp.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        
         let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(doneClick))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         inputAccessoryToolbar.setItems([ spaceButton, doneButton], animated: false)
         textField.inputView = dp
         textField.inputAccessoryView = inputAccessoryToolbar
-        
         let gesture = UITapGestureRecognizer(target: self, action: #selector(DateEntryCell.didSelectCell))
         addGestureRecognizer(gesture)
     }
     
     @objc func datePickerChanged(sender: UIDatePicker) {
         let formatter = DateFormatter()
-        formatter.dateFormat = "hh:mm"
+        formatter.dateFormat = "hh:mm a"
+        formatter.amSymbol = "AM"
+        formatter.pmSymbol = "PM"
         textFieldValue = formatter.string(from: sender.date)
-        //formatter.string(from: sender.date)
         layoutSubviews()
     }
-    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -79,20 +76,20 @@ class TimeEntryCell: UITableViewCell {
     
     @objc func doneClick() {
         self.endEditing(true)
+        if let period = textField.text {
+            delegate?.textFieldInCell(cell: self, editingChangedInTextField: period)
+        }
     }
     
     func setupViews() {
-        
         addSubview(nameLabel)
         addSubview(textField)
         nameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 5).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        
         textField.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -25).isActive = true
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
-        
     }
     
     open override func layoutSubviews() {
@@ -111,8 +108,8 @@ extension TimeEntryCell {
     
     @objc func didSelectCell() {
         textField.becomeFirstResponder()
-        delegate?.textFieldInCell(didSelect: self)
     }
+    
     @objc func textFieldValueChanged(_ sender: UITextField) {
         if let text = sender.text {
             delegate?.textFieldInCell(cell: self, editingChangedInTextField: text)

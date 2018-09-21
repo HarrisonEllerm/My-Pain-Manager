@@ -6,14 +6,6 @@
 //  Copyright © 2018 Harrison Ellerm. All rights reserved.
 //
 
-//
-//  ButtonCell.swift
-//  MPM-Sft-Eng-Proj
-//
-//  Created by Harrison Ellerm on 29/04/18.
-//  Copyright © 2018 Harrison Ellerm. All rights reserved.
-//
-
 import UIKit
 
 class EnableButtonCell: UITableViewCell {
@@ -21,6 +13,7 @@ class EnableButtonCell: UITableViewCell {
     var name: String?
     var mainImage: UIImage?
     var id: Int?
+    var delegate: EnableButtonCellDelegate?
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -29,19 +22,11 @@ class EnableButtonCell: UITableViewCell {
         return label
     }()
     
-//    var mainImageView : UIImageView = {
-//        var imageView = UIImageView(frame: CGRect(x: 5, y: 5, width: 30, height: 30))
-//        imageView.contentMode = .scaleAspectFit
-//        return imageView
-//    }()
-    
     var switchButton: UISwitch = {
         let switchButton = UISwitch(frame:CGRect(x: UIScreen.main.bounds.width-60, y: 0, width: 150, height: 300))
         switchButton.translatesAutoresizingMaskIntoConstraints = false
-        switchButton.isOn = true
-        switchButton.setOn(true, animated: false)
+        switchButton.isOn = false
         switchButton.onTintColor = UIColor(r: 254, g: 162, b: 25)
-        
         return switchButton
     }()
     
@@ -55,21 +40,15 @@ class EnableButtonCell: UITableViewCell {
     }
     
     func setupViews() {
-        
-        //addSubview(mainImageView)
         addSubview(nameLabel)
         addSubview(switchButton)
-        
-       // nameLabel.leftAnchor.constraint(equalTo: self.mainImageView.rightAnchor, constant: 10).isActive = true
-        //nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor,constant: 10).isActive = true
         nameLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
         nameLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         nameLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        
         switchButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true
         switchButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 5).isActive = true
-        switchButton.addTarget(self, action: #selector(handleAction), for: UIControlEvents.valueChanged)
+        switchButton.addTarget(self, action: #selector(notifyDelegate), for: UIControlEvents.valueChanged)
     }
     
     override func layoutSubviews() {
@@ -77,13 +56,15 @@ class EnableButtonCell: UITableViewCell {
         if let message = name {
             nameLabel.text = message
         }
-        //if let image = mainImage {
-          //  mainImageView.image = image
-        //}
     }
     
-    @objc func handleAction() {
-        guard let idOfCaller = id else { return }
-        print("tapped with cell id: \(idOfCaller)")
+    @objc private func notifyDelegate() {
+        delegate?.buttonActivated(switchButton)
     }
 }
+
+protocol EnableButtonCellDelegate {
+    func buttonActivated(_ button: UISwitch)
+}
+
+

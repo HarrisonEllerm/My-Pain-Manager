@@ -13,11 +13,13 @@ import FirebaseStorage
 import FirebaseDatabase
 import SwiftSpinner
 import SwiftyBeaver
+import EventKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginFlowWorker {
 
     var window: UIWindow?
+    var eventStore: EKEventStore?
     var mainTabBarController: MainTabBarController?
     let log = SwiftyBeaver.self
 
@@ -32,6 +34,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, LoginF
         log.addDestination(cloud)
 
         //Configure Firebase
+        FirebaseConfiguration.shared.setLoggerLevel(.min)
+        FirebaseConfiguration.shared.analyticsConfiguration.setAnalyticsCollectionEnabled(false)
         FirebaseApp.configure()
         //Enable Disk Persistence
         Database.database().isPersistenceEnabled = true

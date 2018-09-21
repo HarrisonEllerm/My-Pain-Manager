@@ -13,7 +13,7 @@ import SwiftyBeaver
 import Alamofire
 
 class ReportController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
+  
     private var startDate: Date?
     private var endDate: Date?
     private let log = SwiftyBeaver.self

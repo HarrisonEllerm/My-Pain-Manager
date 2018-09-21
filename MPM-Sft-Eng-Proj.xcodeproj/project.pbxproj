@@ -105,7 +105,6 @@
 		38BC72F42144B8530000629A /* ModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BC72F32144B8530000629A /* ModelBuilder.swift */; };
 		38DC0C102150FF31009F425B /* NotificationsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C0F2150FF31009F425B /* NotificationsController.swift */; };
 		38DC0C1221510581009F425B /* PeriodEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C1121510581009F425B /* PeriodEntryCell.swift */; };
-		38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */; };
 		38DC0C1821510CC4009F425B /* TimeEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C1721510CC4009F425B /* TimeEntryCell.swift */; };
 		38DC0C1A2151106D009F425B /* TimeEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */; };
 		38F3E0B0215390A600555635 /* EnableButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F3E0AF215390A600555635 /* EnableButtonCell.swift */; };
@@ -154,6 +153,7 @@
 		6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */; };
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
+		6F91F27A2154EED1005B6CDC /* PeriodEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F91F2792154EED1005B6CDC /* PeriodEntryCellDelegate.swift */; };
 		6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
@@ -274,7 +274,6 @@
 		38BC72F32144B8530000629A /* ModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelBuilder.swift; sourceTree = "<group>"; };
 		38DC0C0F2150FF31009F425B /* NotificationsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsController.swift; sourceTree = "<group>"; };
 		38DC0C1121510581009F425B /* PeriodEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCell.swift; sourceTree = "<group>"; };
-		38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCellDelegate.swift; sourceTree = "<group>"; };
 		38DC0C1721510CC4009F425B /* TimeEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCell.swift; sourceTree = "<group>"; };
 		38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeEntryCellDelegate.swift; sourceTree = "<group>"; };
 		38F3E0AF215390A600555635 /* EnableButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableButtonCell.swift; sourceTree = "<group>"; };
@@ -328,6 +327,7 @@
 		6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCell.swift; sourceTree = "<group>"; };
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
+		6F91F2792154EED1005B6CDC /* PeriodEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FatigueAlertDialog.swift; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -576,15 +576,15 @@
 				6F26AA9B20959707009A3446 /* ButtonCell.swift */,
 				6F26AABA2097D06D009A3446 /* DateEntryCell.swift */,
 				38DC0C1121510581009F425B /* PeriodEntryCell.swift */,
+				6F91F2792154EED1005B6CDC /* PeriodEntryCellDelegate.swift */,
 				38F3E0AF215390A600555635 /* EnableButtonCell.swift */,
-				38DC0C13215105EE009F425B /* PeriodEntryCellDelegate.swift */,
 				38DC0C1721510CC4009F425B /* TimeEntryCell.swift */,
+				38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */,
 				6F26AABC2097D2EA009A3446 /* DateEntryCellDelegate.swift */,
 				6F046597209ABFDC0066FA14 /* GenderEntryCell.swift */,
 				6F046599209AC2FF0066FA14 /* GenderEntryCellDelegate.swift */,
 				6F04659B209ACB860066FA14 /* HeightEntryCell.swift */,
 				6F04659D209ACBB60066FA14 /* HeightEntryCellDelegate.swift */,
-				38DC0C192151106D009F425B /* TimeEntryCellDelegate.swift */,
 				6F04659F209B1EB10066FA14 /* WeightEntryCell.swift */,
 				6F0465A1209B1F350066FA14 /* WeightEntryCellDelegate.swift */,
 				6F569A5C210BEAD900AC644A /* GraphDateEntryCell.swift */,
@@ -1010,7 +1010,6 @@
 				38F3E0B0215390A600555635 /* EnableButtonCell.swift in Sources */,
 				6F26AAB720974524009A3446 /* Object.swift in Sources */,
 				6F04659E209ACBB60066FA14 /* HeightEntryCellDelegate.swift in Sources */,
-				38DC0C14215105EE009F425B /* PeriodEntryCellDelegate.swift in Sources */,
 				6F046598209ABFDC0066FA14 /* GenderEntryCell.swift in Sources */,
 				6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */,
 				6F569A5D210BEAD900AC644A /* GraphDateEntryCell.swift in Sources */,
@@ -1024,6 +1023,7 @@
 				6F26AA9C20959707009A3446 /* ButtonCell.swift in Sources */,
 				6F4FCA87213DEAA700D4882F /* AAChartModel.swift in Sources */,
 				6F1705D62085E8EF00F6265C /* Service.swift in Sources */,
+				6F91F27A2154EED1005B6CDC /* PeriodEntryCellDelegate.swift in Sources */,
 				38DC0C1221510581009F425B /* PeriodEntryCell.swift in Sources */,
 				6F1705CE2085E81E00F6265C /* SignUserUpController.swift in Sources */,
 				6F26AA9A20959580009A3446 /* GenericHeader.swift in Sources */,
