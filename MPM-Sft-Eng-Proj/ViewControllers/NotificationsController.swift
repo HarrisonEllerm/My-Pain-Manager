@@ -28,12 +28,9 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
     var time: String = "12:00 PM"
     var enableCell: EnableButtonCell?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var parts: [String]?
     var reminder: EKEvent?
+    private var data = [NotificationCellData]()
 
-
-    private var window: UIWindow?
-    // show the view table
     private let NotificationTableView: UITableView = {
         let t = UITableView()
         t.translatesAutoresizingMaskIntoConstraints = false
@@ -43,10 +40,6 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
         t.allowsMultipleSelection = false
         return t
     }()
-
-    let label = UILabel()
-
-    private var data = [NotificationCellData]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,16 +53,17 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
         setupTableData()
     }
 
+    /**
+        Sets up the intial values for the table.
+    */
     private func setupTableData() {
         self.data = [NotificationCellData.init(message: "Period", value: "Daily"),
             NotificationCellData.init(message: "Time", value: "12:00 PM"),
             NotificationCellData.init(message: "EnableNotificaitons", value: "False")]
     }
 
-
     fileprivate func setUpTable() {
         view.addSubview(NotificationTableView)
-        view.addSubview(label)
         NotificationTableView.register(PeriodEntryCell.self, forCellReuseIdentifier: "periodEntry")
         NotificationTableView.register(TimeEntryCell.self, forCellReuseIdentifier: "timeEntry")
         NotificationTableView.register(EnableButtonCell.self, forCellReuseIdentifier: "buttonCell")
@@ -129,6 +123,16 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
         }
     }
 
+    /**
+        Creates an event reminding the user to log an entry
+        at a specified time, repeating over a specified period.
+        This function also attaches an alarm to the event, allowing
+        the application to prompt them even if the application isn't
+        running, or is running in the background.
+     
+        - Note: The event store should only ever be created once,
+                hence it is a field within the application delegate.
+    */
     private func createReminder() {
         if let eventStore = appDelegate.eventStore {
             reminder = EKEvent(eventStore: eventStore)
@@ -166,6 +170,7 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
                         try eventStore.save(reminder!, span: EKSpan.thisEvent, commit: true)
                     } catch let error {
                         log.error(error)
+                        Service.notifyStaffOfError(#file, "\(#function) \(#line): There was an error saving the users event: \(error.localizedDescription)")
                     }
                 }
             }
@@ -173,14 +178,35 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
     }
 }
 
+/**
+    This extension handles all of the delegate tasks that the
+    view controller needs to be notified of, for example, setting
+    the period and time, and responding to the enabling of notifications
+    or disabiling of notifications.
+*/
 extension NotificationsController: EnableButtonCellDelegate, PeriodEntryCellDelegate, TimeEntryCellDelegate {
 
-    func buttonActivated(_ button: UISwitch) {
+
+    /**
+        Called when the enabled button is enabled/disabled. This then
+        triggers the process of creating a reminder (first intializing
+        the users event store if one does not exist).
+     
+        - Note: the user will have to grant permission for notifications
+                to be enabled.
+    */
+    internal func buttonActivated(_ button: UISwitch) {
         if button.isOn {
             if appDelegate.eventStore == nil {
                 appDelegate.eventStore = EKEventStore()
                 appDelegate.eventStore?.requestAccess(to: EKEntityType.event, completion:
                         { (granted, error) in
+                            //If an error ocurred, log, notify and then exit
+                            if let err = error {
+                                self.log.error(err)
+                                Service.notifyStaffOfError(#file, "\(#function) \(#line): There was an error requesting access to the users event store: \(err.localizedDescription)")
+                                return
+                            }
                             if !granted {
                                 /**
                                     If user hasn't granted permissions, dont enable notifications.
@@ -189,33 +215,39 @@ extension NotificationsController: EnableButtonCellDelegate, PeriodEntryCellDele
                                     them manually.
                                  */
                                 DispatchQueue.main.sync {
-                                    Service.showAlert(on: self, style: .alert, title: "Whoops", message: "We cannot enable notifications without permission! If you chang your mind, you can enable reminders in Settings -> MyPainManager.")
+                                    Service.showAlert(on: self, style: .alert, title: "Whoops", message: "We cannot enable notifications without permission! If you chang your mind, you can enable access in Settings -> MyPainManager.")
                                     if let buttonCell = self.enableCell {
                                         buttonCell.switchButton.setOn(false, animated: true)
                                         buttonCell.layoutSubviews()
                                         return
                                     }
                                 }
+
                             } else {
                                 //User has granted permission, and event store was initially nil
                                 self.createReminder()
                             }
                     })
             } else {
-                print("Event Store not nil")
                 self.createReminder()
             }
+            //User disabled notifications
         } else {
             turnOffReminders()
         }
     }
 
-
-    func textFieldInCell(cell: PeriodEntryCell, editingChangedInTextField newText: String) {
+    /**
+        Called when the period cell is set.
+    */
+    internal func textFieldInCell(cell: PeriodEntryCell, editingChangedInTextField newText: String) {
         period = newText
     }
 
-    func textFieldInCell(cell: TimeEntryCell, editingChangedInTextField newText: String) {
+    /**
+        Called when the time cell is set.
+    */
+    internal func textFieldInCell(cell: TimeEntryCell, editingChangedInTextField newText: String) {
         time = newText
     }
 }
