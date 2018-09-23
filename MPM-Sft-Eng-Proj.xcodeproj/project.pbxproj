@@ -154,6 +154,7 @@
 		6F569A5F210BEC1700AC644A /* GraphDateEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */; };
 		6F5AD2FD20E329F200A9B4F6 /* GradientSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */; };
 		6F91F27A2154EED1005B6CDC /* PeriodEntryCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F91F2792154EED1005B6CDC /* PeriodEntryCellDelegate.swift */; };
+		6F91F27C21572B9C005B6CDC /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F91F27B21572B9C005B6CDC /* Default-568h@2x.png */; };
 		6F9308FC20E4561D001C09D5 /* FatigueAlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */; };
 		6FD4A77920A6D97D00F10250 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD4A77820A6D97D00F10250 /* LoginViewController.swift */; };
 		6FE4D8AF208AF89D000F8B62 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */; };
@@ -328,6 +329,7 @@
 		6F569A5E210BEC1700AC644A /* GraphDateEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphDateEntryCellDelegate.swift; sourceTree = "<group>"; };
 		6F5AD2FC20E329F200A9B4F6 /* GradientSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSlider.swift; sourceTree = "<group>"; };
 		6F91F2792154EED1005B6CDC /* PeriodEntryCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeriodEntryCellDelegate.swift; sourceTree = "<group>"; };
+		6F91F27B21572B9C005B6CDC /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		6F9308FB20E4561D001C09D5 /* FatigueAlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FatigueAlertDialog.swift; sourceTree = "<group>"; };
 		6FD4A77820A6D97D00F10250 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		6FE4D8AE208AF89C000F8B62 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -482,6 +484,7 @@
 		6F17058D2085DFE100F6265C = {
 			isa = PBXGroup;
 			children = (
+				6F91F27B21572B9C005B6CDC /* Default-568h@2x.png */,
 				6F5AD2FB20E329D300A9B4F6 /* ExternalLibraries */,
 				3876397E20B90A59009AA4F9 /* hitmaps3.bundle */,
 				6F1705982085DFE100F6265C /* MPM-Sft-Eng-Proj */,
@@ -775,6 +778,7 @@
 				38B9E591209EF5CC00773B0F /* neck_R.obj in Resources */,
 				38B9E571209EF5CC00773B0F /* forearmR3.obj in Resources */,
 				38B9E542209EF5CC00773B0F /* thigh_L3.obj in Resources */,
+				6F91F27C21572B9C005B6CDC /* Default-568h@2x.png in Resources */,
 				380D21BA21114DB700BB3921 /* Man_Skin2.obj in Resources */,
 				38B9E579209EF5CC00773B0F /* upperbumR.obj in Resources */,
 				38B9E557209EF5CC00773B0F /* forearm6L.obj in Resources */,

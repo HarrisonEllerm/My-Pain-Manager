@@ -24,14 +24,13 @@ fileprivate struct NotificationCellData {
 class NotificationsController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     let log = SwiftyBeaver.self
-    var period: String?
-    var time: String?
+    var period: String = "Daily"
+    var time: String = "12:00 PM"
     var enableCell: EnableButtonCell?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var parts: [String]?
+    var reminder: EKEvent?
 
-//    var eventStore = EKEventStore()
-    // var calendars: Array<EKCalendar> = []
 
     private var window: UIWindow?
     // show the view table
@@ -119,44 +118,55 @@ class NotificationsController: UIViewController, UITableViewDataSource, UITableV
         }
     }
 
+    private func turnOffReminders() {
+        if let event = reminder {
+            do {
+                //Deleting this event should also remove all future events
+                try appDelegate.eventStore?.remove(event, span: EKSpan.futureEvents, commit: true)
+            } catch let error {
+                log.error(error)
+            }
+        }
+    }
+
     private func createReminder() {
-        let localDate = Date()
-        log.debug("CREATING REMINDER")
-        let reminder = EKReminder(eventStore: appDelegate.eventStore!)
-        reminder.title = "Time to Log an entry!"
-        reminder.calendar = appDelegate.eventStore!.defaultCalendarForNewReminders()
-        if let hourandmins = parts {
-            let hour = Int(hourandmins[0])
-            let min = Int(hourandmins[1].trimmingCharacters(in: CharacterSet.init(charactersIn: " PM")))
-            if let calHour = hour, let calMin = min {
-                log.debug("Was able to set calHour and calMin")
-                log.debug("Setting up startDateComponents and endDateComponents")
-                reminder.startDateComponents = DateComponents(calendar: nil, timeZone: TimeZone.current, era: nil, year: localDate.year, month: localDate.month, day: localDate.day, hour: calHour, minute: calMin, second: 0, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
-                reminder.dueDateComponents = DateComponents(calendar: nil, timeZone: TimeZone.current, era: nil, year: localDate.year.advanced(by: 1), month: localDate.month, day: localDate.day, hour: calHour, minute: calMin, second: 0, nanosecond: nil, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil)
+        if let eventStore = appDelegate.eventStore {
+            reminder = EKEvent(eventStore: eventStore)
+            reminder!.title = "MPM - Time to Log an entry!"
+            reminder!.calendar = appDelegate.eventStore!.defaultCalendarForNewEvents
+            //Convert from AM/PM time to 24 hour time
+            let dateF = DateFormatter()
+            dateF.dateFormat = "h:mm a"
+            let date = dateF.date(from: time)
+            dateF.dateFormat = "HH:mm"
+            let time24Hr = dateF.string(from: date!)
+            //Split into hour time components
+            let time24HrParts = time24Hr.split(separator: ":").map({ String($0) })
+            let hour = time24HrParts[0]
+            let min = time24HrParts[1]
+            let currDate = Date()
+            reminder!.startDate = DateComponents(calendar: Calendar.current, timeZone: TimeZone.current, era: nil, year: currDate.year, month: currDate.month, day: currDate.day, hour: Int(hour), minute: Int(min), second: 0, nanosecond: 0, weekday: nil, weekdayOrdinal: nil, quarter: nil, weekOfMonth: nil, weekOfYear: nil, yearForWeekOfYear: nil).date
+            if let startDate = reminder!.startDate {
+                reminder!.endDate = startDate.add(TimeChunk(seconds: 0, minutes: 5, hours: 0, days: 0, weeks: 0, months: 0, years: 0))
                 var rule: EKRecurrenceRule?
-                //Set Recurrence
-                if let per = period {
-                    switch per {
-                    case "Daily":
-                        log.debug("daily")
-                        rule = EKRecurrenceRule(recurrenceWith: EKRecurrenceFrequency.daily, interval: 1, end: nil)
-                    case "Weekly":
-                        log.debug("weekly")
-                        rule = EKRecurrenceRule(recurrenceWith: EKRecurrenceFrequency.weekly, interval: 1, end: nil)
-                    case "Monthly":
-                        log.debug("monthly")
-                        rule = EKRecurrenceRule(recurrenceWith: EKRecurrenceFrequency.monthly, interval: 1, end: nil)
-                    default:
-                        return
-                    }
+                switch period {
+                case "Daily":
+                    rule = EKRecurrenceRule(recurrenceWith: EKRecurrenceFrequency.daily, interval: 1, end: nil)
+                case "Weekly":
+                    rule = EKRecurrenceRule(recurrenceWith: EKRecurrenceFrequency.weekly, interval: 1, end: nil)
+                default:
+                    return
                 }
-                if let setRule = rule, let startDateComponents = reminder.startDateComponents {
-                    print("Setting Recurrence Rule")
-                    reminder.addRecurrenceRule(setRule)
-                    //Create alarm
-                    let alarm = EKAlarm(absoluteDate: startDateComponents.date!)
-                    reminder.addAlarm(alarm)
-                    try! appDelegate.eventStore?.save(reminder, commit: true)
+                if let setRule = rule {
+                    reminder!.addRecurrenceRule(setRule)
+                    //Set alarm one minute earlier (offset must be negative)
+                    let alarm = EKAlarm(relativeOffset: 60.0 * -1.0)
+                    reminder!.addAlarm(alarm)
+                    do {
+                        try eventStore.save(reminder!, span: EKSpan.thisEvent, commit: true)
+                    } catch let error {
+                        log.error(error)
+                    }
                 }
             }
         }
@@ -169,7 +179,7 @@ extension NotificationsController: EnableButtonCellDelegate, PeriodEntryCellDele
         if button.isOn {
             if appDelegate.eventStore == nil {
                 appDelegate.eventStore = EKEventStore()
-                appDelegate.eventStore?.requestAccess(to: EKEntityType.reminder, completion:
+                appDelegate.eventStore?.requestAccess(to: EKEntityType.event, completion:
                         { (granted, error) in
                             if !granted {
                                 /**
@@ -196,7 +206,7 @@ extension NotificationsController: EnableButtonCellDelegate, PeriodEntryCellDele
                 self.createReminder()
             }
         } else {
-            //figure out how to disable notifs if they exist
+            turnOffReminders()
         }
     }
 
@@ -207,6 +217,5 @@ extension NotificationsController: EnableButtonCellDelegate, PeriodEntryCellDele
 
     func textFieldInCell(cell: TimeEntryCell, editingChangedInTextField newText: String) {
         time = newText
-        parts = newText.split(separator: ":").map({ String($0) })
     }
 }

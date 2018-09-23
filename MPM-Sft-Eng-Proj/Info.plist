@@ -77,5 +77,7 @@
 	<string>Allow access to photo library</string>
     <key>NSRemindersUsageDescription</key>
     <string>Setup Reminders</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Setup Event Reminder</string>
 </dict>
 </plist>

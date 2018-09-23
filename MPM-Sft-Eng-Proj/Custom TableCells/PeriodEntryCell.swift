@@ -17,7 +17,7 @@ class PeriodEntryCell: UITableViewCell,  UIPickerViewDelegate, UIPickerViewDataS
     
     let log = SwiftyBeaver.self
     
-    let options = ["Daily", "Weekly", "Yearly"]
+    let options = ["Daily", "Weekly"]
     var textFieldName: String?
     var textFieldValue: String?
     var delegate: PeriodEntryCellDelegate?
