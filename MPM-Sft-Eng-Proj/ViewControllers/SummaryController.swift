@@ -87,7 +87,7 @@ class SummaryController: UIViewController {
         let reportController = ReportController()
         self.navigationController?.pushViewController(reportController, animated: true)
     }
-    
+
     /**
         Pulls a users pain/vatigue logs over the month
         they provided when selecting dates. This initial
@@ -141,12 +141,7 @@ class SummaryController: UIViewController {
                             }
                             self.buildChart()
                         } else {
-                            //There was no data in given period
-                            self.loading?.stopAnimating()
-                            self.loading?.isHidden = true
-                            self.chartContainer.isHidden = true
-                            self.noDataLabel.isHidden = false
-                            self.noDataImageView?.isHidden = false
+                            self.handleNoDataInPeriod()
                         }
                     }) { (error) in
                         self.log.error("Error thrown when querying for months data", context: SummaryController.self)
@@ -154,6 +149,15 @@ class SummaryController: UIViewController {
                 }
             }
         }
+    }
+
+    private func handleNoDataInPeriod() {
+        //There was no data in given period
+        self.loading?.stopAnimating()
+        self.loading?.isHidden = true
+        self.chartContainer.isHidden = true
+        self.noDataLabel.isHidden = false
+        self.noDataImageView?.isHidden = false
     }
 
     /**
@@ -185,6 +189,15 @@ class SummaryController: UIViewController {
                 }
             }
         }
+        // Test to see if they were all removed, if so return.
+        // This is necessary as we filter on the client accross
+        // the monthly range, which may contain data, but not for
+        // the date range actually specified.
+        if wrappers.isEmpty {
+            self.handleNoDataInPeriod()
+            return
+        }
+
         //Grouping the log wrappers by pain type
         var mappedWrappers: Dictionary<String, [LogWrapper]> = Dictionary()
         for item in self.wrappers {
@@ -198,10 +211,6 @@ class SummaryController: UIViewController {
         setupXandYValues(wrappers: mappedWrappers)
         //Initiate the chart
         initChart()
-
-
-
-
     }
 
     /**

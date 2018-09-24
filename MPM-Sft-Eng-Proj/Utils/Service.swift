@@ -41,12 +41,6 @@ class Service {
         on.present(alert, animated: true, completion: completion)
     }
     
-    static func delayBySeconds(_ seconds: Double, completion: @escaping () -> ()) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
-            completion()
-        }
-    }
-    
     static func setupNavBar(controller: UIViewController) {
         controller.navigationController?.navigationBar.titleTextAttributes =
             [NSAttributedStringKey.foregroundColor:UIColor.white]
