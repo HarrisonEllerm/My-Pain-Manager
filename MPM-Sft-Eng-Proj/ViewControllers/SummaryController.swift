@@ -96,7 +96,6 @@ class SummaryController: UIViewController {
         further on the client.
     */
     private func getDataForMonths() {
-        log.debug("Getting data for the month")
         refreshData()
         if let sDate = start, let eDate = end {
             //if the chart container contains something remove whats inside it
@@ -124,7 +123,6 @@ class SummaryController: UIViewController {
                     .observeSingleEvent(of: .value, with: { (snapshot) in
                         if let snapshots = snapshot.children.allObjects as? [DataSnapshot] {
                             for snap in snapshots {
-                                self.log.debug(snap)
                                 if let values = snap.value as? Dictionary<String, Any> {
                                     guard let rating = values["ranking"] as? Double,
                                         let type = values["type"] as? String,
@@ -134,7 +132,6 @@ class SummaryController: UIViewController {
                                     let date = Date(dateString)
                                     if let dateUnwrapped = date {
                                         let w = LogWrapper(dayInMonth, rating, type, dateUnwrapped)
-                                        self.log.debug("Adding logwrapper \(w)")
                                         self.wrappers.append(w)
                                     }
                                 }
