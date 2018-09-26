@@ -82,7 +82,7 @@ class SummaryController: UIViewController {
         self.navigationController?.present(navigationController, animated: true, completion: nil)
     }
 
-    //
+    
     @objc func handleReportButtonOnTap() {
         let reportController = ReportController()
         self.navigationController?.pushViewController(reportController, animated: true)

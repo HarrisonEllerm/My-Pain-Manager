@@ -77,7 +77,7 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
                 alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: { (action) in
                     let entryStr: String = (inputTextField?.text)!.trimmingCharacters(in: .whitespaces)
                     self.log.info("User requested report with email: \(entryStr)")
-                    self.finishSendingReport(uid: uid, year: sDate.year, firstMonth: sDate.month, endMonth: eDate.month, email: entryStr)
+                    self.finishSendingReport(uid: uid, year: sDate.year, firstMonth: sDate.toFormat("dd/MM/yyyy"), endMonth: eDate.toFormat("dd/MM/yyyy"), email: entryStr)
                 }))
                 alert.addTextField(configurationHandler: { (textField: UITextField!) in
                     textField.text = email
@@ -91,20 +91,19 @@ class ReportController: UIViewController, UITableViewDataSource, UITableViewDele
         }
     }
     
-    private func finishSendingReport(uid: String, year: Int, firstMonth: Int, endMonth: Int, email: String) {
+    private func finishSendingReport(uid: String, year: Int, firstMonth: String, endMonth: String, email: String) {
         let params = ["uuid": uid,
                       "year": year,
-                      "first_Month": firstMonth,
-                      "end_Month": endMonth,
+                      "start_Date": firstMonth,
+                      "end_Date": endMonth,
                       "email": email] as [String: Any]
         log.info("Sending summary to \(email)")
         log.info("Request details \(params.description)")
-        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/report")
+        let url = URL(string: "http://mypainmanager.ddns.net:2118/api/mpm/report")
         let headers = ["Content-Type": "application/json"]
         Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
         Service.showAlert(on: self, style: .alert, title: "Generating Report", message: "Check your email shortly for your generated report!")
     }
-    
     
     private func setUpTable() {
         reportTableView.register(GraphDateEntryCell.self, forCellReuseIdentifier: "graphDateEntry")

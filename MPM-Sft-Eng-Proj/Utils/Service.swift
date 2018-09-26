@@ -51,7 +51,7 @@ class Service {
     static func notifyStaffOfError(_ clazz: String, _ exception: String) {
         let params = ["class": clazz,
                       "exception_message": exception]
-        let url = URL(string: "http://mypainmanager.ddns.net:2120/api/mpm/exception")
+        let url = URL(string: "http://mypainmanager.ddns.net:2118/api/mpm/exception")
         let headers = ["Content-Type": "application/json"]
         Alamofire.request(url!, method: .post, parameters: params, encoding: JSONEncoding.default, headers: headers)
     }
