@@ -57,7 +57,7 @@ public class CalendarDateRangePickerViewController: UICollectionViewController{
  
         let numberOfSec = self.numberOfSections(in: self.collectionView!)
 
-        self.scrollToLast(numberOfSections: numberOfSec)
+        //self.scrollToLast(numberOfSections: numberOfSec)
     }
     
 
